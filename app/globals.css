@@ -1,12 +1,79 @@
 @import "tailwindcss";
 
 :root {
+  /* Legacy aliases */
   --orion-navy: #070d1a;
   --orion-navy-deep: #050a14;
   --orion-gold: #d4af37;
   --orion-gold-light: #e2c158;
-  --background: var(--orion-navy);
-  --foreground: #f5f5f7;
+  --background: var(--orion-color-background);
+  --foreground: var(--orion-color-text);
+
+  /* Colors */
+  --orion-color-primary: #070d1a;
+  --orion-color-secondary: #050a14;
+  --orion-color-accent: #d4af37;
+  --orion-color-accent-light: #e2c158;
+  --orion-color-success: #34d399;
+  --orion-color-warning: #fbbf24;
+  --orion-color-danger: #f87171;
+  --orion-color-info: #60a5fa;
+  --orion-color-background: #070d1a;
+  --orion-color-surface: rgba(255, 255, 255, 0.03);
+  --orion-color-border: rgba(255, 255, 255, 0.07);
+  --orion-color-text: #f5f5f7;
+  --orion-color-muted-text: rgba(255, 255, 255, 0.45);
+
+  /* Spacing */
+  --orion-space-1: 4px;
+  --orion-space-2: 8px;
+  --orion-space-3: 12px;
+  --orion-space-4: 16px;
+  --orion-space-6: 24px;
+  --orion-space-8: 32px;
+  --orion-space-10: 40px;
+  --orion-space-12: 48px;
+  --orion-space-16: 64px;
+
+  /* Border radius */
+  --orion-radius-sm: 0.5rem;
+  --orion-radius-md: 0.75rem;
+  --orion-radius-lg: 1rem;
+  --orion-radius-xl: 1.25rem;
+  --orion-radius-pill: 9999px;
+
+  /* Shadows */
+  --orion-shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.16);
+  --orion-shadow-md: 0 8px 32px rgba(0, 0, 0, 0.24);
+  --orion-shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.32);
+  --orion-shadow-overlay: 0 8px 24px rgba(212, 175, 55, 0.25);
+
+  /* Typography */
+  --orion-font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --orion-font-mono: var(--font-geist-mono), monospace;
+  --orion-text-heading-xl: 1.875rem;
+  --orion-text-heading-lg: 1.5rem;
+  --orion-text-body-md: 0.875rem;
+  --orion-text-caption-md: 0.6875rem;
+  --orion-weight-light: 300;
+  --orion-weight-medium: 500;
+  --orion-weight-semibold: 600;
+  --orion-tracking-tight: -0.025em;
+  --orion-tracking-wide: 0.14em;
+  --orion-leading-relaxed: 1.625;
+
+  /* Transitions */
+  --orion-duration-fast: 150ms;
+  --orion-duration-normal: 200ms;
+  --orion-duration-slow: 300ms;
+
+  /* Z-index */
+  --orion-z-header: 20;
+  --orion-z-sidebar: 30;
+  --orion-z-dropdown: 40;
+  --orion-z-modal: 50;
+  --orion-z-toast: 60;
+  --orion-z-tooltip: 70;
 }
 
 @theme inline {
@@ -16,14 +83,29 @@
   --color-orion-navy-deep: var(--orion-navy-deep);
   --color-orion-gold: var(--orion-gold);
   --color-orion-gold-light: var(--orion-gold-light);
+  --color-orion-primary: var(--orion-color-primary);
+  --color-orion-secondary: var(--orion-color-secondary);
+  --color-orion-accent: var(--orion-color-accent);
+  --color-orion-success: var(--orion-color-success);
+  --color-orion-warning: var(--orion-color-warning);
+  --color-orion-danger: var(--orion-color-danger);
+  --color-orion-info: var(--orion-color-info);
+  --color-orion-surface: var(--orion-color-surface);
+  --color-orion-border: var(--orion-color-border);
+  --color-orion-text: var(--orion-color-text);
+  --color-orion-muted: var(--orion-color-muted-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --radius-orion-sm: var(--orion-radius-sm);
+  --radius-orion-md: var(--orion-radius-md);
+  --radius-orion-lg: var(--orion-radius-lg);
+  --radius-orion-xl: var(--orion-radius-xl);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--orion-font-sans);
 }
 
 ::selection {

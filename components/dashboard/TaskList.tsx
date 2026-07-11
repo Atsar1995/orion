@@ -8,7 +8,7 @@ export function TaskList({ tasks }: TaskListProps) {
       {tasks.map((task) => (
         <li
           key={task}
-          className="flex items-start gap-3 rounded-xl border border-white/[0.05] bg-white/[0.02] px-3 py-2.5 transition-colors duration-200 hover:border-white/[0.08] hover:bg-white/[0.04]"
+          className="flex items-start gap-3 rounded-orion-md border border-white/[0.05] bg-white/[0.02] px-3 py-2.5 transition-colors duration-[var(--orion-duration-normal)] hover:border-white/[0.08] hover:bg-white/[0.04]"
         >
           <span
             aria-hidden

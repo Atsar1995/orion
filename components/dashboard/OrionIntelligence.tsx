@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/common/Button";
 import { SparkIcon } from "@/components/common/icons";
-import { DashboardCard } from "@/components/dashboard/DashboardCard";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Divider } from "@/components/ui/Divider";
+import { Input } from "@/components/ui/Input";
 
 const GREETING = "Good Evening, Mohammad Shafi";
 
@@ -24,14 +26,10 @@ export function OrionIntelligence() {
   const [query, setQuery] = useState("");
 
   return (
-    <DashboardCard
-      title="ORION Intelligence"
-      variant="premium"
-      className="h-full"
-    >
+    <Card title="ORION Intelligence" variant="premium" className="h-full">
       <div className="flex flex-1 flex-col gap-5">
         <div className="space-y-3">
-          <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-orion-gold/25 bg-orion-gold/10">
+          <div className="inline-flex h-11 w-11 items-center justify-center rounded-orion-md border border-orion-gold/25 bg-orion-gold/10">
             <SparkIcon className="h-5 w-5 text-orion-gold" />
           </div>
           <p className="text-lg font-medium tracking-tight text-white">
@@ -77,17 +75,15 @@ export function OrionIntelligence() {
           </ul>
         </section>
 
-        <section
-          aria-label="Ask ORION"
-          className="mt-auto space-y-3 border-t border-white/[0.06] pt-4"
-        >
+        <section aria-label="Ask ORION" className="mt-auto space-y-3 pt-4">
+          <Divider />
           <div className="flex flex-col gap-2 sm:flex-row">
-            <input
+            <Input
+              label="Ask ORION"
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               placeholder="Ask ORION anything..."
-              className="min-w-0 flex-1 rounded-xl border border-white/[0.08] bg-white/[0.04] px-4 py-2.5 text-sm font-light text-white placeholder:text-white/30 transition-colors duration-200 outline-none focus:border-orion-gold/30 focus:bg-white/[0.06]"
             />
             <Button className="shrink-0 justify-center sm:w-auto">Send</Button>
           </div>
@@ -96,6 +92,6 @@ export function OrionIntelligence() {
           </p>
         </section>
       </div>
-    </DashboardCard>
+    </Card>
   );
 }

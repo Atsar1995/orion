@@ -1,8 +1,9 @@
 import { OrionIntelligence } from "@/components/dashboard/OrionIntelligence";
 import { BriefingCard } from "@/components/dashboard/BriefingCard";
-import { DashboardCard } from "@/components/dashboard/DashboardCard";
-import { MetricGrid } from "@/components/dashboard/MetricCard";
 import { TaskList } from "@/components/dashboard/TaskList";
+import { Card } from "@/components/ui/Card";
+import { SectionHeader } from "@/components/ui/SectionHeader";
+import { StatGrid } from "@/components/ui/StatCard";
 import {
   commerceMetrics,
   hotelsMetrics,
@@ -13,14 +14,10 @@ import {
 export default function MissionControlPage() {
   return (
     <div className="space-y-6">
-      <header>
-        <h2 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
-          Mission Control
-        </h2>
-        <p className="mt-1 text-sm font-light text-white/45">
-          Your business at a glance.
-        </p>
-      </header>
+      <SectionHeader
+        title="Mission Control"
+        subtitle="Your business at a glance."
+      />
 
       <section
         aria-label="Mission Control dashboard"
@@ -30,25 +27,25 @@ export default function MissionControlPage() {
           <BriefingCard />
         </div>
 
-        <DashboardCard title="Hotels">
-          <MetricGrid metrics={hotelsMetrics} />
-        </DashboardCard>
+        <Card title="Hotels">
+          <StatGrid stats={hotelsMetrics} />
+        </Card>
 
-        <DashboardCard title="Commerce">
-          <MetricGrid metrics={commerceMetrics} />
-        </DashboardCard>
+        <Card title="Commerce">
+          <StatGrid stats={commerceMetrics} />
+        </Card>
 
-        <DashboardCard title="Marketing">
-          <MetricGrid metrics={marketingMetrics} />
-        </DashboardCard>
+        <Card title="Marketing">
+          <StatGrid stats={marketingMetrics} />
+        </Card>
 
         <div className="md:col-span-2">
           <OrionIntelligence />
         </div>
 
-        <DashboardCard title="Tasks">
+        <Card title="Tasks">
           <TaskList tasks={missionControlTasks} />
-        </DashboardCard>
+        </Card>
       </section>
     </div>
   );

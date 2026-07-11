@@ -1,10 +1,10 @@
 import { Badge } from "@/components/common/Badge";
 import { SparkIcon } from "@/components/common/icons";
-import { DashboardCard } from "@/components/dashboard/DashboardCard";
+import { Card } from "@/components/ui/Card";
 
 export function BriefingCard() {
   return (
-    <DashboardCard
+    <Card
       title="Today's Briefing"
       action={
         <Badge>
@@ -16,6 +16,6 @@ export function BriefingCard() {
       <p className="text-sm leading-relaxed font-light text-white/50">
         AI summary coming soon.
       </p>
-    </DashboardCard>
+    </Card>
   );
 }
