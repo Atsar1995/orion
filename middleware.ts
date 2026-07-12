@@ -2,13 +2,13 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
   isAuthPublicPath,
-  isPlaceholderSessionActive,
+  isAuthenticatedPlaceholder,
 } from "@/lib/auth/routes";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isPublicRoute = isAuthPublicPath(pathname);
-  const isAuthenticated = isPlaceholderSessionActive();
+  const isAuthenticated = isAuthenticatedPlaceholder();
 
   if (isPublicRoute && isAuthenticated) {
     return NextResponse.redirect(new URL("/", request.url));

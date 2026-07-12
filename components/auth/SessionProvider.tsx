@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPlaceholderSession } from "@/lib/auth/placeholder-session";
-import { isPlaceholderSessionActive } from "@/lib/auth/routes";
+import { isAuthenticatedPlaceholder } from "@/lib/auth/routes";
 import { isSessionActive } from "@/lib/auth/session";
 import type { Session } from "@/types/auth";
 
@@ -21,7 +21,7 @@ type SessionContextValue = {
 const SessionContext = createContext<SessionContextValue | null>(null);
 
 function createInitialSession(): Session | null {
-  if (!isPlaceholderSessionActive()) {
+  if (!isAuthenticatedPlaceholder()) {
     return null;
   }
 

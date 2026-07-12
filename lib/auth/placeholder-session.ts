@@ -8,15 +8,14 @@ import { SystemRole } from "@/lib/auth/roles";
 import type { Session } from "@/types/auth";
 import { OrganizationStatus, UserStatus } from "@/types/auth";
 
-const PLACEHOLDER_NOW = new Date("2026-07-12T00:00:00.000Z");
-
 /** Creates a typed placeholder session for development and foundation testing. */
 export function createPlaceholderSession(): Session {
+  const now = new Date();
   const organizationId = "org-orania";
   const workspaceId = "workspace-orania";
 
   return createSession({
-    now: PLACEHOLDER_NOW,
+    now,
     user: {
       id: "user-placeholder-founder",
       email: "founder@orion.dev",
@@ -37,8 +36,8 @@ export function createPlaceholderSession(): Session {
         { module: "settings", action: "write" },
         { module: "users", action: "write" },
       ],
-      createdAt: PLACEHOLDER_NOW,
-      updatedAt: PLACEHOLDER_NOW,
+      createdAt: now,
+      updatedAt: now,
     },
     activeWorkspace: {
       id: workspaceId,

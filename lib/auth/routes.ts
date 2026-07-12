@@ -2,6 +2,9 @@
  * ORION Identity — route classification for auth middleware and guards.
  */
 
+import { createPlaceholderSession } from "@/lib/auth/placeholder-session";
+import { isSessionActive } from "@/lib/auth/session";
+
 /** Paths accessible without an authenticated session. */
 export const AUTH_PUBLIC_PATHS = [
   "/login",
@@ -22,4 +25,16 @@ export function isAuthPublicPath(pathname: string): boolean {
  */
 export function isPlaceholderSessionActive(): boolean {
   return process.env.NEXT_PUBLIC_ORION_PLACEHOLDER_AUTH !== "false";
+}
+
+/**
+ * Returns true when a valid placeholder session should be treated as authenticated.
+ * Shared by middleware and SessionProvider to prevent redirect loops.
+ */
+export function isAuthenticatedPlaceholder(): boolean {
+  if (!isPlaceholderSessionActive()) {
+    return false;
+  }
+
+  return isSessionActive(createPlaceholderSession());
 }
