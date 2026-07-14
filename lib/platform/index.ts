@@ -42,6 +42,17 @@ export {
   validationError,
 } from "@/lib/platform/errors";
 
+// Event services
+export {
+  EventBus,
+  InMemoryEventPublisher,
+  InMemoryEventSubscriber,
+  createCorrelationId,
+  createEventId,
+  createInMemoryEventServices,
+  createPlatformEvent,
+} from "@/lib/platform/events";
+
 // Core types
 export { ServiceErrorCode, ServiceHealth, ServiceStatus } from "@/types/services";
 export type {
@@ -49,6 +60,7 @@ export type {
   AuditOutcome,
   AuditRecord,
   ConfigurationEntry,
+  CreatePlatformEventInput,
   DateRange,
   EnqueueJobRequest,
   FeatureFlag,

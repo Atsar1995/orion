@@ -2,7 +2,7 @@
  * ORION Platform Events — in-memory event bus.
  */
 
-import type { PlatformEvent, ServiceResult } from "@/types/services";
+import type { PlatformEvent, ServiceContext, ServiceResult } from "@/types/services";
 import { validationError } from "@/lib/platform/errors";
 import { failure, success } from "@/lib/platform/result";
 import { EventDispatcher } from "@/lib/platform/events/EventDispatcher";
@@ -72,10 +72,10 @@ export class EventBus {
   }
 
   private validateEvent(event: PlatformEvent): ServiceResult<PlatformEvent> {
-    if (!event.id.trim()) {
+    if (!event.eventId.trim()) {
       return failure(
         validationError({
-          message: "PlatformEvent.id is required.",
+          message: "PlatformEvent.eventId is required.",
         }),
       );
     }
@@ -88,14 +88,63 @@ export class EventBus {
       );
     }
 
-    if (!event.organizationId.trim() || !event.workspaceId.trim()) {
+    if (!(event.timestamp instanceof Date) || Number.isNaN(event.timestamp.getTime())) {
       return failure(
         validationError({
-          message: "PlatformEvent tenant scope is required.",
+          message: "PlatformEvent.timestamp must be a valid date.",
         }),
       );
     }
 
+    if (!event.correlationId.trim()) {
+      return failure(
+        validationError({
+          message: "PlatformEvent.correlationId is required.",
+        }),
+      );
+    }
+
+    if (!event.source.trim()) {
+      return failure(
+        validationError({
+          message: "PlatformEvent.source is required.",
+        }),
+      );
+    }
+
+    if (!event.version.trim()) {
+      return failure(
+        validationError({
+          message: "PlatformEvent.version is required.",
+        }),
+      );
+    }
+
+    const tenantValidation = this.validateTenantContext(event.tenantContext);
+
+    if (!tenantValidation.success) {
+      return tenantValidation;
+    }
+
     return success(event);
+  }
+
+  private validateTenantContext(
+    tenantContext: ServiceContext,
+  ): ServiceResult<ServiceContext> {
+    if (
+      !tenantContext.organizationId.trim() ||
+      !tenantContext.workspaceId.trim() ||
+      !tenantContext.userId.trim() ||
+      !tenantContext.role.trim()
+    ) {
+      return failure(
+        validationError({
+          message: "PlatformEvent.tenantContext is incomplete.",
+        }),
+      );
+    }
+
+    return success(tenantContext);
   }
 }

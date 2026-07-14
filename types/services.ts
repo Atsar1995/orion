@@ -90,13 +90,29 @@ export interface ScheduledNotificationRequest extends NotificationRequest {
 
 /** Platform event contract. */
 export interface PlatformEvent {
-  id: string;
+  eventId: string;
   type: string;
   timestamp: Date;
-  organizationId: string;
-  workspaceId: string;
-  actorUserId?: string;
+  correlationId: string;
+  causationId?: string;
+  source: string;
+  version: string;
+  tenantContext: ServiceContext;
   payload: Record<string, string>;
+  metadata?: Record<string, string>;
+}
+
+/** Input for constructing a platform event. */
+export interface CreatePlatformEventInput {
+  type: string;
+  source: string;
+  version: string;
+  tenantContext: ServiceContext;
+  payload: Record<string, string>;
+  eventId?: string;
+  timestamp?: Date;
+  correlationId?: string;
+  causationId?: string;
   metadata?: Record<string, string>;
 }
 
