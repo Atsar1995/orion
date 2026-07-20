@@ -26,6 +26,13 @@ export function NavIconGlyph({
           <path d="M4 13h6v7H4zM14 4h6v16h-6zM4 4h6v5H4z" />
         </svg>
       );
+    case "engineering":
+      return (
+        <svg className={className} viewBox="0 0 24 24" aria-hidden {...stroke}>
+          <path d="m16 18 6-6-6-6" />
+          <path d="m8 6-6 6 6 6" />
+        </svg>
+      );
     case "intelligence":
       return (
         <svg className={className} viewBox="0 0 24 24" aria-hidden {...stroke}>

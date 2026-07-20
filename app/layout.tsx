@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ORION — Mission Control",
+  title: "ORION — Command Center",
   description:
     "ORION AI Business Operating System. One AI. One Workspace. Complete Business Control.",
 };

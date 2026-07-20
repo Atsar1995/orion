@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { APP_TAGLINE, APP_VERSION } from "@/lib/constants";
+import { APP_TAGLINE } from "@/lib/constants";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -10,20 +10,16 @@ type DashboardLayoutProps = {
 function Footer() {
   return (
     <footer className="border-t border-white/[0.06] px-6 py-6 md:px-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="text-[11px] font-medium tracking-[0.2em] text-white/30 uppercase">
-            Version {APP_VERSION}
+          <p className="text-sm font-medium text-white/60">
+            ORION Business Operating System
           </p>
-          <p className="mt-2 text-sm font-medium text-white/70">ORION Platform</p>
+          <p className="mt-1 text-xs font-light text-white/40">
+            Version v0.5 – Command
+          </p>
         </div>
-        <p className="max-w-xs text-right text-sm leading-relaxed font-light text-white/40">
-          One AI.
-          <br />
-          One Workspace.
-          <br />
-          Complete Business Control.
-        </p>
+        <p className="text-xs font-light text-white/30">© Atsar Technologies</p>
       </div>
       <p className="sr-only">{APP_TAGLINE}</p>
     </footer>

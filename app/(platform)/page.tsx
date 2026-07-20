@@ -1,51 +1,46 @@
-import { OrionIntelligence } from "@/components/dashboard/OrionIntelligence";
 import { BriefingCard } from "@/components/dashboard/BriefingCard";
+import { CommandCenterHeader } from "@/components/dashboard/CommandCenterHeader";
+import { ModulePreviewCard } from "@/components/dashboard/ModulePreviewCard";
+import { OrionIntelligence } from "@/components/dashboard/OrionIntelligence";
+import { PlatformHealthCard } from "@/components/dashboard/PlatformHealthCard";
+import { QuickActionsCard } from "@/components/dashboard/QuickActionsCard";
 import { TaskList } from "@/components/dashboard/TaskList";
 import { Card } from "@/components/ui/Card";
-import { SectionHeader } from "@/components/ui/SectionHeader";
-import { StatGrid } from "@/components/ui/StatCard";
-import {
-  commerceMetrics,
-  hotelsMetrics,
-  marketingMetrics,
-  missionControlTasks,
-} from "@/lib/dashboard-data";
+import { missionControlTasks } from "@/lib/dashboard-data";
 
-export default function MissionControlPage() {
+export default function CommandCenterPage() {
   return (
-    <div className="space-y-6">
-      <SectionHeader
-        title="Mission Control"
-        subtitle="Your business at a glance."
-      />
+    <div className="space-y-8">
+      <CommandCenterHeader />
 
-      <section
-        aria-label="Mission Control dashboard"
-        className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
-      >
-        <div className="xl:col-span-3">
-          <BriefingCard />
+      <section aria-label="ORION Command Center" className="space-y-6">
+        <BriefingCard />
+
+        <div>
+          <h2 className="mb-4 text-lg font-medium tracking-tight text-white/90 md:text-xl">
+            Business Modules
+          </h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <ModulePreviewCard title="🏨 ORANIA" />
+            <ModulePreviewCard title="🛍 ATSAR" />
+            <ModulePreviewCard title="📈 Marketing" />
+          </div>
         </div>
 
-        <Card title="Hotels">
-          <StatGrid stats={hotelsMetrics} />
-        </Card>
-
-        <Card title="Commerce">
-          <StatGrid stats={commerceMetrics} />
-        </Card>
-
-        <Card title="Marketing">
-          <StatGrid stats={marketingMetrics} />
-        </Card>
-
-        <div className="md:col-span-2">
-          <OrionIntelligence />
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <PlatformHealthCard />
+          <QuickActionsCard />
         </div>
 
-        <Card title="Tasks">
-          <TaskList tasks={missionControlTasks} />
-        </Card>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="md:col-span-2">
+            <OrionIntelligence />
+          </div>
+
+          <Card title="Tasks">
+            <TaskList tasks={missionControlTasks} />
+          </Card>
+        </div>
       </section>
     </div>
   );
