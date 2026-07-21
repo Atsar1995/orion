@@ -7,6 +7,7 @@ export type NavItem = {
 export type NavIcon =
   | "mission-control"
   | "engineering"
+  | "configuration"
   | "intelligence"
   | "tasks"
   | "calendar"
@@ -23,6 +24,7 @@ export type NavIcon =
 export const primaryNav: NavItem[] = [
   { label: "Mission Control", href: "/", icon: "mission-control" },
   { label: "Engineering", href: "/engineering", icon: "engineering" },
+  { label: "Configuration", href: "/configuration", icon: "configuration" },
   { label: "Intelligence", href: "/intelligence", icon: "intelligence" },
   { label: "Tasks", href: "/tasks", icon: "tasks" },
   { label: "Calendar", href: "/calendar", icon: "calendar" },
