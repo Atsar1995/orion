@@ -1,16 +1,14 @@
 import { Card } from "@/components/ui/Card";
 import { RECOMMENDED_ACTIONS } from "@/lib/command-center-data";
+import { WORKSPACE_LIST_CLASS, WORKSPACE_LIST_ITEM_CLASS } from "@/lib/constants";
 
 /** Executive recommended actions for today. */
 export function RecommendedActionsCard() {
   return (
     <Card title="Recommended Actions">
-      <ul className="space-y-2.5">
+      <ul className={WORKSPACE_LIST_CLASS}>
         {RECOMMENDED_ACTIONS.map((item) => (
-          <li
-            key={item}
-            className="flex items-start gap-2 text-sm font-light leading-relaxed text-white/65"
-          >
+          <li key={item} className={WORKSPACE_LIST_ITEM_CLASS}>
             <span aria-hidden className="text-orion-gold">
               →
             </span>

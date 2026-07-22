@@ -1,6 +1,12 @@
 "use client";
 
 import { FOUNDER_NAME } from "@/lib/command-center-data";
+import {
+  WORKSPACE_GREETING_CLASS,
+  WORKSPACE_HEADER_BLOCK_CLASS,
+  WORKSPACE_SUBTITLE_CLASS,
+  WORKSPACE_TITLE_CLASS,
+} from "@/lib/constants";
 
 function getGreetingPeriod(): string {
   const hour = new Date().getHours();
@@ -28,14 +34,12 @@ function formatTodayDate(): string {
 /** Compact executive greeting with date — minimal spacing before first content. */
 export function ExecutiveGreeting() {
   return (
-    <header className="space-y-1 border-b border-white/[0.06] pb-4">
-      <p className="text-base font-medium text-white/85 md:text-lg">
+    <header className={WORKSPACE_HEADER_BLOCK_CLASS}>
+      <p className={WORKSPACE_GREETING_CLASS}>
         {getGreetingPeriod()}, {FOUNDER_NAME}
       </p>
-      <h1 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
-        Executive Command Center
-      </h1>
-      <p className="text-sm font-light text-white/45">{formatTodayDate()}</p>
+      <h1 className={WORKSPACE_TITLE_CLASS}>Executive Command Center</h1>
+      <p className={WORKSPACE_SUBTITLE_CLASS}>{formatTodayDate()}</p>
     </header>
   );
 }

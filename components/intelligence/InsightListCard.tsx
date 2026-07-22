@@ -1,4 +1,5 @@
 import { Card } from "@/components/ui/Card";
+import { WORKSPACE_LIST_CLASS, WORKSPACE_LIST_ITEM_CLASS } from "@/lib/constants";
 
 type InsightListCardProps = {
   title: string;
@@ -38,12 +39,9 @@ export function InsightListCard({
 }: InsightListCardProps) {
   return (
     <Card title={title}>
-      <ul className="space-y-2.5">
+      <ul className={WORKSPACE_LIST_CLASS}>
         {items.map((item) => (
-          <li
-            key={item}
-            className="flex items-start gap-2 text-sm font-light leading-relaxed text-white/60"
-          >
+          <li key={item} className={WORKSPACE_LIST_ITEM_CLASS}>
             <ListMarker marker={marker} />
             <span>{item}</span>
           </li>

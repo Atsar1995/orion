@@ -6,6 +6,13 @@ import { NotificationSettingsCard } from "@/components/configuration/Notificatio
 import { Divider } from "@/components/ui/Divider";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import {
+  WORKSPACE_GRID_2_COL,
+  WORKSPACE_GRID_INTEGRATIONS_COL,
+  WORKSPACE_PAGE_CLASS,
+  WORKSPACE_SECTION_CLASS,
+  WORKSPACE_SECTION_GROUP_CLASS,
+} from "@/lib/constants";
+import {
   AI_PREFERENCE_FIELDS,
   APPEARANCE_FIELDS,
   FOUNDER_PROFILE_FIELDS,
@@ -16,11 +23,11 @@ import {
 
 export default function ConfigurationWorkspacePage() {
   return (
-    <div className="space-y-8">
+    <div className={WORKSPACE_PAGE_CLASS}>
       <ConfigurationWorkspaceHeader />
 
-      <section aria-label="Configuration Workspace" className="space-y-6">
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <section aria-label="Configuration Workspace" className={WORKSPACE_SECTION_CLASS}>
+        <div className={WORKSPACE_GRID_2_COL}>
           <ConfigurationSectionCard
             title="Organization Information"
             fields={ORGANIZATION_FIELDS}
@@ -31,7 +38,7 @@ export default function ConfigurationWorkspacePage() {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className={WORKSPACE_GRID_2_COL}>
           <ConfigurationSectionCard title="Appearance" fields={APPEARANCE_FIELDS} />
           <NotificationSettingsCard settings={NOTIFICATION_SETTINGS} />
         </div>
@@ -43,12 +50,12 @@ export default function ConfigurationWorkspacePage() {
 
         <Divider />
 
-        <div className="space-y-4">
+        <div className={WORKSPACE_SECTION_GROUP_CLASS}>
           <SectionHeader
             title="Integrations"
             subtitle="Connect third-party services to extend ORION capabilities."
           />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className={WORKSPACE_GRID_INTEGRATIONS_COL}>
             {INTEGRATION_PROVIDERS.map((provider) => (
               <IntegrationCard key={provider.name} name={provider.name} />
             ))}

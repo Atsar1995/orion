@@ -10,12 +10,12 @@ export function ReleaseInformationCard() {
             Latest Release
           </p>
           <p className="mt-1 text-lg font-semibold tracking-tight text-white">
-            v0.5 – Command
+            v0.7 – Foundation Complete
           </p>
         </div>
         <p className="text-sm font-light leading-relaxed text-white/50">
-          Command Center foundation, platform health monitoring, and executive
-          briefing surfaces.
+          Executive Command Center, Intelligence and Configuration workspaces,
+          shared design system, and platform polish.
         </p>
       </div>
     </Card>

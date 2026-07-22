@@ -9,27 +9,32 @@ import { RecentActivityCard } from "@/components/command-center/RecentActivityCa
 import { RecommendedActionsCard } from "@/components/command-center/RecommendedActionsCard";
 import { TodaysPrioritiesCard } from "@/components/command-center/TodaysPrioritiesCard";
 import { Divider } from "@/components/ui/Divider";
+import {
+  WORKSPACE_GRID_2_COL,
+  WORKSPACE_PAGE_CLASS,
+  WORKSPACE_SECTION_CLASS,
+} from "@/lib/constants";
 
 export default function ExecutiveCommandCenterPage() {
   return (
-    <div className="space-y-6">
+    <div className={WORKSPACE_PAGE_CLASS}>
       <ExecutiveGreeting />
 
-      <section aria-label="Executive Command Center" className="space-y-8">
+      <section aria-label="Executive Command Center" className={WORKSPACE_SECTION_CLASS}>
         <ExecutiveSummaryCard />
 
         <BusinessHealthOverview />
 
         <Divider />
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className={WORKSPACE_GRID_2_COL}>
           <ExecutiveBriefingSection />
           <CriticalAttentionCard />
         </div>
 
         <InsightOfTheDayCard />
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className={WORKSPACE_GRID_2_COL}>
           <TodaysPrioritiesCard />
           <RecommendedActionsCard />
         </div>

@@ -1,11 +1,12 @@
 import { Card } from "@/components/ui/Card";
 import { RECENT_ACTIVITY } from "@/lib/command-center-data";
+import { WORKSPACE_FIELD_LIST_CLASS } from "@/lib/constants";
 
 /** Recent platform activity timeline. */
 export function RecentActivityCard() {
   return (
     <Card title="Recent Activity">
-      <ul className="space-y-3">
+      <ul className={WORKSPACE_FIELD_LIST_CLASS}>
         {RECENT_ACTIVITY.map((item) => (
           <li
             key={`${item.time}-${item.description}`}

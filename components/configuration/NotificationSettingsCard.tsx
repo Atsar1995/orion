@@ -1,6 +1,10 @@
 import { Badge } from "@/components/common/Badge";
 import { Card } from "@/components/ui/Card";
 import type { NotificationSetting } from "@/lib/configuration-data";
+import {
+  WORKSPACE_FIELD_LIST_CLASS,
+  WORKSPACE_FIELD_ROW_CLASS,
+} from "@/lib/constants";
 
 type NotificationSettingsCardProps = {
   settings: NotificationSetting[];
@@ -12,12 +16,9 @@ export function NotificationSettingsCard({
 }: NotificationSettingsCardProps) {
   return (
     <Card title="Notifications">
-      <ul className="space-y-3">
+      <ul className={WORKSPACE_FIELD_LIST_CLASS}>
         {settings.map((setting) => (
-          <li
-            key={setting.label}
-            className="flex items-center justify-between gap-4 border-b border-white/[0.04] pb-3 last:border-b-0 last:pb-0"
-          >
+          <li key={setting.label} className={WORKSPACE_FIELD_ROW_CLASS}>
             <span className="text-sm font-light text-white/55">
               {setting.label}
             </span>

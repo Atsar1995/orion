@@ -8,6 +8,13 @@ import { Divider } from "@/components/ui/Divider";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatCard } from "@/components/ui/StatCard";
 import {
+  WORKSPACE_GRID_3_COL,
+  WORKSPACE_GRID_4_COL,
+  WORKSPACE_PAGE_CLASS,
+  WORKSPACE_SECTION_CLASS,
+  WORKSPACE_SECTION_GROUP_CLASS,
+} from "@/lib/constants";
+import {
   AI_INSIGHTS,
   BUSINESS_HEALTH_MODULES,
   BUSINESS_METRICS,
@@ -17,25 +24,25 @@ import {
 
 export default function IntelligenceWorkspacePage() {
   return (
-    <div className="space-y-8">
+    <div className={WORKSPACE_PAGE_CLASS}>
       <IntelligenceWorkspaceHeader />
 
-      <section aria-label="Intelligence Workspace" className="space-y-6">
+      <section aria-label="Intelligence Workspace" className={WORKSPACE_SECTION_CLASS}>
         <ExecutiveBriefingCard />
 
-        <div className="space-y-4">
+        <div className={WORKSPACE_SECTION_GROUP_CLASS}>
           <SectionHeader
             title="Business Health"
             subtitle="Operational snapshot across core business modules."
           />
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className={WORKSPACE_GRID_4_COL}>
             {BUSINESS_HEALTH_MODULES.map((module) => (
               <BusinessHealthCard key={module.title} module={module} />
             ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+        <div className={WORKSPACE_GRID_3_COL}>
           <InsightListCard title="AI Insights" items={AI_INSIGHTS} />
           <InsightListCard
             title="Recommendations"
@@ -49,7 +56,7 @@ export default function IntelligenceWorkspacePage() {
           />
         </div>
 
-        <div className="space-y-4">
+        <div className={WORKSPACE_SECTION_GROUP_CLASS}>
           <SectionHeader
             title="Business Metrics"
             subtitle="Key performance indicators at a glance."
