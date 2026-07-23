@@ -1,7 +1,7 @@
 import { Avatar } from "@/components/common/Avatar";
 import { Button } from "@/components/common/Button";
 import { BellIcon } from "@/components/common/icons";
-import { SearchBar } from "@/components/common/SearchBar";
+import { CommandPaletteTrigger } from "@/components/search/CommandPaletteTrigger";
 import { USER } from "@/lib/constants";
 
 /** Compact platform utility bar — workspace pages provide their own executive greeting. */
@@ -9,7 +9,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-orion-navy/80 px-6 py-3 backdrop-blur-xl md:px-8">
       <div className="flex items-center justify-between gap-4">
-        <SearchBar className="hidden min-w-[240px] flex-1 md:block lg:min-w-[320px]" />
+        <CommandPaletteTrigger className="hidden min-w-[240px] flex-1 md:flex lg:min-w-[320px]" />
 
         <div className="flex items-center gap-3 md:gap-4">
           <Button variant="icon" aria-label="Notifications">

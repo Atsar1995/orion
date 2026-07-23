@@ -1,6 +1,6 @@
-export const APP_VERSION = "1.0.0";
+export const APP_VERSION = "1.1.0";
 
-export const APP_RELEASE_NAME = "Executive Intelligence";
+export const APP_RELEASE_NAME = "Executive Experience";
 
 export const APP_TAGLINE = "One AI. One Workspace. Complete Business Control.";
 

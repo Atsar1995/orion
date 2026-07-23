@@ -8,6 +8,48 @@ The format is based on "Keep a Changelog" principles.
 
 ---
 
+## v1.1.0 – Executive Experience
+
+**Release Status:** Released  
+**Release Date:** 23 July 2026  
+**Git Tag:** v1.1.0
+
+### Summary
+
+ORION v1.1.0 delivers the Executive Experience — a unified app shell, Executive Brief as the default landing surface, and a global Command Palette with Universal Search across the platform.
+
+### Added
+
+- Executive Experience Foundation
+- Executive Brief (Advisor)
+- Command Palette & Universal Search
+- Global keyboard shortcut (Ctrl+K / ⌘+K)
+- Universal Search with categorized results
+- Recent and Favorites sections
+- Search ranking engine
+- Lazy-loaded Command Palette
+- Accessibility improvements
+- Responsive search experience
+
+### Changed
+
+- Advisor is now the default landing page.
+- Root (`/`) redirects to Advisor.
+- Mission Control moved to `/mission-control`.
+
+### Engineering
+
+- Mission 14A completed
+- Mission 14B completed
+- Mission 14C completed
+
+| Check | Status |
+|-------|--------|
+| Build | PASS |
+| Lint | PASS |
+
+---
+
 ## v0.7 – Foundation Complete
 
 **Release Status:** Released  
