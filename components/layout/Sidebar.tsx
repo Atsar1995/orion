@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { NavIconGlyph } from "@/components/common/icons";
 import { OrionLogo } from "@/components/common/OrionLogo";
 import {
+  executiveNav,
   moduleNav,
   primaryNav,
   utilityNav,
@@ -83,7 +84,8 @@ export function Sidebar() {
         aria-label="Main navigation"
         className="flex flex-1 flex-col gap-6 overflow-y-auto px-3 py-5"
       >
-        <NavSection items={primaryNav} />
+        <NavSection label="Executive" items={executiveNav} />
+        <NavSection label="Platform" items={primaryNav} />
         <NavSection label="Modules" items={moduleNav} />
         <div className="mt-auto">
           <NavSection items={utilityNav} />

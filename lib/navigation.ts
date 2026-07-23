@@ -5,6 +5,8 @@ export type NavItem = {
 };
 
 export type NavIcon =
+  | "advisor"
+  | "command-center"
   | "mission-control"
   | "engineering"
   | "configuration"
@@ -12,7 +14,7 @@ export type NavIcon =
   | "tasks"
   | "calendar"
   | "messages"
-  | "hotels"
+  | "hospitality"
   | "commerce"
   | "marketing"
   | "crm"
@@ -21,20 +23,26 @@ export type NavIcon =
   | "integrations"
   | "settings";
 
-export const primaryNav: NavItem[] = [
+/** Executive intelligence layer — founder daily briefing surfaces. */
+export const executiveNav: NavItem[] = [
+  { label: "ORION Advisor", href: "/advisor", icon: "advisor" },
+  { label: "Command Center", href: "/command-center", icon: "command-center" },
   { label: "Mission Control", href: "/", icon: "mission-control" },
+];
+
+export const primaryNav: NavItem[] = [
+  { label: "Intelligence", href: "/intelligence", icon: "intelligence" },
   { label: "Engineering", href: "/engineering", icon: "engineering" },
   { label: "Configuration", href: "/configuration", icon: "configuration" },
-  { label: "Intelligence", href: "/intelligence", icon: "intelligence" },
   { label: "Tasks", href: "/tasks", icon: "tasks" },
   { label: "Calendar", href: "/calendar", icon: "calendar" },
   { label: "Messages", href: "/messages", icon: "messages" },
 ];
 
 export const moduleNav: NavItem[] = [
-  { label: "Hotels", href: "/hotels", icon: "hotels" },
-  { label: "Commerce", href: "/commerce", icon: "commerce" },
+  { label: "Hospitality", href: "/hospitality", icon: "hospitality" },
   { label: "Marketing", href: "/marketing", icon: "marketing" },
+  { label: "Commerce", href: "/commerce", icon: "commerce" },
   { label: "CRM", href: "/crm", icon: "crm" },
   { label: "Finance", href: "/finance", icon: "finance" },
   { label: "Knowledge Vault", href: "/knowledge", icon: "knowledge" },

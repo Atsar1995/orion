@@ -20,6 +20,21 @@ export function NavIconGlyph({
   className?: string;
 }) {
   switch (name) {
+    case "advisor":
+      return (
+        <svg className={className} viewBox="0 0 24 24" aria-hidden {...stroke}>
+          <path d="M12 3a7 7 0 0 0-4 12.74V19a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-3.26A7 7 0 0 0 12 3z" />
+          <path d="M8 21h8" />
+          <path d="M12 17v4" />
+        </svg>
+      );
+    case "command-center":
+      return (
+        <svg className={className} viewBox="0 0 24 24" aria-hidden {...stroke}>
+          <path d="M12 2 2 7l10 5 10-5-10-5z" />
+          <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+        </svg>
+      );
     case "mission-control":
       return (
         <svg className={className} viewBox="0 0 24 24" aria-hidden {...stroke}>
@@ -65,7 +80,7 @@ export function NavIconGlyph({
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
       );
-    case "hotels":
+    case "hospitality":
       return (
         <svg className={className} viewBox="0 0 24 24" aria-hidden {...stroke}>
           <path d="M3 21V7l9-4 9 4v14" />

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
-import { APP_TAGLINE } from "@/lib/constants";
+import { APP_RELEASE_NAME, APP_TAGLINE, APP_VERSION } from "@/lib/constants";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -16,7 +16,7 @@ function Footer() {
             ORION Business Operating System
           </p>
           <p className="mt-1 text-xs font-light text-white/40">
-            Version v0.5 – Command
+            Version v{APP_VERSION} – {APP_RELEASE_NAME}
           </p>
         </div>
         <p className="text-xs font-light text-white/30">© Atsar Technologies</p>
