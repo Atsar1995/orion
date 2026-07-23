@@ -1,13 +1,13 @@
 import { Card } from "@/components/ui/Card";
 import { WORKSPACE_LIST_CLASS, WORKSPACE_LIST_ITEM_CLASS } from "@/lib/constants";
-import { TODAYS_FOCUS } from "@/lib/advisor-data";
+import { TODAYS_PRIORITIES } from "@/lib/advisor-data";
 
-/** Exactly three priorities for today. */
-export function TodaysFocus() {
+/** Up to five founder priorities for today. */
+export function PrioritiesCard() {
   return (
-    <Card title="Today's Focus" variant="premium">
-      <ul className={WORKSPACE_LIST_CLASS}>
-        {TODAYS_FOCUS.map((item, index) => (
+    <Card title="Today's Priorities">
+      <ul className={WORKSPACE_LIST_CLASS} aria-label="Today's priorities">
+        {TODAYS_PRIORITIES.map((item, index) => (
           <li key={item} className={WORKSPACE_LIST_ITEM_CLASS}>
             <span aria-hidden className="font-medium text-orion-gold">
               {index + 1}.

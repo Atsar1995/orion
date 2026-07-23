@@ -1,16 +1,16 @@
-import { BusinessHealth } from "@/components/advisor/BusinessHealth";
-import { BusinessMemory } from "@/components/advisor/BusinessMemory";
-import { BusinessSnapshot } from "@/components/advisor/BusinessSnapshot";
-import { CriticalRisks } from "@/components/advisor/CriticalRisks";
-import { CrossWorkspaceInsights } from "@/components/advisor/CrossWorkspaceInsights";
+import { BusinessHealthCard } from "@/components/advisor/BusinessHealthCard";
+import { BusinessSnapshotCard } from "@/components/advisor/BusinessSnapshotCard";
+import { CalendarCard } from "@/components/advisor/CalendarCard";
+import { DecisionCard } from "@/components/advisor/DecisionCard";
 import { ExecutiveBrief } from "@/components/advisor/ExecutiveBrief";
-import { OrionIntelligence } from "@/components/advisor/OrionIntelligence";
-import { PriorityTimeline } from "@/components/advisor/PriorityTimeline";
-import { QuickActions } from "@/components/advisor/QuickActions";
-import { RecommendedDecisions } from "@/components/advisor/RecommendedDecisions";
-import { TodaysFocus } from "@/components/advisor/TodaysFocus";
-import { TopOpportunities } from "@/components/advisor/TopOpportunities";
+import { OpportunitiesCard } from "@/components/advisor/OpportunitiesCard";
+import { PrioritiesCard } from "@/components/advisor/PrioritiesCard";
+import { QuickActionsCard } from "@/components/advisor/QuickActionsCard";
+import { RisksCard } from "@/components/advisor/RisksCard";
+import { WeatherCard } from "@/components/advisor/WeatherCard";
+import { Card } from "@/components/ui/Card";
 import { FOUNDER_NAME } from "@/lib/command-center-data";
+import { RECOMMENDED_DECISIONS } from "@/lib/advisor-data";
 import {
   WORKSPACE_GREETING_CLASS,
   WORKSPACE_HEADER_BLOCK_CLASS,
@@ -43,30 +43,36 @@ function formatTodayDate(): string {
   });
 }
 
-export default function OrionAdvisorPage() {
+export default function ExecutiveBriefPage() {
   return (
     <div className={WORKSPACE_PAGE_CLASS}>
       <header className={WORKSPACE_HEADER_BLOCK_CLASS}>
         <p className={WORKSPACE_GREETING_CLASS}>
           {getGreetingPeriod()}, {FOUNDER_NAME}
         </p>
-        <h1 className={WORKSPACE_TITLE_CLASS}>ORION Advisor</h1>
-        <p className={WORKSPACE_SUBTITLE_CLASS}>{formatTodayDate()}</p>
+        <h1 className={WORKSPACE_TITLE_CLASS}>Executive Brief</h1>
+        <p className={WORKSPACE_SUBTITLE_CLASS}>Today&apos;s Brief · {formatTodayDate()}</p>
       </header>
 
-      <section aria-label="ORION Advisor" className={WORKSPACE_SECTION_CLASS}>
-        <BusinessHealth />
+      <section aria-label="Executive Brief" className={WORKSPACE_SECTION_CLASS}>
         <ExecutiveBrief />
-        <BusinessSnapshot />
-        <TopOpportunities />
-        <CriticalRisks />
-        <RecommendedDecisions />
-        <OrionIntelligence />
-        <CrossWorkspaceInsights />
-        <BusinessMemory />
-        <PriorityTimeline />
-        <TodaysFocus />
-        <QuickActions />
+        <BusinessHealthCard />
+        <PrioritiesCard />
+        <RisksCard />
+        <OpportunitiesCard />
+        <Card title="Recommended Decisions">
+          <ul className="grid grid-cols-1 gap-3 lg:grid-cols-3">
+            {RECOMMENDED_DECISIONS.map((item) => (
+              <li key={item.priority}>
+                <DecisionCard decision={item} />
+              </li>
+            ))}
+          </ul>
+        </Card>
+        <BusinessSnapshotCard />
+        <CalendarCard />
+        <WeatherCard />
+        <QuickActionsCard />
       </section>
     </div>
   );

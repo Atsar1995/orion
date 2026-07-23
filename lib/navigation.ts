@@ -25,9 +25,9 @@ export type NavIcon =
 
 /** Executive intelligence layer — founder daily briefing surfaces. */
 export const executiveNav: NavItem[] = [
-  { label: "ORION Advisor", href: "/advisor", icon: "advisor" },
+  { label: "Executive Brief", href: "/advisor", icon: "advisor" },
   { label: "Command Center", href: "/command-center", icon: "command-center" },
-  { label: "Mission Control", href: "/", icon: "mission-control" },
+  { label: "Mission Control", href: "/mission-control", icon: "mission-control" },
 ];
 
 export const primaryNav: NavItem[] = [
