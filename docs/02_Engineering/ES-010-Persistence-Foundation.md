@@ -6,6 +6,8 @@
 
 ---
 
+> **Canonical specification:** [ES-036 — Database & Persistence Architecture](./ES-036-Database-Persistence-Architecture.md) (Approved · extends this document for Construction Phase)
+
 ## 1. Document Information
 
 | Field | Value |

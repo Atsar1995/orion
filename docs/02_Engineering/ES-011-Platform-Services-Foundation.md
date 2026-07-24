@@ -4,6 +4,8 @@
 
 # ORION Platform Services Foundation
 
+> **Canonical specification:** [ES-038 — Audit Logging & Observability Architecture](./ES-038-Audit-Logging-Observability-Architecture.md) (Approved · extends this document for Construction Phase)
+
 ---
 
 ## 1. Document Information
@@ -319,6 +321,8 @@ PlatformContainer
 4. **Composition root** is the single place where concrete implementations are bound.
 
 ---
+
+> **Canonical specification:** [ES-033 — Event & Messaging Architecture](./ES-033-Event-Messaging-Architecture.md) (Approved · supersedes Section 9 detail for Construction Phase)
 
 ## 9. Event-Driven Architecture
 
