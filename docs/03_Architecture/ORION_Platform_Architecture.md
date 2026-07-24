@@ -20,6 +20,12 @@
 
 This document is the **master architecture reference** for the ORION Platform.
 
+**Enterprise consolidation:** [ES-050 — ORION Enterprise Reference Architecture](../02_Engineering/ES-050-ORION-Enterprise-Reference-Architecture.md) (Approved · Construction Phase ES-006–ES-049 mapped to six enterprise layers)
+
+**Product evolution:** [ES-051 — ORION Technical Roadmap & Product Evolution Strategy](../02_Engineering/ES-051-ORION-Technical-Roadmap-Product-Evolution-Strategy.md) (Approved · five-year roadmap)
+
+For a concise onboarding overview, see [ORION System Context](./SYSTEM_CONTEXT.md) and [ORION System Map](./SYSTEM_MAP.md).
+
 Engineering Specifications (ES) implement within this architecture. The Product Backlog defines the business capabilities this architecture must support.
 
 ---
@@ -593,7 +599,7 @@ This document is the master architecture reference for the ORION Platform.
 
 - Engineering Specifications implement **within** this architecture.
 - Changes to platform layers, technology stack, or data ownership require **CTO approval**.
-- Deviations must be recorded as Architecture Decision Records in `docs/03_Architecture/`.
+- Deviations must be recorded as Architecture Decision Records in `docs/10_Decisions/`.
 - This document is updated after major milestones and sprints.
 
 ---

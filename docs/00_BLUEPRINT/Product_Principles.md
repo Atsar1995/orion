@@ -1,5 +1,9 @@
 # ORION Product Principles
 
+> **Superseded by:** [ORION Product Constitution v1.0](../01_Product/ORION_Product_Constitution.md) (Foundational · Product Blueprint)
+>
+> This document remains for historical reference. All new product decisions shall evaluate against the Product Constitution.
+
 ## Purpose
 
 These principles guide every engineering, design, and product decision within ORION.
