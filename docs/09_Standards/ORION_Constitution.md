@@ -1,179 +1,239 @@
-# ORION PLATFORM
-
 # ORION Constitution
 
-Version: 1.0
+> **Master reference:** [ORION Product Bible](../00_BLUEPRINT/ORION_Product_Bible.md) takes precedence where conflicts exist.
 
-Status: Approved
+Version 1.0
 
-Author: Mohammad Shafi Goroo (Founder & CEO)
+Status: Ratified
 
-Co-Author: Orion (Chief AI Architect & CTO)
+Owner: Founder
 
----
-
-# Purpose
-
-The ORION Constitution defines the principles that guide every decision made during the design, development, and evolution of the ORION Platform.
-
-Technology changes.
-
-Programming languages change.
-
-Frameworks change.
-
-These principles remain constant.
+Chief Architect: ORION CTO
 
 ---
 
-# Article 1 — Business First
+# Preamble
 
-Every feature must solve a genuine business problem.
+ORION exists to help leaders make better decisions.
 
-Technology exists to serve businesses—not the other way around.
+It is not a collection of applications.
 
----
+It is an Executive Operating System.
 
-# Article 2 — AI First
-
-Before building any feature, ask:
-
-"Can Artificial Intelligence make this significantly easier, faster or smarter?"
-
-If yes, AI should be considered from the beginning.
+Every architectural decision, engineering decision and product decision shall support this purpose.
 
 ---
 
-# Article 3 — Simplicity
+# Article I
+Mission
 
-The simplest solution that delivers the required outcome is usually the best solution.
+ORION shall transform business information into executive intelligence.
 
-Avoid unnecessary complexity.
+The objective is not to collect data.
 
----
-
-# Article 4 — Exceptional User Experience
-
-Software should feel calm, elegant and intuitive.
-
-Users should spend time running their business—not learning software.
+The objective is to improve executive decision making.
 
 ---
 
-# Article 5 — Automation
+# Article II
+Architecture
 
-If a task is performed repeatedly, ORION should eventually automate it.
+ORION is built upon three permanent layers.
 
----
+Executive Experience
 
-# Article 6 — Integration
+Executive Intelligence Platform
 
-ORION connects existing business systems.
+Business Workspaces
 
-It should enhance existing software rather than replace it.
-
----
-
-# Article 7 — Reusability
-
-Build reusable components whenever practical.
-
-Avoid duplicated code.
-
-Design for long-term maintainability.
+No layer shall violate the responsibility of another.
 
 ---
 
-# Article 8 — Intelligence
+# Article III
+Business Workspaces
 
-Dashboards should not simply display information.
+Every Business Workspace is autonomous.
 
-They should explain what is happening.
+Every Business Workspace owns its own business knowledge.
 
-They should recommend what should happen next.
+Business Workspaces never communicate directly.
 
----
-
-# Article 9 — Security
-
-Protect customer information.
-
-Respect privacy.
-
-Design with security from the beginning.
-
-Trust must never be compromised.
+Communication occurs only through approved platform contracts.
 
 ---
 
-# Article 10 — Continuous Improvement
+# Article IV
+Executive Intelligence
 
-Every sprint should improve ORION.
+Executive Intelligence is a platform capability.
 
-Small improvements made consistently create extraordinary software.
+Business Workspaces publish intelligence.
 
----
+The Executive Intelligence Platform aggregates intelligence.
 
-# Product Philosophy
-
-ORION is not another business application.
-
-ORION is an AI Business Operating System.
-
-It connects software.
-
-It automates work.
-
-It helps businesses make better decisions.
+The Executive Experience presents intelligence.
 
 ---
 
-# Development Philosophy
+# Article V
+Executive Experience
 
-Think in years.
+The Executive Experience presents information.
 
-Design in months.
+It does not calculate information.
 
-Build in weeks.
+It does not own business rules.
 
-Improve every day.
-
----
-
-# The ORION Promise
-
-Every feature should satisfy at least one of these goals:
-
-- Save Time
-- Increase Revenue
-- Improve Customer Experience
-- Reduce Manual Work
-- Improve Decision Making
-
-If a feature satisfies none of these goals, it should not be built.
+It does not duplicate intelligence.
 
 ---
 
-# Final Statement
+# Article VI
+Engineering Principles
 
-We are not building software.
+The platform shall follow these principles.
 
-We are building an intelligent platform that helps businesses grow.
+Platform before Features.
 
-Every decision should move ORION closer to that vision.
+Business Intelligence before User Interface.
+
+Loose Coupling.
+
+High Cohesion.
+
+Deterministic Intelligence.
+
+Contract First Design.
+
+Rule of Three.
+
+Backward Compatibility.
+
+Documentation First.
+
+Architecture before Optimisation.
 
 ---
 
-Approved by:
+# Article VII
+Governance
 
-Mohammad Shafi Goroo
+Every architectural decision shall be documented.
 
-Founder & CEO
+Every major architectural change shall be approved.
+
+Architecture shall evolve intentionally.
+
+Never accidentally.
 
 ---
 
-Approved by:
+# Article VIII
+Quality
 
-Orion
+Every mission must satisfy
 
-Chief AI Architect & CTO
+Build
+
+Lint
+
+Type Safety
+
+Accessibility
+
+Responsive Design
+
+Regression
+
+Manual Verification
+
+Release Documentation
+
+No exceptions.
+
+---
+
+# Article IX
+Documentation
+
+Documentation is part of the product.
+
+Documentation is never optional.
+
+Documentation evolves with the platform.
+
+---
+
+# Article X
+Artificial Intelligence
+
+Artificial Intelligence shall enhance executive judgement.
+
+Artificial Intelligence shall never replace deterministic platform intelligence.
+
+AI advises.
+
+The platform decides.
+
+---
+
+# Article XI
+Scalability
+
+The architecture shall make it easier to add the next ten Business Workspaces.
+
+Not merely the next feature.
+
+---
+
+# Article XII
+Maintainability
+
+Every contributor shall leave the architecture better than they found it.
+
+---
+
+# Article XIII
+Founder Principle
+
+Every feature shall answer one executive question.
+
+If a feature does not improve executive decision making, it does not belong in ORION.
+
+---
+
+# Article XIV
+Long-Term Vision
+
+ORION is not being built for the next release.
+
+ORION is being built to remain understandable, maintainable and extensible for the next decade.
+
+---
+
+# ORION Motto
+
+Clarity before Complexity.
+
+Architecture before Features.
+
+Intelligence before Automation.
+
+Platform before Products.
+
+Executive Decisions through Engineering Excellence.
+
+---
+
+# Ratification
+
+This Constitution becomes the highest architectural document of the ORION Platform.
+
+All future ADRs, Engineering Standards and Business Workspaces shall conform to these principles.
+
+Approved by
+
+Founder
+
+Chief Architect (ORION CTO)

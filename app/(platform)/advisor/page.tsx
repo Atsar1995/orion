@@ -1,3 +1,5 @@
+import { CustomerInsightsCard } from "@/components/advisor/CustomerInsightsCard";
+import { FinanceInsightsCard } from "@/components/advisor/FinanceInsightsCard";
 import { BusinessHealthCard } from "@/components/advisor/BusinessHealthCard";
 import { BusinessSnapshotCard } from "@/components/advisor/BusinessSnapshotCard";
 import { CalendarCard } from "@/components/advisor/CalendarCard";
@@ -56,6 +58,8 @@ export default function ExecutiveBriefPage() {
 
       <section aria-label="Executive Brief" className={WORKSPACE_SECTION_CLASS}>
         <ExecutiveBrief />
+        <FinanceInsightsCard />
+        <CustomerInsightsCard />
         <BusinessHealthCard />
         <PrioritiesCard />
         <RisksCard />

@@ -1,6 +1,7 @@
 /**
  * ORION Platform Services — core type definitions.
  * @see docs/02_Engineering/ES-011-Platform-Services-Foundation.md
+ * @see docs/02_Engineering/ES-038-Audit-Logging-Observability-Architecture.md
  */
 
 import type { RoleSlug } from "@/types/auth";

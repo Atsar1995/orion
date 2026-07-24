@@ -4,6 +4,8 @@
 
 # ORION Identity & Authentication Foundation
 
+> **Canonical specification:** [ES-037 — Authentication & Authorisation Architecture](./ES-037-Authentication-Authorisation-Architecture.md) (Approved · extends this document for Construction Phase)
+
 | Field | Value |
 |-------|-------|
 | **Version** | 1.0 |

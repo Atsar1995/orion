@@ -1,6 +1,7 @@
 /**
  * ORION Identity — core type definitions.
  * @see docs/02_Engineering/ES-009-Identity-Authentication-Foundation.md
+ * @see docs/02_Engineering/ES-037-Authentication-Authorisation-Architecture.md
  */
 
 /** Lifecycle state for a user account. */
