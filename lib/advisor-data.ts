@@ -1,4 +1,5 @@
 import type { HealthStatus } from "@/lib/command-center-data";
+import { getAggregatedBriefingLine } from "@/lib/intelligence/intelligence-bus";
 
 export type RiskLevel = "high" | "medium" | "low";
 
@@ -40,7 +41,8 @@ export const BUSINESS_HEALTH = {
 };
 
 export const EXECUTIVE_BRIEF =
-  "Business performance remains healthy across all departments. Marketing generated high-quality leads yesterday. Hotel occupancy is expected to exceed 90% this weekend. Cash flow remains positive. Two operational issues require attention before noon.";
+  "Business performance remains healthy across all departments. Marketing generated high-quality leads yesterday. Hotel occupancy is expected to exceed 90% this weekend. Two operational issues require attention before noon. " +
+  getAggregatedBriefingLine();
 
 export const TODAYS_PRIORITIES = [
   "Confirm VIP arrivals",
@@ -101,8 +103,8 @@ export const RECOMMENDED_DECISIONS: RecommendedDecision[] = [
 export const BUSINESS_SNAPSHOT: BusinessSnapshotItem[] = [
   { domain: "Marketing", status: "Healthy", health: "healthy" },
   { domain: "Hospitality", status: "Excellent", health: "healthy" },
-  { domain: "Finance", status: "Stable", health: "healthy" },
-  { domain: "CRM", status: "Good", health: "healthy" },
+  { domain: "Finance", status: "88/100 — Revenue above plan", health: "healthy" },
+  { domain: "CRM", status: "84/100 — Pipeline growing", health: "healthy" },
   { domain: "Operations", status: "Needs Attention", health: "attention" },
 ];
 
@@ -121,7 +123,7 @@ export const WEATHER = {
 
 export const ADVISOR_QUICK_ACTIONS = [
   { label: "Open Hospitality", href: "/hospitality" },
-  { label: "Review Finance" },
+  { label: "Review Finance", href: "/finance" },
   { label: "Launch Marketing", href: "/marketing" },
   { label: "View Reports" },
   { label: "Create Task" },
