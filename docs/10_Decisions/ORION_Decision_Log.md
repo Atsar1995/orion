@@ -148,6 +148,7 @@ Founder · Chief Architect
 | ID | Title | Category | Status | Date |
 |----|-------|----------|--------|------|
 | [DL-2026-001](./decisions/DL-2026-001-Executive-Brief-Default-Landing.md) | Executive Brief as default landing | Product | Implemented | 2026-07-23 |
+| [DL-2026-002](./decisions/DL-2026-002-Sprint-4-Intelligence-Orchestrator.md) | Sprint 4 Intelligence Orchestrator dual-stack | Architecture | Implemented | 2026-07-25 |
 
 ---
 

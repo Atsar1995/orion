@@ -146,8 +146,9 @@ Defines user-facing behaviour and executive discovery.
 | ES-058 Enterprise Operations & Service Management Framework | [02_Engineering/ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md](../02_Engineering/ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) | Approved |
 | ES-059 Platform Security & Zero Trust Architecture | [02_Engineering/ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md](../02_Engineering/ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) | Approved |
 | ES-060 Platform Extensibility, Plugin & Marketplace Architecture | [02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) | Approved |
-| ES-061 ORION v0.4 Master Development Plan | [02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) | Approved |
-| ES-063 Sprint 4 Work Breakdown Structure | [02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md](../02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) | Approved |
+| ES-061 ORION v0.4 Master Development Plan | [02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) | Approved · Sprint 4 in progress |
+| ES-062 Sprint 4 Implementation Plan | [02_Engineering/ES-062-Sprint-4-Implementation-Plan.md](../02_Engineering/ES-062-Sprint-4-Implementation-Plan.md) | Approved · in progress |
+| ES-063 Sprint 4 Work Breakdown Structure | [02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md](../02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) | Approved · ~45% complete |
 | ES-064 Sprint 4 Engineering Task Catalogue | [02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md](../02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md) | Approved |
 | ES-065 Executive Intelligence Architecture | [02_Engineering/ES-065-Executive-Intelligence-Architecture.md](../02_Engineering/ES-065-Executive-Intelligence-Architecture.md) | Approved |
 

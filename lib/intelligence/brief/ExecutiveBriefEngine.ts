@@ -9,33 +9,11 @@ import {
   DEFAULT_BRIEF_TEMPLATE,
   getBriefTemplate,
 } from "@/lib/intelligence/brief/ExecutiveBriefTemplates";
-import {
-  fetchProviderContributions,
-} from "@/lib/providers/dashboard-aggregator";
+import { aggregateBusinessHealth } from "@/lib/intelligence/shared/provider-aggregation";
+import { fetchProviderContributions } from "@/lib/providers/provider-data";
+import type { ProviderDashboardContribution } from "@/types/providers";
 import type { DailyExecutiveBrief } from "@/types/brief";
-import type { BusinessHealth, ExecutiveBrief } from "@/types/intelligence";
-
-function aggregateBusinessHealthFromContributions(
-  contributions: Awaited<ReturnType<typeof fetchProviderContributions>>,
-): BusinessHealth {
-  const drivers = contributions
-    .map((item) => item.healthDriver)
-    .filter((driver): driver is NonNullable<typeof driver> => Boolean(driver));
-
-  const healthyCount = drivers.filter((driver) => driver.status === "healthy").length;
-  const score = drivers.length ? Math.round((healthyCount / drivers.length) * 100) : 0;
-  const status =
-    score >= 85 ? "healthy" : score >= 65 ? ("attention" as const) : ("critical" as const);
-
-  return {
-    score,
-    maxScore: 100,
-    trend: "+3",
-    status,
-    summary: "Platform health aggregated from registered workspace providers.",
-    drivers,
-  };
-}
+import type { ExecutiveBrief } from "@/types/intelligence";
 
 /**
  * Executive Brief Engine (ES-028 · Sprint 4).
@@ -44,9 +22,11 @@ function aggregateBusinessHealthFromContributions(
  * and produces a structured Daily Executive Brief — no UI formatting.
  */
 export class ExecutiveBriefEngine {
-  async generateDailyBrief(templateId = DEFAULT_BRIEF_TEMPLATE.id): Promise<DailyExecutiveBrief> {
-    const contributions = await fetchProviderContributions();
-    const health = aggregateBusinessHealthFromContributions(contributions);
+  generateDailyBriefFromContributions(
+    contributions: ProviderDashboardContribution[],
+    templateId = DEFAULT_BRIEF_TEMPLATE.id,
+  ): DailyExecutiveBrief {
+    const health = aggregateBusinessHealth(contributions);
     const schedule = getBriefScheduleContext();
     const template = getBriefTemplate(templateId);
 
@@ -65,8 +45,33 @@ export class ExecutiveBriefEngine {
     });
   }
 
-  async generateDashboardBrief(templateId?: string): Promise<ExecutiveBrief> {
-    const dailyBrief = await this.generateDailyBrief(templateId);
+  async generateDailyBrief(
+    templateId = DEFAULT_BRIEF_TEMPLATE.id,
+    contributions?: ProviderDashboardContribution[],
+  ): Promise<DailyExecutiveBrief> {
+    const resolvedContributions =
+      contributions ?? (await fetchProviderContributions());
+
+    return this.generateDailyBriefFromContributions(resolvedContributions, templateId);
+  }
+
+  generateDashboardBriefFromContributions(
+    contributions: ProviderDashboardContribution[],
+    templateId?: string,
+  ): ExecutiveBrief {
+    const dailyBrief = this.generateDailyBriefFromContributions(
+      contributions,
+      templateId ?? DEFAULT_BRIEF_TEMPLATE.id,
+    );
+
+    return executiveBriefFormatter.toDashboardBrief(dailyBrief);
+  }
+
+  async generateDashboardBrief(
+    templateId?: string,
+    contributions?: ProviderDashboardContribution[],
+  ): Promise<ExecutiveBrief> {
+    const dailyBrief = await this.generateDailyBrief(templateId, contributions);
     return executiveBriefFormatter.toDashboardBrief(dailyBrief);
   }
 }
@@ -75,12 +80,21 @@ export const executiveBriefEngine = new ExecutiveBriefEngine();
 
 export async function buildDailyExecutiveBrief(
   templateId?: string,
+  contributions?: ProviderDashboardContribution[],
 ): Promise<DailyExecutiveBrief> {
-  return executiveBriefEngine.generateDailyBrief(templateId);
+  return executiveBriefEngine.generateDailyBrief(templateId, contributions);
 }
 
 export async function buildExecutiveBriefForDashboard(
   templateId?: string,
+  contributions?: ProviderDashboardContribution[],
 ): Promise<ExecutiveBrief> {
+  if (contributions) {
+    return executiveBriefEngine.generateDashboardBriefFromContributions(
+      contributions,
+      templateId,
+    );
+  }
+
   return executiveBriefEngine.generateDashboardBrief(templateId);
 }

@@ -45,14 +45,15 @@ export function buildExecutionMetrics(
   errors: PipelineExecution["errors"],
   warnings: PipelineExecution["warnings"],
   executionCount: number,
+  wallClockDurationMs?: number,
 ): ExecutionMetrics {
-  const pipelineDurationMs = Object.values(stageDurationsMs).reduce(
+  const summedStageDurationMs = Object.values(stageDurationsMs).reduce(
     (total, value) => total + value,
     0,
   );
 
   return {
-    pipelineDurationMs,
+    pipelineDurationMs: wallClockDurationMs ?? summedStageDurationMs,
     stageDurationsMs,
     engineDurationsMs,
     failureCount: errors.length,

@@ -3,9 +3,16 @@ import {
 } from "@/lib/intelligence/alerts/AlertEngine";
 import {
   buildDailyExecutiveBrief,
-  buildExecutiveBriefForDashboard,
 } from "@/lib/intelligence/brief/ExecutiveBriefEngine";
+import { executiveBriefFormatter } from "@/lib/intelligence/brief/ExecutiveBriefFormatter";
 import { buildDashboardRecommendations } from "@/lib/intelligence/recommendations/RecommendationEngine";
+import {
+  aggregateBusinessHealth,
+  aggregateMetrics,
+  aggregateTasks,
+  aggregateTrends,
+  normalizeContributions,
+} from "@/lib/intelligence/shared/provider-aggregation";
 import { engineRegistry } from "@/lib/orchestrator/EngineRegistry";
 import {
   addWarning,
@@ -18,9 +25,8 @@ import {
   buildExecutionMetrics,
   pipelineMetrics,
 } from "@/lib/orchestrator/PipelineMetrics";
-import { fetchProviderContributions } from "@/lib/providers/dashboard-aggregator";
+import { fetchProviderContributions } from "@/lib/providers/provider-data";
 import { providerManager } from "@/lib/providers/ProviderManager";
-import type { ProviderDashboardContribution } from "@/types/providers";
 import type {
   ExecutionContext,
   OrchestratorPipelineOutput,
@@ -28,13 +34,7 @@ import type {
   PipelineExecution,
   PipelineResult,
 } from "@/types/orchestrator";
-import type {
-  BusinessHealth,
-  DashboardSnapshot,
-  ExecutiveMetricsBundle,
-  ExecutiveTask,
-  Trend,
-} from "@/types/intelligence";
+import type { DashboardSnapshot } from "@/types/intelligence";
 
 function measureAsync<T>(fn: () => Promise<T>): Promise<[T, number]> {
   const start = performance.now();
@@ -48,98 +48,6 @@ function createStageError(stageId: string, message: string, recoverable: boolean
     timestamp: new Date().toISOString(),
     recoverable,
   };
-}
-
-function aggregateTrends(contributions: ProviderDashboardContribution[]): Trend[] {
-  const seen = new Set<string>();
-
-  return contributions
-    .flatMap((item) => item.trends ?? [])
-    .filter((trend) => {
-      if (seen.has(trend.id)) {
-        return false;
-      }
-
-      seen.add(trend.id);
-      return true;
-    });
-}
-
-function aggregateTasks(contributions: ProviderDashboardContribution[]): ExecutiveTask[] {
-  const seen = new Set<string>();
-
-  return contributions
-    .flatMap((item) => item.tasks ?? [])
-    .filter((task) => {
-      if (seen.has(task.id)) {
-        return false;
-      }
-
-      seen.add(task.id);
-      return true;
-    });
-}
-
-function aggregateMetrics(
-  contributions: ProviderDashboardContribution[],
-): ExecutiveMetricsBundle {
-  const byWorkspace = new Map<string, ProviderDashboardContribution>();
-
-  for (const contribution of contributions) {
-    if (contribution.metric?.workspace) {
-      byWorkspace.set(contribution.metric.workspace, contribution);
-    }
-  }
-
-  const finance = byWorkspace.get("Finance")?.metric;
-  const hospitality = byWorkspace.get("Hospitality")?.metric;
-  const crm = byWorkspace.get("CRM")?.metric;
-  const marketing = byWorkspace.get("Marketing")?.metric;
-
-  if (!finance || !hospitality || !crm || !marketing) {
-    throw new Error("Dashboard metrics incomplete — required workspace providers missing");
-  }
-
-  return {
-    revenue: finance,
-    occupancy: hospitality,
-    customer: crm,
-    marketing,
-  };
-}
-
-function aggregateBusinessHealth(
-  contributions: ProviderDashboardContribution[],
-): BusinessHealth {
-  const drivers = contributions
-    .map((item) => item.healthDriver)
-    .filter((driver): driver is NonNullable<typeof driver> => Boolean(driver));
-
-  const healthyCount = drivers.filter((driver) => driver.status === "healthy").length;
-  const score = drivers.length ? Math.round((healthyCount / drivers.length) * 100) : 0;
-  const status: BusinessHealth["status"] =
-    score >= 85 ? "healthy" : score >= 65 ? "attention" : "critical";
-
-  return {
-    score,
-    maxScore: 100,
-    trend: "+3",
-    status,
-    summary: "Platform health aggregated from registered workspace providers.",
-    drivers,
-  };
-}
-
-function normalizeContributions(
-  contributions: ProviderDashboardContribution[],
-): ProviderDashboardContribution[] {
-  const byProvider = new Map<string, ProviderDashboardContribution>();
-
-  for (const contribution of contributions) {
-    byProvider.set(contribution.providerId, contribution);
-  }
-
-  return Array.from(byProvider.values());
 }
 
 async function runStage<T>(
@@ -196,20 +104,18 @@ export class PipelineRunner {
     const stageDurationsMs: Record<string, number> = {};
     const engineDurationsMs: Record<string, number> = {};
     const startedAt = new Date().toISOString();
+    const pipelineStartedAt = performance.now();
 
     executionLogger.info("Pipeline execution started", undefined, "orchestrator");
 
-    const sequentialStageIds = [
+    const setupStageIds = [
       "refresh-providers",
       "collect-provider-data",
       "normalize-data",
       "update-business-metrics",
-      "generate-executive-brief",
-      "generate-recommendations",
-      "evaluate-alerts",
     ];
 
-    for (const stageId of sequentialStageIds) {
+    for (const stageId of setupStageIds) {
       const stage = getOrderedStages().find((item) => item.id === stageId);
 
       if (!stage) {
@@ -218,6 +124,16 @@ export class PipelineRunner {
 
       const result = await this.executeStage(context, stage.id, stage.required);
       stageDurationsMs[stage.id] = result.durationMs;
+    }
+
+    const intelligenceResults = await Promise.all([
+      this.executeStage(context, "generate-executive-brief", true),
+      this.executeStage(context, "generate-recommendations", true),
+      this.executeStage(context, "evaluate-alerts", true),
+    ]);
+
+    for (const result of intelligenceResults) {
+      stageDurationsMs[result.stageId] = result.durationMs;
     }
 
     const insightsResults = await Promise.all([
@@ -249,6 +165,7 @@ export class PipelineRunner {
     engineDurationsMs["trend-service"] = stageDurationsMs["generate-trends"] ?? 0;
 
     const completedAt = new Date().toISOString();
+    const wallClockDurationMs = Math.round(performance.now() - pipelineStartedAt);
     const execution: PipelineExecution = {
       id: executionId,
       startedAt,
@@ -260,6 +177,7 @@ export class PipelineRunner {
         context.errors,
         context.warnings,
         pipelineMetrics.getExecutionCount() + 1,
+        wallClockDurationMs,
       ),
       errors: context.errors,
       warnings: context.warnings,
@@ -288,18 +206,19 @@ export class PipelineRunner {
     stageId: string,
     required: boolean,
   ): Promise<PipelineResult> {
+    const contributions = context.normalizedContributions;
+
     switch (stageId) {
       case "refresh-providers":
         return runStage(context, stageId, "provider-framework", required, async () => {
           await providerManager.connectAll();
-          await providerManager.refreshAll();
           await providerManager.syncAll();
           return true;
         });
 
       case "collect-provider-data":
         return runStage(context, stageId, "provider-framework", required, async () => {
-          context.contributions = await fetchProviderContributions();
+          context.contributions = await fetchProviderContributions({ skipConnect: true });
           return context.contributions;
         });
 
@@ -317,24 +236,21 @@ export class PipelineRunner {
 
       case "generate-executive-brief":
         return runStage(context, stageId, "executive-brief-engine", required, async () => {
-          const [brief, dailyBrief] = await Promise.all([
-            buildExecutiveBriefForDashboard(),
-            buildDailyExecutiveBrief(),
-          ]);
-          context.brief = brief;
+          const dailyBrief = await buildDailyExecutiveBrief(undefined, contributions);
           context.dailyBrief = dailyBrief;
-          return brief;
+          context.brief = executiveBriefFormatter.toDashboardBrief(dailyBrief);
+          return context.brief;
         });
 
       case "generate-recommendations":
         return runStage(context, stageId, "recommendation-engine", required, async () => {
-          context.recommendations = await buildDashboardRecommendations();
+          context.recommendations = await buildDashboardRecommendations(contributions);
           return context.recommendations;
         });
 
       case "evaluate-alerts":
         return runStage(context, stageId, "alert-engine", required, async () => {
-          context.alertPanel = await buildAlertPanelSnapshot();
+          context.alertPanel = await buildAlertPanelSnapshot(contributions);
           return context.alertPanel;
         });
 

@@ -90,10 +90,11 @@ Engineering Specifications
 - [ES-058 — ORION Enterprise Operations & Service Management Framework](./02_Engineering/ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) (Approved · ITSM · service management)
 - [ES-059 — ORION Platform Security & Zero Trust Architecture](./02_Engineering/ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) (Approved · Zero Trust · security)
 - [ES-060 — ORION Platform Extensibility, Plugin & Marketplace Architecture](./02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) (Approved · plugins · marketplace)
-- [ES-061 — ORION v0.4 Master Development Plan](./02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) (Approved · master plan · v0.4 programme)
-- [ES-063 — Sprint 4 Work Breakdown Structure](./02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) (Approved · 110 work packages · v0.4 Phase 1)
+- [ES-061 — ORION v0.4 Master Development Plan](./02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) (Approved · master plan · Sprint 4 in progress)
+- [ES-062 — Sprint 4 Implementation Plan](./02_Engineering/ES-062-Sprint-4-Implementation-Plan.md) (Approved · in progress · orchestrator · `/dashboard`)
+- [ES-063 — Sprint 4 Work Breakdown Structure](./02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) (Approved · 110 work packages · ~45% complete)
 - [ES-064 — Sprint 4 Engineering Task Catalogue](./02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md) (Approved · 93 tasks · execution checklist)
-- [ES-065 — Executive Intelligence Architecture](./02_Engineering/ES-065-Executive-Intelligence-Architecture.md) (Approved · intelligence pipeline · engines)
+- [ES-065 — Executive Intelligence Architecture](./02_Engineering/ES-065-Executive-Intelligence-Architecture.md) (Approved · Sprint 4 orchestrator · dual-stack)
 
 Technical Decisions
 
@@ -106,6 +107,14 @@ Sprint Documents
 Database Design
 
 API Documentation
+
+### 03_Quality
+
+Quality assurance audits and Sprint verification reports.
+
+- [Engineering Audit Report](./03_Quality/Engineering-Audit-Report.md) (QA-001 · Sprint 4 post-implementation · 33 findings · grade B−)
+- [Performance Audit Report](./03_Quality/Performance-Audit.md) (QA-002 · Sprint 4 post-implementation)
+- [Sprint 4 Testing Summary](./03_Quality/Sprint-4-Testing-Summary.md) (QA-003 · 84 tests · ~88% coverage)
 
 ### 04_Design
 
@@ -138,6 +147,9 @@ Memory System
 Release Notes
 
 Version History
+
+- [v0.4.0-alpha Release Notes](./releases/v0.4.0-alpha-Release-Notes.md) · [Checklist](./releases/v0.4.0-alpha-Release-Checklist.md) · [Release Index](./releases/README.md)
+- [CHANGELOG](./06_Releases/CHANGELOG.md)
 
 ### 07_Meetings
 

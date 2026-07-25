@@ -6,82 +6,35 @@ import {
   deduplicateAlerts,
   escalateUnresolvedAlerts,
 } from "@/lib/intelligence/alerts/AlertPrioritizer";
-import { fetchProviderContributions } from "@/lib/providers/dashboard-aggregator";
+import {
+  aggregateBusinessHealth,
+  aggregateMetrics,
+  aggregateTrends,
+} from "@/lib/intelligence/shared/provider-aggregation";
+import { fetchProviderContributions } from "@/lib/providers/provider-data";
 import type {
   Alert,
   AlertBundle,
   AlertEvaluationContext,
   AlertPanelSnapshot,
 } from "@/types/alerts";
-import type { Alert as DashboardAlert, BusinessHealth } from "@/types/intelligence";
+import type { Alert as DashboardAlert } from "@/types/intelligence";
+import type { ProviderDashboardContribution } from "@/types/providers";
 
-function aggregateBusinessHealth(
-  contributions: Awaited<ReturnType<typeof fetchProviderContributions>>,
-): BusinessHealth {
-  const drivers = contributions
-    .map((item) => item.healthDriver)
-    .filter((driver): driver is NonNullable<typeof driver> => Boolean(driver));
-
-  const healthyCount = drivers.filter((driver) => driver.status === "healthy").length;
-  const score = drivers.length ? Math.round((healthyCount / drivers.length) * 100) : 0;
-  const status: BusinessHealth["status"] =
-    score >= 85 ? "healthy" : score >= 65 ? "attention" : "critical";
-
-  return {
-    score,
-    maxScore: 100,
-    trend: "+3",
-    status,
-    summary: "Platform health aggregated from registered workspace providers.",
-    drivers,
-  };
-}
-
-function aggregateMetrics(contributions: Awaited<ReturnType<typeof fetchProviderContributions>>) {
-  const byWorkspace = new Map<string, (typeof contributions)[number]>();
-
-  for (const contribution of contributions) {
-    if (contribution.metric?.workspace) {
-      byWorkspace.set(contribution.metric.workspace, contribution);
-    }
-  }
-
-  const finance = byWorkspace.get("Finance")?.metric;
-  const hospitality = byWorkspace.get("Hospitality")?.metric;
-  const crm = byWorkspace.get("CRM")?.metric;
-  const marketing = byWorkspace.get("Marketing")?.metric;
-
-  if (!finance || !hospitality || !crm || !marketing) {
-    throw new Error("Dashboard metrics incomplete — required workspace providers missing");
-  }
-
-  return { revenue: finance, occupancy: hospitality, customer: crm, marketing };
-}
-
-function aggregateTrends(contributions: Awaited<ReturnType<typeof fetchProviderContributions>>) {
-  const seen = new Set<string>();
-
-  return contributions
-    .flatMap((item) => item.trends ?? [])
-    .filter((trend) => {
-      if (seen.has(trend.id)) {
-        return false;
-      }
-
-      seen.add(trend.id);
-      return true;
-    });
-}
-
-async function buildAlertEvaluationContext(): Promise<AlertEvaluationContext> {
-  const contributions = await fetchProviderContributions();
-
+function buildAlertEvaluationContextFromContributions(
+  contributions: ProviderDashboardContribution[],
+): AlertEvaluationContext {
   return {
     contributions,
     trends: aggregateTrends(contributions),
     metrics: aggregateMetrics(contributions),
     businessHealth: aggregateBusinessHealth(contributions),
   };
+}
+
+async function buildAlertEvaluationContext(): Promise<AlertEvaluationContext> {
+  const contributions = await fetchProviderContributions();
+  return buildAlertEvaluationContextFromContributions(contributions);
 }
 
 function mapSeverityToDashboard(severity: Alert["severity"]): DashboardAlert["severity"] {
@@ -122,6 +75,23 @@ export function toDashboardAlert(alert: Alert): DashboardAlert {
   };
 }
 
+function generateAlertBundleFromContext(
+  context: AlertEvaluationContext,
+  generatedAt: string,
+): AlertBundle {
+  const evaluated = evaluateAlertContext(context);
+  const deduped = deduplicateAlerts(evaluated);
+  const withNotifications = alertDispatcher.attachNotifications(deduped);
+  const escalated = escalateUnresolvedAlerts(withNotifications);
+
+  for (const alert of escalated) {
+    alertHistory.record(alert);
+  }
+
+  const resolved = alertHistory.getResolved();
+  return assembleAlertBundle(escalated, resolved, generatedAt);
+}
+
 /**
  * Alert & Event Engine (ES-030 · Sprint 4).
  *
@@ -129,33 +99,35 @@ export function toDashboardAlert(alert: Alert): DashboardAlert {
  * deduplicates, escalates, groups, and maintains alert history.
  */
 export class AlertEngine {
-  async buildContext(): Promise<AlertEvaluationContext> {
+  async buildContext(
+    contributions?: ProviderDashboardContribution[],
+  ): Promise<AlertEvaluationContext> {
+    if (contributions) {
+      return buildAlertEvaluationContextFromContributions(contributions);
+    }
+
     return buildAlertEvaluationContext();
   }
 
-  async generateAlertBundle(): Promise<AlertBundle> {
+  async generateAlertBundle(
+    contributions?: ProviderDashboardContribution[],
+  ): Promise<AlertBundle> {
     const generatedAt = new Date().toISOString();
-    const context = await this.buildContext();
-    const evaluated = evaluateAlertContext(context);
-    const deduped = deduplicateAlerts(evaluated);
-    const withNotifications = alertDispatcher.attachNotifications(deduped);
-    const escalated = escalateUnresolvedAlerts(withNotifications);
-
-    for (const alert of escalated) {
-      alertHistory.record(alert);
-    }
-
-    const resolved = alertHistory.getResolved();
-    return assembleAlertBundle(escalated, resolved, generatedAt);
+    const context = await this.buildContext(contributions);
+    return generateAlertBundleFromContext(context, generatedAt);
   }
 
-  async getActiveAlerts(): Promise<Alert[]> {
-    const bundle = await this.generateAlertBundle();
+  async getActiveAlerts(
+    contributions?: ProviderDashboardContribution[],
+  ): Promise<Alert[]> {
+    const bundle = await this.generateAlertBundle(contributions);
     return bundle.active;
   }
 
-  async getAlertPanelSnapshot(): Promise<AlertPanelSnapshot> {
-    const bundle = await this.generateAlertBundle();
+  async getAlertPanelSnapshot(
+    contributions?: ProviderDashboardContribution[],
+  ): Promise<AlertPanelSnapshot> {
+    const bundle = await this.generateAlertBundle(contributions);
 
     return {
       critical: bundle.critical.map(toDashboardAlert),
@@ -168,19 +140,34 @@ export class AlertEngine {
 
 export const alertEngine = new AlertEngine();
 
-export async function buildAlertBundle(): Promise<AlertBundle> {
-  return alertEngine.generateAlertBundle();
+export async function buildAlertBundle(
+  contributions?: ProviderDashboardContribution[],
+): Promise<AlertBundle> {
+  return alertEngine.generateAlertBundle(contributions);
 }
 
-export async function buildDashboardAlerts(): Promise<DashboardAlert[]> {
-  const bundle = await buildAlertBundle();
+export async function buildDashboardAlerts(
+  contributions?: ProviderDashboardContribution[],
+): Promise<DashboardAlert[]> {
+  const bundle = await buildAlertBundle(contributions);
   return bundle.active.map(toDashboardAlert);
 }
 
-export async function buildAlertPanelSnapshot(): Promise<AlertPanelSnapshot> {
-  return alertEngine.getAlertPanelSnapshot();
+export async function buildAlertPanelSnapshot(
+  contributions?: ProviderDashboardContribution[],
+): Promise<AlertPanelSnapshot> {
+  return alertEngine.getAlertPanelSnapshot(contributions);
 }
 
-export async function getAlertEvaluationContext(): Promise<AlertEvaluationContext> {
-  return alertEngine.buildContext();
+export async function getAlertEvaluationContext(
+  contributions?: ProviderDashboardContribution[],
+): Promise<AlertEvaluationContext> {
+  return alertEngine.buildContext(contributions);
+}
+
+export function buildDashboardAlertsFromContributions(
+  contributions: ProviderDashboardContribution[],
+): DashboardAlert[] {
+  const context = buildAlertEvaluationContextFromContributions(contributions);
+  return evaluateAlertContext(context).map(toDashboardAlert);
 }

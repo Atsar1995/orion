@@ -1,4 +1,6 @@
-import { buildDashboardAlerts } from "@/lib/intelligence/alerts/AlertEngine";
+import {
+  buildDashboardAlertsFromContributions,
+} from "@/lib/intelligence/alerts/AlertEngine";
 import { executiveBriefEngine } from "@/lib/intelligence/brief/ExecutiveBriefEngine";
 import { mapLegacyCategory, mapProviderIdToCategory } from "@/lib/intelligence/recommendations/RecommendationCategories";
 import {
@@ -10,8 +12,12 @@ import { evaluateAllRules } from "@/lib/intelligence/recommendations/Recommendat
 import { applyScores, priorityToLegacyRank } from "@/lib/intelligence/recommendations/RecommendationScoring";
 import { buildRecommendationFromTemplate } from "@/lib/intelligence/recommendations/RecommendationTemplates";
 import {
-  fetchProviderContributions,
-} from "@/lib/providers/dashboard-aggregator";
+  aggregateBusinessHealth,
+  aggregateMetrics,
+  aggregateTrends,
+} from "@/lib/intelligence/shared/provider-aggregation";
+import { fetchProviderContributions } from "@/lib/providers/provider-data";
+import type { ProviderDashboardContribution } from "@/types/providers";
 import type {
   Recommendation,
   RecommendationBundle,
@@ -19,81 +25,7 @@ import type {
   RecommendationEvidence,
   RecommendationPriority,
 } from "@/types/recommendations";
-import type { Recommendation as DashboardRecommendation, BusinessHealth } from "@/types/intelligence";
-
-function aggregateBusinessHealth(
-  contributions: Awaited<ReturnType<typeof fetchProviderContributions>>,
-) {
-  const drivers = contributions
-    .map((item) => item.healthDriver)
-    .filter((driver): driver is NonNullable<typeof driver> => Boolean(driver));
-
-  const healthyCount = drivers.filter((driver) => driver.status === "healthy").length;
-  const score = drivers.length ? Math.round((healthyCount / drivers.length) * 100) : 0;
-  const status: BusinessHealth["status"] =
-    score >= 85 ? "healthy" : score >= 65 ? "attention" : "critical";
-
-  return {
-    score,
-    maxScore: 100,
-    trend: "+3",
-    status,
-    summary: "Platform health aggregated from registered workspace providers.",
-    drivers,
-  };
-}
-
-function aggregateMetrics(contributions: Awaited<ReturnType<typeof fetchProviderContributions>>) {
-  const byWorkspace = new Map<string, (typeof contributions)[number]>();
-
-  for (const contribution of contributions) {
-    if (contribution.metric?.workspace) {
-      byWorkspace.set(contribution.metric.workspace, contribution);
-    }
-  }
-
-  const finance = byWorkspace.get("Finance")?.metric;
-  const hospitality = byWorkspace.get("Hospitality")?.metric;
-  const crm = byWorkspace.get("CRM")?.metric;
-  const marketing = byWorkspace.get("Marketing")?.metric;
-
-  if (!finance || !hospitality || !crm || !marketing) {
-    throw new Error("Dashboard metrics incomplete — required workspace providers missing");
-  }
-
-  return { revenue: finance, occupancy: hospitality, customer: crm, marketing };
-}
-
-function aggregateTrends(contributions: Awaited<ReturnType<typeof fetchProviderContributions>>) {
-  const seen = new Set<string>();
-
-  return contributions
-    .flatMap((item) => item.trends ?? [])
-    .filter((trend) => {
-      if (seen.has(trend.id)) {
-        return false;
-      }
-
-      seen.add(trend.id);
-      return true;
-    });
-}
-
-function mapLegacyPriority(priority: number): RecommendationPriority {
-  if (priority === 1) {
-    return "critical";
-  }
-
-  if (priority === 2) {
-    return "high";
-  }
-
-  if (priority === 3) {
-    return "medium";
-  }
-
-  return "low";
-}
+import type { Recommendation as DashboardRecommendation } from "@/types/intelligence";
 
 function buildEvidenceFromContext(
   recommendation: Recommendation,
@@ -277,17 +209,44 @@ function buildFromRules(context: RecommendationContext, generatedAt: string): Re
     .filter((item): item is Recommendation => Boolean(item));
 }
 
-async function buildRecommendationContext(): Promise<RecommendationContext> {
-  const contributions = await fetchProviderContributions();
+function mapLegacyPriority(priority: number): RecommendationPriority {
+  if (priority === 1) {
+    return "critical";
+  }
+
+  if (priority === 2) {
+    return "high";
+  }
+
+  if (priority === 3) {
+    return "medium";
+  }
+
+  return "low";
+}
+
+function buildRecommendationContextFromContributions(
+  contributions: ProviderDashboardContribution[],
+): RecommendationContext {
+  const dailyBrief = executiveBriefEngine.generateDailyBriefFromContributions(contributions);
 
   return {
     contributions,
     businessHealth: aggregateBusinessHealth(contributions),
-    alerts: await buildDashboardAlerts(),
+    alerts: buildDashboardAlertsFromContributions(contributions),
     trends: aggregateTrends(contributions),
     metrics: aggregateMetrics(contributions),
-    dailyBrief: await executiveBriefEngine.generateDailyBrief(),
+    dailyBrief,
   };
+}
+
+async function buildRecommendationContext(
+  contributions?: ProviderDashboardContribution[],
+): Promise<RecommendationContext> {
+  const resolvedContributions =
+    contributions ?? (await fetchProviderContributions());
+
+  return buildRecommendationContextFromContributions(resolvedContributions);
 }
 
 /**
@@ -297,13 +256,18 @@ async function buildRecommendationContext(): Promise<RecommendationContext> {
  * evaluates configuration-driven rules, and returns ranked recommendations.
  */
 export class RecommendationEngine {
-  async buildContext(): Promise<RecommendationContext> {
-    return buildRecommendationContext();
+  async buildContext(
+    contributions?: ProviderDashboardContribution[],
+  ): Promise<RecommendationContext> {
+    return buildRecommendationContext(contributions);
   }
 
-  async generateRecommendations(limit = 6): Promise<RecommendationBundle> {
+  async generateRecommendations(
+    limit = 6,
+    contributions?: ProviderDashboardContribution[],
+  ): Promise<RecommendationBundle> {
     const generatedAt = new Date().toISOString();
-    const context = await this.buildContext();
+    const context = await this.buildContext(contributions);
 
     const fromRules = buildFromRules(context, generatedAt);
     const fromProviders = buildFromProviderRecommendations(context, generatedAt);
@@ -322,8 +286,11 @@ export class RecommendationEngine {
 
 export const recommendationEngine = new RecommendationEngine();
 
-export async function buildRecommendationBundle(limit?: number): Promise<RecommendationBundle> {
-  return recommendationEngine.generateRecommendations(limit);
+export async function buildRecommendationBundle(
+  limit?: number,
+  contributions?: ProviderDashboardContribution[],
+): Promise<RecommendationBundle> {
+  return recommendationEngine.generateRecommendations(limit, contributions);
 }
 
 export function toDashboardRecommendation(
@@ -359,7 +326,9 @@ function mapDashboardCategory(
   return map[category] ?? "priority";
 }
 
-export async function buildDashboardRecommendations(): Promise<DashboardRecommendation[]> {
-  const bundle = await buildRecommendationBundle();
+export async function buildDashboardRecommendations(
+  contributions?: ProviderDashboardContribution[],
+): Promise<DashboardRecommendation[]> {
+  const bundle = await buildRecommendationBundle(undefined, contributions);
   return bundle.recommendations.map(toDashboardRecommendation);
 }

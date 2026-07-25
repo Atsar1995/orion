@@ -1,5 +1,3 @@
-"use client";
-
 const COMMAND_VERSION = "0.5 – Command";
 const FOUNDER_NAME = "Shafi";
 

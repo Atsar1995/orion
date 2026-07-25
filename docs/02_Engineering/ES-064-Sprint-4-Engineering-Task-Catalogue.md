@@ -8,7 +8,7 @@
 
 **Author:** Founder & Chief Architect
 
-**Parent plan:** [ES-061 — ORION v0.4 Master Development Plan](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-063 — Sprint 4 WBS](./ES-063-Sprint-4-Work-Breakdown-Structure.md) · **Architecture:** [ES-065 — Executive Intelligence Architecture](./ES-065-Executive-Intelligence-Architecture.md)
+**Parent plan:** [ES-061 — ORION v0.4 Master Development Plan](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-062 — Sprint 4 Implementation Plan](./ES-062-Sprint-4-Implementation-Plan.md) · [ES-063 — Sprint 4 WBS](./ES-063-Sprint-4-Work-Breakdown-Structure.md) · **Architecture:** [ES-065 — Executive Intelligence Architecture](./ES-065-Executive-Intelligence-Architecture.md)
 
 ---
 
@@ -20,7 +20,7 @@ Each task is independently implementable, testable, reviewable, and traceable fr
 
 **Task ID convention:** `S4T-xxx` (atomic tasks) · maps to work packages `S4-xxx` in [ES-063](./ES-063-Sprint-4-Work-Breakdown-Structure.md). Platform, API, auth, and integration tasks remain in WBS S4-039–S4-098 and are referenced as **WBS S4-xxx** where they block catalogue tasks.
 
-**Current state:** All **93 tasks** (S4T-001–S4T-108) catalogued with implementation status mapped to the ORION codebase. **Sprint 4 execution has not started** — partial delivery inherited from Sprints 1–3 and `v0.3.0-enterprise-foundation`.
+**Current state:** All **93 tasks** (S4T-001–S4T-108) catalogued with implementation status mapped to the ORION codebase. **Sprint 4 execution is in progress** — core intelligence modules and `/dashboard` delivered on `main` @ `cc4a282` · widget registry, API, CI, legacy migration, and M9 acceptance remain open. Last synced 25 July 2026. See [ES-062](./ES-062-Sprint-4-Implementation-Plan.md).
 
 ---
 
@@ -46,24 +46,24 @@ Each engineering task contains:
 
 | Status | Count | Meaning |
 |--------|-------|---------|
-| Done | 0 | Delivered and meets task acceptance |
-| Partial | 26 | Foundation exists · Sprint 4 acceptance not met |
-| Open | 67 | Not implemented |
+| Done | 18 | Delivered and meets task acceptance |
+| Partial | 42 | Foundation exists · Sprint 4 acceptance not fully met |
+| Open | 33 | Not implemented |
 
 | Section | Tasks | Done | Partial | Open |
 |---------|-------|------|---------|------|
-| Executive Dashboard | S4T-001–S4T-020 | 0 | 10 | 10 |
-| Executive Brief | S4T-021–S4T-032 | 0 | 7 | 5 |
-| Recommendation Engine | S4T-040–S4T-048 | 0 | 2 | 7 |
-| Alert Engine | S4T-050–S4T-058 | 0 | 3 | 6 |
-| Trend Engine | S4T-060–S4T-068 | 0 | 0 | 9 |
-| Business Health Engine | S4T-070–S4T-078 | 0 | 3 | 6 |
-| Testing | S4T-080–S4T-088 | 0 | 0 | 9 |
-| Documentation | S4T-090–S4T-096 | 0 | 1 | 6 |
+| Executive Dashboard | S4T-001–S4T-020 | 4 | 9 | 7 |
+| Executive Brief | S4T-021–S4T-032 | 3 | 6 | 5 |
+| Recommendation Engine | S4T-040–S4T-048 | 1 | 3 | 5 |
+| Alert Engine | S4T-050–S4T-058 | 5 | 2 | 2 |
+| Trend Engine | S4T-060–S4T-068 | 0 | 2 | 7 |
+| Business Health Engine | S4T-070–S4T-078 | 0 | 4 | 5 |
+| Testing | S4T-080–S4T-088 | 1 | 1 | 7 |
+| Documentation | S4T-090–S4T-096 | 0 | 2 | 5 |
 | Review | S4T-100–S4T-104 | 0 | 0 | 5 |
 | Approval | S4T-105–S4T-108 | 0 | 0 | 4 |
 
-**Sprint 4 task completion:** **~0% Done** · **~28% Partial** · **M9 sprint acceptance not met** ([ES-063](./ES-063-Sprint-4-Work-Breakdown-Structure.md))
+**Sprint 4 task completion:** **~19% Done** · **~45% Partial** · **M9 sprint acceptance not met** ([ES-063](./ES-063-Sprint-4-Work-Breakdown-Structure.md))
 
 ---
 
@@ -73,7 +73,7 @@ Each engineering task contains:
 
 | Task ID | Title | Description | Dependencies | Hours | Priority | Owner | Status | Acceptance Criteria |
 |---------|-------|-------------|--------------|-------|----------|-------|--------|---------------------|
-| S4T-001 | Create `/dashboard` Route and Layout Shell | Add canonical dashboard page at `/dashboard` using `DashboardLayout` with ES-022 layout zones | — | 8h | P0 | Frontend Engineer | **Open** | Route live · layout zones defined · responsive shell at 1280/768/375px |
+| S4T-001 | Create `/dashboard` Route and Layout Shell | Add canonical dashboard page at `/dashboard` using `DashboardLayout` with ES-022 layout zones | — | 8h | P0 | Frontend Engineer | **Done** | Route live · layout zones defined · responsive shell at 1280/768/375px |
 | S4T-002 | Implement 12-Column Responsive Grid | Build unified dashboard grid with breakpoint reflow and widget slot containers | S4T-001 | 6h | P0 | Frontend Engineer | **Partial** | 12-column grid documented · widgets reflow at breakpoints · ES-022 aligned |
 | S4T-003 | Build KPI Card Base Component | Reusable KPI widget with value, label, trend slot, and workspace attribution | S4T-001 | 5h | P0 | Frontend Engineer | **Partial** | `KpiWidget` component · trend up/down/neutral · workspace label prop |
 | S4T-004 | Implement Widget Registry Module | Central registry mapping widget IDs to components, providers, and default configs | S4T-001 | 6h | P0 | Platform Engineer | **Open** | `WidgetRegistry` · register/unregister · type-safe definitions · barrel export |
@@ -85,7 +85,7 @@ Each engineering task contains:
 | S4T-010 | Implement Trend Indicator Components | Shared trend badge, delta, and period comparison for KPI widgets | S4T-003 · S4T-066 | 4h | P1 | Frontend Engineer | **Open** | Reusable trend components · Trend Engine fed · period labels correct |
 | S4T-011 | Build Executive Summary Hero Panel | Dashboard hero panel rendering Brief Engine narrative | S4T-001 · S4T-023 | 5h | P0 | Frontend Engineer | **Partial** | Summary from `generateExecutiveBrief()` · no static copy |
 | S4T-012 | Implement Recent Activity Feed | Cross-workspace activity stream with categorisation and timestamps | S4T-001 | 6h | P1 | Frontend Engineer | **Partial** | Feed component · ≥3 workspace sources · chronological sort |
-| S4T-013 | Build Alert Centre Panel | Unified alert surface with severity filters fed by Alert Engine | S4T-001 · S4T-054 | 6h | P0 | Frontend Engineer | **Partial** | Alert panel · critical/warning/info filters · workspace links |
+| S4T-013 | Build Alert Centre Panel | Unified alert surface with severity filters fed by Alert Engine | S4T-001 · S4T-054 | 6h | P0 | Frontend Engineer | **Done** | `AlertPanel` · Critical/Recent/Resolved · counts |
 | S4T-014 | Configure Dashboard Routing and Aliases | Make `/dashboard` canonical; configure `/advisor` alias and redirects | S4T-001 | 4h | P0 | Frontend Engineer | **Open** | `/dashboard` canonical · alias/redirect works · ES-022 routing met |
 | S4T-015 | Update Navigation and Command Palette | Sidebar, breadcrumbs, and palette entries for dashboard as primary executive entry | S4T-014 | 3h | P0 | Frontend Engineer | **Partial** | Sidebar highlights Dashboard · palette finds widgets · landing configurable |
 | S4T-016 | Implement Widget Configuration Engine | Per-widget and per-user configuration schema with validation | S4T-004 | 6h | P1 | Backend Engineer | **Open** | Typed config schema · defaults · validation on save |
@@ -147,11 +147,11 @@ Each engineering task contains:
 
 | Task ID | Title | Description | Dependencies | Hours | Priority | Owner | Status | Acceptance Criteria |
 |---------|-------|-------------|--------------|-------|----------|-------|--------|---------------------|
-| S4T-050 | Extract `alert-engine.ts` Module | Create dedicated Alert Engine module separate from interim `getAlerts()` | — | 6h | P0 | Backend Engineer | **Open** | `lib/intelligence/alert-engine.ts` · implements engine interface |
-| S4T-051 | Define Alert Severity Rules | Configurable severity classification (critical, warning, info) with rule documentation | S4T-050 | 4h | P0 | Backend Engineer | **Open** | Rules documented · severity assigned consistently · ES-030 aligned |
-| S4T-052 | Register Alert Engine in Pipeline | Wire Alert Engine into intelligence pipeline orchestrator | S4T-050 | 3h | P0 | Platform Engineer | **Partial** | Engine invoked by pipeline · output in bus payload |
+| S4T-050 | Extract `alert-engine.ts` Module | Create dedicated Alert Engine module separate from interim `getAlerts()` | — | 6h | P0 | Backend Engineer | **Done** | `lib/intelligence/alerts/` · rule engine · prioritizer |
+| S4T-051 | Define Alert Severity Rules | Configurable severity classification (critical, warning, info) with rule documentation | S4T-050 | 4h | P0 | Backend Engineer | **Done** | `AlertRules.ts` · 10 configuration-driven rules |
+| S4T-052 | Register Alert Engine in Pipeline | Wire Alert Engine into intelligence pipeline orchestrator | S4T-050 | 3h | P0 | Platform Engineer | **Done** | `evaluate-alerts` stage in `PipelineRunner` |
 | S4T-053 | Build Notification Bridge Interface | Define notification delivery interface stub for critical alerts | S4T-051 | 4h | P1 | Backend Engineer | **Open** | Interface defined · stub implementation · ES-033 hook documented |
-| S4T-054 | Wire Alert Centre to Alert Engine | Connect dashboard alert panel to Alert Engine output with filters | S4T-050 · S4T-013 | 4h | P0 | Frontend Engineer | **Partial** | Panel uses engine output · severity filters work |
+| S4T-054 | Wire Alert Centre to Alert Engine | Connect dashboard alert panel to Alert Engine output with filters | S4T-050 · S4T-013 | 4h | P0 | Frontend Engineer | **Done** | `AlertPanel` consumes `alertPanel` snapshot |
 | S4T-055 | Wire RisksCard to Alert Engine | Refactor `RisksCard` to consume Alert Engine instead of interim aggregation | S4T-050 · S4T-022 | 4h | P0 | Frontend Engineer | **Partial** | Risks from Alert Engine · no interim bypass |
 | S4T-056 | Remove Interim Alert Aggregation | Deprecate interim `getAlerts()` path once Alert Engine is live | S4T-052 · S4T-054 | 3h | P0 | Backend Engineer | **Open** | Single alert path through engine · interim code removed or gated |
 | S4T-057 | Implement GET `/api/v1/alerts` | REST endpoint returning alerts with severity and workspace filters | S4T-050 · WBS S4-049 | 5h | P1 | Backend Engineer | **Open** | Paginated alerts · severity filter · authenticated |
@@ -207,7 +207,7 @@ Each engineering task contains:
 
 | Task ID | Title | Description | Dependencies | Hours | Priority | Owner | Status | Acceptance Criteria |
 |---------|-------|-------------|--------------|-------|----------|-------|--------|---------------------|
-| S4T-080 | Configure Unit Test Runner and CI | Set up Vitest/Jest, fixtures, and CI job for unit tests | S4T-043 | 8h | P0 | QA Engineer | **Open** | Test runner configured · sample test passes · runs in CI Phase B |
+| S4T-080 | Configure Unit Test Runner and CI | Set up Vitest/Jest, fixtures, and CI job for unit tests | S4T-043 | 8h | P0 | QA Engineer | **Partial** | Vitest configured locally · CI Phase B not wired |
 | S4T-081 | Intelligence Engine Unit Test Suite | Unit tests for Brief, Recommendation, Alert, Trend, and Health engines | S4T-030 · S4T-050 · S4T-062 | 12h | P0 | QA Engineer | **Open** | ≥1 test file per engine · happy path + empty provider |
 | S4T-082 | Provider Contract Compliance Tests | Automated tests validating executive provider contract methods | S4T-061 | 8h | P0 | QA Engineer | **Open** | Finance, CRM, Marketing, Hospitality, Commerce validated |
 | S4T-083 | Dashboard Integration Tests | Integration tests for dashboard pipeline and widget rendering | S4T-005 · S4T-080 | 10h | P0 | QA Engineer | **Open** | Dashboard loads · widgets render · pipeline mocked · CI green |
@@ -472,7 +472,7 @@ The Sprint 4 Engineering Task Catalogue is complete when:
 
 **Catalogue documentation:** **Complete**.
 
-**Sprint 4 task execution:** **Not started** — 0 Done · 26 Partial · 67 Open.
+**Sprint 4 task execution:** **In progress** — 18 Done · 42 Partial · 33 Open · M9 not met.
 
 ---
 

@@ -10,7 +10,7 @@
 
 **Related specifications:** [ES-020 — Executive Intelligence Foundation](./ES-020-Executive-Intelligence-Foundation.md) · [ES-021 — Executive Intelligence Engines](./ES-021-Executive-Intelligence-Engines.md) · [ES-028–ES-032 Intelligence Engines](./ES-028-Executive-Brief-Engine.md) · [ES-039 — AI Orchestration](./ES-039-AI-Orchestration-Agent-Framework.md) · [ES-057 — AI Governance](./ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md) · [ES-061 — v0.4 Master Plan](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-064 — Sprint 4 Task Catalogue](./ES-064-Sprint-4-Engineering-Task-Catalogue.md) · [ADR-006 — Executive Intelligence Provider Framework](../10_Decisions/ADR-006-Executive-Intelligence-Provider-Framework.md)
 
-**Code baseline:** `lib/intelligence/` · [Intelligence README](../../lib/intelligence/README.md)
+**Code baseline:** `lib/intelligence/` · `lib/orchestrator/` · `lib/providers/` · [Intelligence README](../../lib/intelligence/README.md) · `main` @ `cc4a282`
 
 ---
 
@@ -22,15 +22,16 @@ ORION implements a **provider-driven, engine-based intelligence platform** (Miss
 
 | Layer | Baseline Status | v0.4 Target |
 |-------|-----------------|-------------|
-| Executive Providers | Finance · CRM registered | Six workspace providers |
+| Executive Providers | Finance · CRM legacy + 7 mock Sprint 4 providers | Six workspace providers · single framework |
 | Data collection & normalization | Provider methods · static `lib/*-data.ts` | Provider-only · TD-001/002 closed |
-| Metrics Engine | `platform-metrics.ts` delivered | Pipeline-integrated · no duplicate runs |
-| Intelligence Engines | Health · Recommendation · Brief delivered | + Alert · Trend extracted |
-| Executive Dashboard | `/advisor` partial · no `/dashboard` registry | ES-022 unified dashboard |
+| Metrics Engine | `platform-metrics.ts` + orchestrator stage | Pipeline-integrated · no duplicate runs |
+| Intelligence Engines | Sprint 4 Brief · Recommendation · Alert + legacy Mission 17B | Unified six engines · legacy retired |
+| Executive Dashboard | `/dashboard` orchestrator-fed · `/advisor` legacy | ES-022 unified · widget registry |
 | AI Copilot | `AI_PROVIDER_REGISTRY` all null | Governed LLM via Intelligence Bus |
 | Event-driven updates | In-memory event registry · ES-033 planned | Domain event emitters |
+| Intelligence Orchestrator | **Delivered** · `lib/orchestrator/` 10-stage pipeline | Context sharing · caching · legacy migration |
 
-**Architecture maturity:** **Substantial foundation** · **operational completion pending** ([ES-061](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-064](./ES-064-Sprint-4-Engineering-Task-Catalogue.md)).
+**Architecture maturity:** **Sprint 4 foundations delivered** · **legacy dual-stack migration and operational completion pending** ([ES-061](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-062](./ES-062-Sprint-4-Implementation-Plan.md) · [ES-064](./ES-064-Sprint-4-Engineering-Task-Catalogue.md)).
 
 ---
 
@@ -97,7 +98,7 @@ AI Copilot
 Executive Decision Support
 ```
 
-**Implementation note:** In the **as-built pipeline** (`runIntelligencePipeline`), engine execution order is **Health → Recommendation → Summaries → Brief**. Alert aggregation is **interim** (via `RecommendationBundle.criticalAlerts`). Trend Engine and AI Copilot are **not yet implemented**. Metrics collection runs **adjacent to** the pipeline via `platform-metrics.ts`. The diagram above represents the **target canonical architecture**; the as-built mapping is documented below.
+**Implementation note:** ORION now runs **two intelligence paths**. The **Sprint 4 orchestrator** (`lib/orchestrator/PipelineRunner.ts`) powers `/dashboard` via `ExecutiveIntelligenceService`. The **legacy Mission 17B pipeline** (`runIntelligencePipeline` in `pipeline.ts`) still powers `/advisor`, CRM cards, and `platform-metrics.ts`. The diagram below represents the **target canonical architecture**; the as-built mapping includes both paths until legacy migration completes ([ES-062](./ES-062-Sprint-4-Implementation-Plan.md)).
 
 ## Pipeline Architecture Diagram
 
@@ -200,18 +201,21 @@ flowchart TB
 
 | Pipeline Stage | Code Location | Status | Notes |
 |----------------|---------------|--------|-------|
-| **Providers** | `workspace-providers/` · `register-executive-providers.ts` | **Partial** | Finance · CRM registered |
-| **Data Collection** | Provider `getHealth()` · `getMetrics()` · etc. | **Partial** | Static `lib/*-data.ts` behind providers |
-| **Normalization** | `models.ts` · `engine-models.ts` | **Delivered** | Typed platform models |
-| **Metrics Engine** | `platform-metrics.ts` | **Delivered** | Invokes pipeline · records statistics |
-| **Executive Dashboard** | `/advisor` · `/command-center` · ES-022 target `/dashboard` | **Partial** | Not registry-driven |
-| **Executive Brief Engine** | `brief-engine.ts` | **Delivered** | Engine + pipeline integration |
-| **Recommendation Engine** | `recommendation-engine.ts` | **Delivered** | Explainability pending ES-057 |
-| **Alert Engine** | Interim via `recommendation-engine.ts` · `getAlerts()` | **Partial** | Dedicated `alert-engine.ts` pending |
-| **Trend Engine** | — | **Open** | ES-031 · ES-064 S4T-060–068 |
-| **Business Health Engine** | `health-engine.ts` | **Delivered** | Finance/CRM only today |
+| **Providers (Sprint 4)** | `lib/providers/` · `MockProvider` × 7 | **Delivered** | Finance · CRM · Marketing · Hospitality · Commerce · Calendar · Email mocks |
+| **Providers (legacy)** | `workspace-providers/` · `register-executive-providers.ts` | **Partial** | Finance · CRM executive providers |
+| **Data Collection** | `fetchProviderContributions()` · provider methods | **Delivered** | Redundant fetches per pipeline run (see Performance Audit) |
+| **Normalization** | `PipelineRunner.normalizeContributions()` | **Delivered** | Sprint 4 orchestrator |
+| **Metrics Engine** | Orchestrator `update-business-metrics` stage | **Delivered** | Legacy `platform-metrics.ts` still separate |
+| **Executive Dashboard** | `/dashboard` · `components/dashboard/` | **Partial** | Orchestrator snapshot · no widget registry |
+| **Executive Brief Engine** | `lib/intelligence/brief/` | **Delivered** | Sprint 4 module · legacy `brief-engine.ts` coexists |
+| **Recommendation Engine** | `lib/intelligence/recommendations/` | **Delivered** | Rule-driven · legacy `recommendation-engine.ts` coexists |
+| **Alert Engine** | `lib/intelligence/alerts/` | **Delivered** | Rule-driven · legacy interim path coexists |
+| **Trend Engine** | Orchestrator `generate-trends` stage | **Partial** | Aggregation only · ES-031 standalone pending |
+| **Business Health Engine** | Orchestrator `calculate-business-health` | **Partial** | 4 mock workspace drivers · legacy `health-engine.ts` coexists |
+| **Intelligence Orchestrator** | `lib/orchestrator/` | **Delivered** | 10-stage pipeline · observability |
+| **Executive Intelligence Service** | `ExecutiveIntelligenceService.ts` | **Delivered** | Facade for dashboard and engine accessors |
 | **AI Copilot** | `ai-providers.ts` · `AskOrionPanel` placeholder | **Open** | ES-039 · ES-057 |
-| **Executive Decision Support** | `DecisionCard` · `PrioritiesCard` · Advisor UI | **Partial** | Mixed static + pipeline |
+| **Executive Decision Support** | Advisor components · `/dashboard` widgets | **Partial** | Dashboard pipeline-only · Advisor mixed static |
 
 ## Runtime Sequence Diagram
 
@@ -766,7 +770,7 @@ The Executive Intelligence Architecture is complete when:
 
 **Architecture documentation:** **Complete**.
 
-**Pipeline operational maturity:** **Substantial** — 3 engines delivered · Alert/Trend/Copilot/API/event-driven refresh pending ([ES-061](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-064](./ES-064-Sprint-4-Engineering-Task-Catalogue.md)).
+**Pipeline operational maturity:** **Sprint 4 orchestrator delivered** — Brief · Recommendation · Alert engines live on `/dashboard` · legacy Mission 17B path active on Advisor · Trend standalone · Copilot · API · event-driven refresh · legacy migration pending ([ES-061](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-062](./ES-062-Sprint-4-Implementation-Plan.md) · [ES-064](./ES-064-Sprint-4-Engineering-Task-Catalogue.md)).
 
 ---
 
@@ -819,7 +823,7 @@ The Executive Intelligence Architecture establishes how ORION transforms busines
 
 By completing Alert Engine extraction, Trend Engine implementation, provider remediation, event-driven refresh, and governed AI Copilot integration, ORION delivers the intelligence pipeline executives expect from the world's leading AI-native operating system.
 
-**Current assessment:** Architecture **documented and approved** · Foundation **substantially delivered** · **v0.4 completion path** defined in ES-061 and ES-064.
+**Current assessment:** Architecture **documented and approved** · **Sprint 4 orchestrator and engines delivered on `/dashboard`** · **legacy migration and v0.4 completion path** defined in ES-061, ES-062, and ES-064.
 
 ---
 

@@ -20,7 +20,7 @@ The ORION v0.4 Master Development Plan establishes the official engineering prog
 
 It consolidates sprint backlogs, workspace specifications, intelligence engine gaps, and integration priorities into a single authoritative plan for engineering execution, release governance, and executive approval.
 
-**Current state:** ORION completed the **Enterprise Foundation** milestone (`v0.3.0-enterprise-foundation`) with ES-017–ES-060 documentation, Finance/CRM workspace delivery, deterministic intelligence platform (Mission 17A–17B), Advisor/Command Center surfaces, and Hospitality/Marketing overview workspaces. **v0.4 work is largely open**: unified Executive Dashboard (ES-022), Hospitality operations (ES-049), Commerce workspace, dedicated Alert/Trend engines, LLM copilot, REST API layer, real authentication, CI/CD, domain providers, and all external integrations. This document **defines the v0.4 target state** mapped against codebase reality.
+**Current state:** ORION completed the **Enterprise Foundation** milestone (`v0.3.0-enterprise-foundation`) and has **delivered Sprint 4 Phase 1 intelligence foundations** (Provider Framework, Brief/Recommendation/Alert engines, Intelligence Orchestrator, `/dashboard` Executive Dashboard — `main` @ `cc4a282`). **v0.4 work remains partially open**: widget registry (ES-022), legacy intelligence-bus migration, standalone Trend Engine (ES-031), REST API layer, production authentication, CI/CD, real domain providers, LLM copilot, and external integrations. This document **defines the v0.4 target state** mapped against codebase reality (last synced 25 July 2026).
 
 **Version note:** Historical semver `v0.4.0` (Persistence Foundation · RR-002) remains in release history. **ORION Version 0.4** in this plan denotes the **Business Platform Completion & Intelligence** programme building on the enterprise foundation tag.
 
@@ -117,16 +117,16 @@ See [Out of Scope](#out-of-scope) section.
 
 | ID | Deliverable | Type | Priority | Spec | Status |
 |----|-------------|------|----------|------|--------|
-| D1 | Unified Executive Dashboard (`/dashboard`) | Product | P0 | ES-022 | **Open** |
+| D1 | Unified Executive Dashboard (`/dashboard`) | Product | P0 | ES-022 | **Partial** · route live · orchestrator-fed |
 | D2 | Widget registry and preferences | Platform | P0 | ES-022 · ES-044 | **Open** |
-| D3 | Advisor full Intelligence Bus wiring | Product | P0 | ES-020 · ES-044 | **Partial** |
+| D3 | Advisor full Intelligence Bus wiring | Product | P0 | ES-020 · ES-044 | **Partial** · legacy bus · `/dashboard` uses orchestrator |
 | D4 | CRM workspace completion | Workspace | P1 | ES-027 | **Partial** |
 | D5 | Finance workspace completion | Workspace | P1 | ES-025 | **Partial** |
 | D6 | Marketing workspace completion | Workspace | P1 | ES-026 | **Partial** |
 | D7 | Hospitality operational workspace | Workspace | P0 | ES-023 · ES-049 | **Partial** |
 | D8 | Commerce workspace foundation | Workspace | P1 | ES-024 | **Open** |
-| D9 | Alert Engine extraction | Engine | P0 | ES-030 | **Partial** |
-| D10 | Trend Engine | Engine | P1 | ES-031 | **Open** |
+| D9 | Alert Engine extraction | Engine | P0 | ES-030 | **Partial** · `lib/intelligence/alerts/` delivered · legacy interim remains |
+| D10 | Trend Engine | Engine | P1 | ES-031 | **Partial** · pipeline trend aggregation · no standalone engine |
 | D11 | Executive Copilot (Ask ORION) | AI | P0 | ES-039 · ES-057 | **Partial** |
 | D12 | REST API v1 foundation | Platform | P0 | ES-035 · S1-120 | **Open** |
 | D13 | Production authentication | Platform | P0 | ES-037 · PRD-001 | **Partial** |
@@ -274,12 +274,12 @@ Each workspace shall deliver: Overview dashboard · Sub-navigation · Domain sec
 
 | Engine | Spec | Code | Baseline | v0.4 Deliverables |
 |--------|------|------|----------|-------------------|
-| **Executive Dashboard** | ES-022 | `/dashboard` · widget registry | `/advisor` · `/command-center` · no registry | Unified route · widget framework · preferences API |
-| **Executive Brief Engine** | ES-028 | `brief-engine.ts` | Engine delivered · UI mixed | Full Advisor wiring · brief history · scheduled generation |
-| **Recommendation Engine** | ES-029 | `recommendation-engine.ts` | Aggregates providers · no explainability fields | Explainability schema · acceptance tracking · ES-057 fields |
-| **Alert Engine** | ES-030 | Interim via `getAlerts()` | No dedicated engine | Extract `alert-engine.ts` · severity rules · notification bridge |
-| **Trend Engine** | ES-031 | — | **Not implemented** | `trend-engine.ts` · time-series from providers · dashboard widgets |
-| **Business Health Engine** | ES-032 | `health-engine.ts` | Delivered · Finance/CRM only | All six providers · platform score on dashboard |
+| **Executive Dashboard** | ES-022 | `/dashboard` · Sprint 4 widgets · orchestrator snapshot | `/advisor` · `/command-center` · no registry | Widget registry · canonical nav · preferences API |
+| **Executive Brief Engine** | ES-028 | `lib/intelligence/brief/` + legacy `brief-engine.ts` | Sprint 4 engine delivered · dual stack | Full Advisor wiring · brief history · scheduled generation |
+| **Recommendation Engine** | ES-029 | `lib/intelligence/recommendations/` + legacy engine | Rule-driven Sprint 4 engine · explainability UI pending | Explainability schema · acceptance tracking · ES-057 fields |
+| **Alert Engine** | ES-030 | `lib/intelligence/alerts/` | Dedicated Sprint 4 module · legacy interim remains | Deprecate interim path · notification bridge |
+| **Trend Engine** | ES-031 | Pipeline trend stage only | Aggregation from mock providers | Standalone `trend-engine.ts` · chart widgets |
+| **Business Health Engine** | ES-032 | Orchestrator stage + legacy `health-engine.ts` | 4 mock workspace drivers on `/dashboard` | All six providers · unify legacy and Sprint 4 paths |
 
 **Intelligence platform code:** `lib/intelligence/` · [README](../../lib/intelligence/README.md)
 
@@ -429,7 +429,7 @@ The ORION v0.4 Master Development Plan is complete when:
 
 **Plan documentation:** **Complete**.
 
-**v0.4 implementation:** **Not started** — execution tracked via Release Records · sprint plans · Technical Debt Register.
+**v0.4 implementation:** **In progress** — Sprint 4 intelligence layer committed (`cc4a282`) · ~45% Phase 1 complete · M9 acceptance not met · see [ES-062](./ES-062-Sprint-4-Implementation-Plan.md).
 
 ---
 
@@ -451,13 +451,13 @@ Use this checklist for v0.4 programme tracking. Mark complete in Release Records
 
 ## Executive Intelligence
 
-- [ ] Unified `/dashboard` (ES-022)
+- [x] Unified `/dashboard` route (ES-022) — **Partial** · orchestrator-fed · widget registry pending
 - [ ] Widget registry and preferences
 - [ ] Advisor full Intelligence Bus wiring
 - [ ] Brief Engine — history · scheduling (ES-028)
 - [ ] Recommendation Engine — explainability (ES-029 · ES-057)
-- [ ] Alert Engine extracted (ES-030)
-- [ ] Trend Engine implemented (ES-031)
+- [x] Alert Engine module (ES-030) — **Partial** · `lib/intelligence/alerts/` · legacy interim not removed
+- [ ] Trend Engine implemented (ES-031) — pipeline aggregation only
 - [ ] Business Health Engine — all providers (ES-032)
 - [ ] Six workspace executive providers registered
 
@@ -532,6 +532,7 @@ Use this checklist for v0.4 programme tracking. Mark complete in Release Records
 | ES-028–ES-032 Intelligence Engines | [ES-028](./ES-028-Executive-Brief-Engine.md) · [ES-029](./ES-029-Recommendation-Engine.md) · [ES-030](./ES-030-Alert-Engine.md) · [ES-031](./ES-031-Trend-Engine.md) · [ES-032](./ES-032-Business-Health-Engine.md) |
 | ES-039 AI Orchestration | [ES-039-AI-Orchestration-Agent-Framework.md](./ES-039-AI-Orchestration-Agent-Framework.md) |
 | ES-044–ES-049 Sprint Plans | [ES-044](./ES-044-Sprint-2-Implementation-Plan.md) · [ES-047](./ES-047-Sprint-3-Implementation-Plan.md) · [ES-046](./ES-046-Sprint-2-Engineering-Task-Catalogue.md) · [ES-049](./ES-049-Sprint-3-Engineering-Task-Catalogue.md) |
+| ES-062 Sprint 4 Implementation Plan | [ES-062-Sprint-4-Implementation-Plan.md](./ES-062-Sprint-4-Implementation-Plan.md) |
 | ES-063 Sprint 4 Work Breakdown Structure | [ES-063-Sprint-4-Work-Breakdown-Structure.md](./ES-063-Sprint-4-Work-Breakdown-Structure.md) |
 | ES-064 Sprint 4 Engineering Task Catalogue | [ES-064-Sprint-4-Engineering-Task-Catalogue.md](./ES-064-Sprint-4-Engineering-Task-Catalogue.md) |
 | ES-065 Executive Intelligence Architecture | [ES-065-Executive-Intelligence-Architecture.md](./ES-065-Executive-Intelligence-Architecture.md) |
@@ -552,7 +553,7 @@ The ORION v0.4 Master Development Plan establishes the engineering programme req
 
 By completing six business workspaces, six intelligence engines, governed AI copilot capabilities, and first-wave integrations — under the discipline of ES-043 through ES-060 governance — ORION Version 0.4 delivers the business value executives expect from the world's leading AI-native operating system.
 
-**Current assessment:** v0.4 is **fully planned and approved** · **implementation not started** · **P0 path: platform foundation (auth · CI · API · TD remediation) → intelligence completion → workspace operations → integrations → AI copilot**.
+**Current assessment:** v0.4 is **fully planned and approved** · **Sprint 4 intelligence foundations delivered** · **P0 path: legacy migration · widget registry · CI/tests · pipeline optimisation → auth · API → workspace operations → integrations → AI copilot**.
 
 ---
 

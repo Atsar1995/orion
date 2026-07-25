@@ -8,7 +8,7 @@
 
 **Author:** Founder & Chief Architect
 
-**Parent plan:** [ES-061 — ORION v0.4 Master Development Plan](./ES-061-ORION-v0.4-Master-Development-Plan.md) · **Architecture:** [ES-065 — Executive Intelligence Architecture](./ES-065-Executive-Intelligence-Architecture.md) · **Task catalogue:** [ES-064 — Sprint 4 Engineering Task Catalogue](./ES-064-Sprint-4-Engineering-Task-Catalogue.md)
+**Parent plan:** [ES-061 — ORION v0.4 Master Development Plan](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-062 — Sprint 4 Implementation Plan](./ES-062-Sprint-4-Implementation-Plan.md) · **Architecture:** [ES-065 — Executive Intelligence Architecture](./ES-065-Executive-Intelligence-Architecture.md) · **Task catalogue:** [ES-064 — Sprint 4 Engineering Task Catalogue](./ES-064-Sprint-4-Engineering-Task-Catalogue.md)
 
 ---
 
@@ -18,7 +18,7 @@ This document decomposes Sprint 4 into executable engineering work packages for 
 
 Each work package is independently implementable, testable, reviewable, and deployable while preserving ORION architectural standards.
 
-**Current state:** All **110 work packages** (S4-001–S4-110) catalogued with implementation status mapped to the ORION codebase. **Sprint 4 execution has not started** — work inherits partial delivery from Sprints 1–3 and the `v0.3.0-enterprise-foundation` baseline. See [ES-061](./ES-061-ORION-v0.4-Master-Development-Plan.md).
+**Current state:** All **110 work packages** (S4-001–S4-110) catalogued with implementation status mapped to the ORION codebase. **Sprint 4 execution is in progress** — core intelligence layer and `/dashboard` delivered on `main` @ `cc4a282` · widget registry, API, CI, legacy migration, and M9 acceptance remain open. Last synced 25 July 2026. See [ES-062](./ES-062-Sprint-4-Implementation-Plan.md).
 
 ---
 
@@ -49,7 +49,7 @@ Each engineering work package contains:
 | Programme | [ES-061 — ORION v0.4 Master Development Plan](./ES-061-ORION-v0.4-Master-Development-Plan.md) |
 | Expected Team | Frontend · Backend · Platform · AI · QA · UX · Founder / Product Owner |
 | Total Work Packages | 110 |
-| Overall WBS Status | **Not started** — 0 Done · 18 Partial (inherited) · 92 Open |
+| Overall WBS Status | **In progress** — 12 Done · 38 Partial · 60 Open · ~45% weighted |
 
 ---
 
@@ -57,20 +57,20 @@ Each engineering work package contains:
 
 | WP | Name | Packages | Status | Completion |
 |----|------|----------|--------|------------|
-| 1 | Executive Dashboard | S4-001–S4-012 | Partial | ~25% |
+| 1 | Executive Dashboard | S4-001–S4-012 | Partial | ~55% |
 | 2 | Widget Framework | S4-013–S4-018 | Not started | ~0% |
-| 3 | Executive Metrics & Visualisation | S4-019–S4-022 | Partial | ~20% |
-| 4 | Executive Intelligence Engines | S4-023–S4-032 | Partial | ~35% |
-| 5 | Intelligence Pipeline & Advisor | S4-033–S4-038 | Partial | ~30% |
+| 3 | Executive Metrics & Visualisation | S4-019–S4-022 | Partial | ~40% |
+| 4 | Executive Intelligence Engines | S4-023–S4-032 | Partial | ~70% |
+| 5 | Intelligence Pipeline & Advisor | S4-033–S4-038 | Partial | ~50% |
 | 6 | Platform Foundation | S4-039–S4-048 | Partial | ~20% |
 | 7 | REST API Layer | S4-049–S4-056 | Not started | ~0% |
-| 8 | Domain Provider Remediation | S4-057–S4-064 | Partial | ~25% |
+| 8 | Domain Provider Remediation | S4-057–S4-064 | Partial | ~45% |
 | 9 | Workspace Intelligence Integration | S4-065–S4-072 | Partial | ~40% |
 | 10 | Commerce & Marketing Workspace | S4-073–S4-078 | Partial | ~15% |
 | 11 | Executive Copilot & AI | S4-079–S4-086 | Not started | ~5% |
 | 12 | Integration Connectors | S4-087–S4-098 | Not started | ~0% |
-| 13 | Quality Assurance | S4-099–S4-106 | Not started | ~0% |
-| 14 | Documentation & Release | S4-107–S4-110 | Substantial | ~50% |
+| 13 | Quality Assurance | S4-099–S4-106 | Partial | ~25% |
+| 14 | Documentation & Release | S4-107–S4-110 | Partial | ~60% |
 
 ---
 
@@ -82,20 +82,20 @@ Each engineering work package contains:
 
 | ID | Title | Description | Priority | Dependencies | Effort | Owner | Acceptance Criteria | Status |
 |----|-------|-------------|----------|--------------|--------|-------|---------------------|--------|
-| S4-001 | Executive Dashboard Layout | Create unified dashboard page shell with responsive grid, section containers, and ES-022 layout zones at `/dashboard` | P0 | — | 8h | Frontend Engineer | `/dashboard` route live · responsive at 1280/768/375px · uses `DashboardLayout` · ES-022 zones defined | **Open** |
+| S4-001 | Executive Dashboard Layout | Create unified dashboard page shell with responsive grid, section containers, and ES-022 layout zones at `/dashboard` | P0 | — | 8h | Frontend Engineer | `/dashboard` route live · responsive at 1280/768/375px · uses `DashboardLayout` · ES-022 zones defined | **Done** · `app/(platform)/dashboard/page.tsx` |
 | S4-002 | KPI Cards Framework | Implement registry-driven KPI card component with trend indicators, sparkline slot, and workspace attribution | P0 | S4-001 | 6h | Frontend Engineer | Reusable `KpiWidget` · trend up/down/neutral · workspace label · no hard-coded Finance/CRM only | **Partial** · workspace KPIs exist · not registry-driven |
 | S4-003 | Executive Metrics Panel | Aggregate platform metrics from `platform-metrics.ts` and provider health into dashboard metrics row | P0 | S4-001 · S4-057 | 6h | Backend Engineer | Metrics row renders live pipeline data · no static `advisor-data.ts` bypass for Finance/CRM | **Partial** · `platform-metrics.ts` exists |
 | S4-004 | Charts & Trend Visualisation | Add dashboard chart widgets consuming Trend Engine output (revenue, occupancy, pipeline, health trends) | P1 | S4-001 · S4-028 | 8h | Frontend Engineer | ≥4 chart widgets · CSS or library per ES-008 · fed by Trend Engine not static arrays | **Open** |
 | S4-005 | Executive Summary Panel | Dashboard hero panel with daily executive narrative from Brief Engine | P0 | S4-001 · S4-023 | 5h | Frontend Engineer | Summary text from `generateExecutiveBrief()` · refreshes on pipeline run · no static copy | **Partial** · `ExecutiveSummaryCard` · mixed static |
 | S4-006 | Recent Activity Feed | Cross-workspace activity stream with categorisation and timestamps | P1 | S4-001 · S4-049 | 6h | Frontend Engineer | Activity feed component · ≥3 workspace sources · sorted chronologically | **Partial** · `RecentActivityCard` · placeholder data |
-| S4-007 | Alert Centre Panel | Unified alert surface aggregating Alert Engine output with severity filtering | P0 | S4-001 · S4-026 | 6h | Frontend Engineer | Alert panel · critical/warning/info filters · links to source workspace | **Partial** · `CriticalAttentionCard` · `RisksCard` |
+| S4-007 | Alert Centre Panel | Unified alert surface aggregating Alert Engine output with severity filtering | P0 | S4-001 · S4-026 | 6h | Frontend Engineer | Alert panel · critical/warning/info filters · links to source workspace | **Done** · `AlertPanel` · Critical/Recent/Resolved |
 | S4-008 | Quick Actions Integration | Dashboard quick actions wired to workspace routes and command palette entries | P1 | S4-001 | 4h | Frontend Engineer | Quick actions navigate correctly · palette entries match · ≥6 actions | **Done** · `QuickActionsCard` · multiple surfaces |
 | S4-009 | Dashboard Routing & Aliases | Establish `/dashboard` as canonical route with redirects from `/advisor` and command palette updates | P0 | S4-001 | 4h | Frontend Engineer | `/dashboard` canonical · `/advisor` alias or redirect · nav updated · ES-022 routing met | **Open** · `/advisor` only today |
 | S4-010 | Dashboard Navigation Integration | Integrate dashboard into sidebar, breadcrumbs, and command palette as primary executive entry | P0 | S4-009 | 3h | Frontend Engineer | Sidebar highlights Dashboard · palette search finds dashboard widgets · default landing configurable | **Partial** · `/advisor` default landing |
 | S4-011 | Responsive Dashboard Grid | Unified 12-column responsive grid supporting widget resize and breakpoint reflow | P0 | S4-001 · S4-013 | 6h | Frontend Engineer | Grid system documented · widgets reflow at breakpoints · matches ES-022 wireframes | **Partial** · card layouts · no unified grid |
 | S4-012 | Dashboard Empty & Loading States | Empty, loading, and error states for dashboard and widget slots | P1 | S4-001 | 4h | Frontend Engineer | Uses `LoadingState` · `EmptyState` · error boundary per widget · accessible | **Partial** · primitives exist · not dashboard-wide |
 
-**WP1 status:** **Partial** — Advisor/Command Center shells exist · ES-022 unified `/dashboard` and registry-driven widgets pending.
+**WP1 status:** **Partial (~55%)** — `/dashboard` live with orchestrator-fed widgets · widget registry and canonical nav pending.
 
 ---
 
@@ -144,15 +144,15 @@ Each engineering work package contains:
 | S4-023 | Executive Brief Engine Completion | Complete Brief Engine wiring, remove static bypass, add brief sections for all workspace providers | P0 | S4-057–S4-061 | 8h | AI Engineer | `brief-engine.ts` produces full brief from pipeline only · all provider summaries included | **Partial** · engine delivered · UI mixed |
 | S4-024 | Brief History & Scheduling | Persist brief history and support scheduled brief generation hooks | P1 | S4-023 · S4-039 | 8h | Backend Engineer | Brief history retrievable · schedule config stub · latest + previous accessible | **Open** |
 | S4-025 | Recommendation Engine Explainability | Extend recommendations with reasoning, evidence, confidence per ES-057 and ES-029 | P0 | S4-057 | 8h | AI Engineer | `ExecutiveRecommendation` includes reasoning · evidence refs · confidence score · ES-057 fields | **Partial** · engine aggregates · no explainability schema |
-| S4-026 | Alert Engine Extraction | Extract dedicated `alert-engine.ts` from interim `getAlerts()` with severity rules | P0 | S4-057 | 8h | Backend Engineer | Standalone Alert Engine · severity classification · registered in pipeline · ES-030 acceptance | **Partial** · interim aggregation only |
-| S4-027 | Alert Severity Rules & Notification Bridge | Configurable severity rules and notification bridge stub for alert delivery | P1 | S4-026 | 6h | Backend Engineer | Rules documented · critical alerts flagged · notification bridge interface defined | **Open** |
-| S4-028 | Trend Engine Implementation | Implement `trend-engine.ts` with time-series aggregation from executive providers | P1 | S4-057–S4-061 | 10h | Backend Engineer | Trend Engine live · period comparison · feeds S4-004 and S4-022 · ES-031 acceptance | **Open** |
-| S4-029 | Trend Data Models & Provider Contracts | Define trend series models and provider `aggregateTrends()` contract extension | P1 | S4-028 · S4-057 | 6h | Platform Engineer | Types in `models.ts` · provider interface extended · Finance/CRM implement first | **Open** |
+| S4-026 | Alert Engine Extraction | Extract dedicated `alert-engine.ts` from interim `getAlerts()` with severity rules | P0 | S4-057 | 8h | Backend Engineer | Standalone Alert Engine · severity classification · registered in pipeline · ES-030 acceptance | **Done** · `lib/intelligence/alerts/` · legacy interim remains |
+| S4-027 | Alert Severity Rules & Notification Bridge | Configurable severity rules and notification bridge stub for alert delivery | P1 | S4-026 | 6h | Backend Engineer | Rules documented · critical alerts flagged · notification bridge interface defined | **Partial** · `AlertRules.ts` · dispatcher stub |
+| S4-028 | Trend Engine Implementation | Implement `trend-engine.ts` with time-series aggregation from executive providers | P1 | S4-057–S4-061 | 10h | Backend Engineer | Trend Engine live · period comparison · feeds S4-004 and S4-022 · ES-031 acceptance | **Partial** · pipeline `generate-trends` stage only |
+| S4-029 | Trend Data Models & Provider Contracts | Define trend series models and provider `aggregateTrends()` contract extension | P1 | S4-028 · S4-057 | 6h | Platform Engineer | Types in `models.ts` · provider interface extended · Finance/CRM implement first | **Partial** · `types/intelligence.ts` Trend · mock provider trends |
 | S4-030 | Business Health Engine Multi-Provider | Extend Health Engine to score all six workspace executive providers | P0 | S4-057–S4-061 | 6h | Backend Engineer | Platform health score uses all registered providers · driver breakdown per domain | **Partial** · Finance/CRM registered |
 | S4-031 | Engine Interface Compliance | Verify all six engines implement `engine-interfaces.ts` and register in pipeline | P0 | S4-023–S4-030 | 4h | Platform Engineer | Six engines pass interface audit · pipeline orchestrator invokes each · unit tests stubbed | **Partial** · 3 engines · 2 interim |
 | S4-032 | Engine Unit Test Suite | Unit tests for each intelligence engine with fixture providers | P0 | S4-031 · S4-099 | 12h | QA Engineer | ≥1 test file per engine · happy path + empty provider · CI runnable | **Open** |
 
-**WP4 status:** **Partial** — Mission 17B engines delivered · Alert/Trend extraction and explainability pending.
+**WP4 status:** **Partial (~70%)** — Sprint 4 Brief, Recommendation, and Alert engines delivered · Trend standalone and explainability UI pending.
 
 ---
 
@@ -162,7 +162,7 @@ Each engineering work package contains:
 
 | ID | Title | Description | Priority | Dependencies | Effort | Owner | Acceptance Criteria | Status |
 |----|-------|-------------|----------|--------------|--------|-------|---------------------|--------|
-| S4-033 | Intelligence Pipeline Orchestration | Harden pipeline orchestrator for sequential/parallel engine execution and caching | P0 | S4-031 | 6h | Platform Engineer | Pipeline runs all engines · errors isolated · execution logged · cache TTL configurable | **Partial** · pipeline exists |
+| S4-033 | Intelligence Pipeline Orchestration | Harden pipeline orchestrator for sequential/parallel engine execution and caching | P0 | S4-031 | 6h | Platform Engineer | Pipeline runs all engines · errors isolated · execution logged · cache TTL configurable | **Partial** · `lib/orchestrator/` 10-stage pipeline · redundant fetches · no cache |
 | S4-034 | Advisor Intelligence Bus Wiring | Refactor Advisor to consume pipeline exclusively; remove Finance/CRM static bypass | P0 | S4-033 · S4-023 | 8h | Frontend Engineer | Advisor cards use pipeline hooks only · no direct `lib/*-data.ts` for intelligence surfaces | **Partial** · mixed static + pipeline |
 | S4-035 | Command Center Pipeline Integration | Align Command Center metrics and cards with same pipeline outputs as Dashboard | P1 | S4-033 | 6h | Frontend Engineer | Command Center and Dashboard show consistent metrics · single pipeline source | **Partial** |
 | S4-036 | Workspace Insight Cards on Advisor | Register insight cards for Marketing, Hospitality, and Commerce on Advisor/Brief | P1 | S4-065–S4-072 | 8h | Frontend Engineer | Six workspace insight cards on Advisor · each from executive provider | **Partial** · Finance/CRM only |
@@ -460,7 +460,7 @@ Sprint 4 Work Breakdown Structure is complete when:
 
 **WBS documentation:** **Complete**.
 
-**Sprint 4 execution against WBS:** **Not started** — 0 Done · 18 Partial (inherited) · 92 Open.
+**Sprint 4 execution against WBS:** **In progress** — 12 Done · 38 Partial · 60 Open · M9 not met.
 
 ---
 

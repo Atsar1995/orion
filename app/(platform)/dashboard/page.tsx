@@ -16,6 +16,8 @@ import {
 } from "@/lib/constants";
 import { executiveIntelligenceService } from "@/lib/intelligence/ExecutiveIntelligenceService";
 
+export const dynamic = "force-dynamic";
+
 function getGreetingPeriod(): string {
   const hour = new Date().getHours();
 

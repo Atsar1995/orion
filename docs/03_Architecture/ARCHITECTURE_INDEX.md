@@ -22,7 +22,7 @@ Central index for ORION platform architecture documentation.
 | Technical Roadmap & Product Evolution | [ES-051](../02_Engineering/ES-051-ORION-Technical-Roadmap-Product-Evolution-Strategy.md) | Approved · five-year strategy |
 | Architecture Decision Record Framework | [ES-052](../02_Engineering/ES-052-Architecture-Decision-Record-Framework.md) · [10_Decisions/](../10_Decisions/) | Approved · ADR-001–006 |
 | Risk Management & Technical Debt | [ES-053](../02_Engineering/ES-053-ORION-Risk-Management-Technical-Debt-Framework.md) · [Technical Debt Register](../09_Standards/Technical_Debt_Register.md) | Approved · TD-001–002 |
-| Quality Assurance & Engineering Excellence | [ES-054](../02_Engineering/ES-054-ORION-Quality-Assurance-Engineering-Excellence-Framework.md) | Approved · 0% coverage · CI planned |
+| Quality Assurance & Engineering Excellence | [ES-054](../02_Engineering/ES-054-ORION-Quality-Assurance-Engineering-Excellence-Framework.md) | Approved · Vitest locally · CI planned |
 | DevSecOps & Continuous Delivery | [ES-055](../02_Engineering/ES-055-ORION-DevSecOps-Continuous-Delivery-Architecture.md) | Approved · manual delivery · pipeline planned |
 | Data Governance & Information Architecture | [ES-056](../02_Engineering/ES-056-ORION-Data-Governance-Information-Architecture.md) · [ES-036](../02_Engineering/ES-036-Database-Persistence-Architecture.md) | Approved · in-memory · static domain data |
 | AI Governance & Responsible Intelligence | [ES-057](../02_Engineering/ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md) · [ES-039](../02_Engineering/ES-039-AI-Orchestration-Agent-Framework.md) | Approved · deterministic intelligence · no LLM |
@@ -30,7 +30,8 @@ Central index for ORION platform architecture documentation.
 | Platform Security & Zero Trust | [ES-059](../02_Engineering/ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) · [ES-037](../02_Engineering/ES-037-Authentication-Authorisation-Architecture.md) | Approved · placeholder auth · RBAC partial |
 | Platform Extensibility & Marketplace | [ES-060](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) · [ES-034](../02_Engineering/ES-034-Provider-Data-Contract-Standards.md) · [ADR-006](../10_Decisions/ADR-006-Executive-Intelligence-Provider-Framework.md) | Approved · provider registry · Phase 5 marketplace |
 | v0.4 Master Development Plan | [ES-061](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-051](../02_Engineering/ES-051-ORION-Technical-Roadmap-Product-Evolution-Strategy.md) | Approved · workspaces · intelligence · AI · integrations |
-| Executive Intelligence Architecture | [ES-065](../02_Engineering/ES-065-Executive-Intelligence-Architecture.md) · [ES-020](../02_Engineering/ES-020-Executive-Intelligence-Foundation.md) · [ADR-006](../10_Decisions/ADR-006-Executive-Intelligence-Provider-Framework.md) | Approved · pipeline · 3 engines delivered · Alert/Trend open |
+| Executive Intelligence Architecture | [ES-065](../02_Engineering/ES-065-Executive-Intelligence-Architecture.md) · [ES-020](../02_Engineering/ES-020-Executive-Intelligence-Foundation.md) · [ADR-006](../10_Decisions/ADR-006-Executive-Intelligence-Provider-Framework.md) | Approved · Sprint 4 orchestrator · dual-stack migration pending |
+| Sprint 4 Implementation Plan | [ES-062](../02_Engineering/ES-062-Sprint-4-Implementation-Plan.md) · [ES-063](../02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) · [ES-064](../02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md) | In progress · ~45% Phase 1 |
 | System Context | [SYSTEM_CONTEXT.md](./SYSTEM_CONTEXT.md) | Approved |
 | System Map | [SYSTEM_MAP.md](./SYSTEM_MAP.md) | Approved |
 | Platform Architecture (PA-001) | [ORION_Platform_Architecture.md](./ORION_Platform_Architecture.md) | Frozen |
@@ -46,30 +47,35 @@ Central index for ORION platform architecture documentation.
 | Sprint 1 Task Catalogue | [ES-042](../02_Engineering/ES-042-Sprint-1-Engineering-Task-Catalogue.md) | Approved · 56 tasks · 28 done |
 | Engineering Governance | [ES-043](../02_Engineering/ES-043-Engineering-Governance-Delivery-Standards.md) · [Engineering Standards](../09_Standards/Engineering_Standards.md) | Approved · CI enforcement pending |
 | Sprint 3 Hospitality Workspace | [ES-047](../02_Engineering/ES-047-Sprint-3-Implementation-Plan.md) · [ES-048](../02_Engineering/ES-048-Sprint-3-Work-Breakdown-Structure.md) · [ES-049](../02_Engineering/ES-049-Sprint-3-Engineering-Task-Catalogue.md) · [ES-023](../02_Engineering/ES-023-Hospitality-Workspace.md) | Partial · overview delivered |
-| Sprint 2 Executive Experience | [ES-044](../02_Engineering/ES-044-Sprint-2-Implementation-Plan.md) · [ES-045](../02_Engineering/ES-045-Sprint-2-Work-Breakdown-Structure.md) · [ES-046](../02_Engineering/ES-046-Sprint-2-Engineering-Task-Catalogue.md) · [ES-022](../02_Engineering/ES-022-Executive-Dashboard.md) | Partial · Advisor delivered |
+| Sprint 2 Executive Experience | [ES-044](../02_Engineering/ES-044-Sprint-2-Implementation-Plan.md) · [ES-045](../02_Engineering/ES-045-Sprint-2-Work-Breakdown-Structure.md) · [ES-046](../02_Engineering/ES-046-Sprint-2-Engineering-Task-Catalogue.md) · [ES-022](../02_Engineering/ES-022-Executive-Dashboard.md) | Partial · Advisor delivered · `/dashboard` Sprint 4 partial |
+| Sprint 4 Executive Intelligence | [ES-062](../02_Engineering/ES-062-Sprint-4-Implementation-Plan.md) · [ES-063](../02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) · [ES-064](../02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md) | In progress · orchestrator · engines · `/dashboard` |
 
 ---
 
 ## Executive Intelligence Platform
 
-| Component | Location | ADR |
-|-----------|----------|-----|
-| Provider Contract | `lib/intelligence/provider.ts` · [ES-034](../02_Engineering/ES-034-Provider-Data-Contract-Standards.md) | ADR-006 |
-| Provider Registry | `lib/intelligence/provider-registry.ts` · [ES-060](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) | ADR-006 · internal extensibility |
-| Intelligence Bus | `lib/intelligence/intelligence-bus.ts` | ADR-006 |
-| Platform Models | `lib/intelligence/models.ts` | Mission 17A |
-| Health Engine | `lib/intelligence/health-engine.ts` · [ES-032](../02_Engineering/ES-032-Business-Health-Engine.md) | Mission 17B |
-| Recommendation Engine | `lib/intelligence/recommendation-engine.ts` · [ES-029](../02_Engineering/ES-029-Recommendation-Engine.md) | Mission 17B |
-| Alert Engine | Interim via Recommendation Engine · [ES-030](../02_Engineering/ES-030-Alert-Engine.md) | Partial · extraction pending |
-| Trend Engine | Not implemented · [ES-031](../02_Engineering/ES-031-Trend-Engine.md) | Planned |
-| Brief Engine | `lib/intelligence/brief-engine.ts` · [ES-028](../02_Engineering/ES-028-Executive-Brief-Engine.md) | Mission 17B |
-| Intelligence Pipeline | `lib/intelligence/pipeline.ts` | Mission 17B |
-| Engine Interfaces | `lib/intelligence/engine-interfaces.ts` | Mission 17B |
-| Engine Models | `lib/intelligence/engine-models.ts` | Mission 17B |
-| Platform Metrics | `lib/intelligence/platform-metrics.ts` | Mission 17B |
-| AI Provider Contracts | `lib/intelligence/ai-providers.ts` · [ES-039](../02_Engineering/ES-039-AI-Orchestration-Agent-Framework.md) · [ES-057](../02_Engineering/ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md) | Architecture only · not registered |
-| Intelligence Constitution | [05_AI/ORION_Intelligence_Constitution.md](../05_AI/ORION_Intelligence_Constitution.md) | Foundational |
-| Decision Framework | [05_AI/ORION_Decision_Framework.md](../05_AI/ORION_Decision_Framework.md) | Foundational |
+| Component | Location | ADR / Spec |
+|-----------|----------|------------|
+| **Sprint 4 Orchestrator** | `lib/orchestrator/` · [ES-065](../02_Engineering/ES-065-Executive-Intelligence-Architecture.md) | 10-stage dashboard pipeline |
+| **Executive Intelligence Service** | `lib/intelligence/ExecutiveIntelligenceService.ts` | Dashboard facade |
+| **Provider Framework (Sprint 4)** | `lib/providers/` · [ES-060](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) | Mock providers × 7 |
+| **Dashboard Aggregator** | `lib/providers/dashboard-aggregator.ts` | Provider contribution fetch |
+| **Executive Dashboard** | `/dashboard` · `components/dashboard/` · [ES-022](../02_Engineering/ES-022-Executive-Dashboard.md) | Orchestrator-fed widgets |
+| **Brief Engine (Sprint 4)** | `lib/intelligence/brief/` · [ES-028](../02_Engineering/ES-028-Executive-Brief-Engine.md) | Rule-driven daily brief |
+| **Recommendation Engine (Sprint 4)** | `lib/intelligence/recommendations/` · [ES-029](../02_Engineering/ES-029-Recommendation-Engine.md) | Configuration-driven rules |
+| **Alert Engine (Sprint 4)** | `lib/intelligence/alerts/` · [ES-030](../02_Engineering/ES-030-Alert-Engine.md) | Rule engine · alert panel |
+| Provider Contract (legacy) | `lib/intelligence/provider.ts` · [ES-034](../02_Engineering/ES-034-Provider-Data-Contract-Standards.md) | ADR-006 |
+| Provider Registry (legacy) | `lib/intelligence/provider-registry.ts` | Mission 17B · Advisor path |
+| Intelligence Bus (legacy) | `lib/intelligence/intelligence-bus.ts` | Advisor · CRM cards |
+| Platform Models | `lib/intelligence/models.ts` · `types/intelligence.ts` | Mission 17A + Sprint 4 |
+| Health Engine (legacy) | `lib/intelligence/health-engine.ts` · [ES-032](../02_Engineering/ES-032-Business-Health-Engine.md) | Mission 17B |
+| Recommendation Engine (legacy) | `lib/intelligence/recommendation-engine.ts` | Mission 17B |
+| Brief Engine (legacy) | `lib/intelligence/brief-engine.ts` | Mission 17B |
+| Intelligence Pipeline (legacy) | `lib/intelligence/pipeline.ts` | Mission 17B |
+| Trend Engine | Orchestrator `generate-trends` · [ES-031](../02_Engineering/ES-031-Trend-Engine.md) | Partial · aggregation only |
+| Platform Metrics | `lib/intelligence/platform-metrics.ts` | Legacy pipeline invoke |
+| AI Provider Contracts | `lib/intelligence/ai-providers.ts` | Architecture only |
+| Quality Audits | [Engineering-Audit-Report.md](../03_Quality/Engineering-Audit-Report.md) · [Performance-Audit.md](../03_Quality/Performance-Audit.md) | Sprint 4 post-implementation |
 | Platform README | [lib/intelligence/README.md](../../lib/intelligence/README.md) | Mission 17A |
 
 ---
@@ -105,7 +111,7 @@ Central index for ORION platform architecture documentation.
 |-----------|-------|----------|----------|
 | Finance | `/finance` | 15A–15C · [ES-025](../02_Engineering/ES-025-Finance-Workspace.md) | `financeExecutiveProvider` |
 | Customer Intelligence (CRM) | `/crm` | 16A–16D · [ES-027](../02_Engineering/ES-027-CRM-Workspace.md) | `crmExecutiveProvider` |
-| Hospitality | `/hospitality` | Sprint 12 overview · [ES-023](../02_Engineering/ES-023-Hospitality-Workspace.md) (Mission 19A) | Planned |
+| Hospitality | `/hospitality` | Sprint 12 overview · [ES-023](../02_Engineering/ES-023-Hospitality-Workspace.md) (Mission 19A) | Mock provider in Sprint 4 framework |
 | Commerce | — | Planned · [ES-024](../02_Engineering/ES-024-Commerce-Workspace.md) (Mission 20A) | — |
 | Marketing | `/marketing` | Overview foundation · [ES-026](../02_Engineering/ES-026-Marketing-Workspace.md) | `marketingExecutiveProvider` (planned) |
 

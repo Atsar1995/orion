@@ -40,12 +40,12 @@ Per FA-003: *ORION should reduce executive effort — not increase it.*
 
 | Capability | ES | Status | Priority |
 |------------|-----|--------|----------|
-| Executive Dashboard | [ES-022](../02_Engineering/ES-022-Executive-Dashboard.md) · [ES-044](../02_Engineering/ES-044-Sprint-2-Implementation-Plan.md) | Approved — Advisor/Command Center partial · unified dashboard pending | Critical |
-| Executive Brief Engine | [ES-028](../02_Engineering/ES-028-Executive-Brief-Engine.md) | Approved — engine delivered · UI alignment pending | Critical |
-| Recommendation Engine | [ES-029](../02_Engineering/ES-029-Recommendation-Engine.md) | Approved — engine delivered · full model pending | Critical |
-| Alert Engine | [ES-030](../02_Engineering/ES-030-Alert-Engine.md) | Approved — interim aggregation only · dedicated engine pending | Critical |
-| Trend Engine | [ES-031](../02_Engineering/ES-031-Trend-Engine.md) | Approved — not implemented | High |
-| Business Health Engine | [ES-032](../02_Engineering/ES-032-Business-Health-Engine.md) | Approved — engine delivered · full domain model pending | Critical |
+| Executive Dashboard | [ES-022](../02_Engineering/ES-022-Executive-Dashboard.md) · [ES-044](../02_Engineering/ES-044-Sprint-2-Implementation-Plan.md) · [ES-062](../02_Engineering/ES-062-Sprint-4-Implementation-Plan.md) | **In Progress** — `/dashboard` live · widget registry pending | Critical |
+| Executive Brief Engine | [ES-028](../02_Engineering/ES-028-Executive-Brief-Engine.md) | **In Progress** — Sprint 4 module delivered · Advisor wiring pending | Critical |
+| Recommendation Engine | [ES-029](../02_Engineering/ES-029-Recommendation-Engine.md) | **In Progress** — Sprint 4 rule engine delivered · explainability UI pending | Critical |
+| Alert Engine | [ES-030](../02_Engineering/ES-030-Alert-Engine.md) | **In Progress** — Sprint 4 module delivered · legacy interim remains | Critical |
+| Trend Engine | [ES-031](../02_Engineering/ES-031-Trend-Engine.md) | **In Progress** — pipeline aggregation only · standalone engine pending | High |
+| Business Health Engine | [ES-032](../02_Engineering/ES-032-Business-Health-Engine.md) | **In Progress** — orchestrator stage · 4 mock drivers | Critical |
 | Event & Messaging Architecture | [ES-033](../02_Engineering/ES-033-Event-Messaging-Architecture.md) | Approved — in-memory foundation · full architecture pending | High |
 | Provider & Data Contract Standards | [ES-034](../02_Engineering/ES-034-Provider-Data-Contract-Standards.md) | Approved — Executive Provider delivered · full standard pending | High |
 | API Design Standards | [ES-035](../02_Engineering/ES-035-API-Design-Standards.md) | Approved — not implemented | High |
@@ -67,17 +67,18 @@ Per FA-003: *ORION should reduce executive effort — not increase it.*
 | Technical Roadmap & Product Evolution | [ES-051](../02_Engineering/ES-051-ORION-Technical-Roadmap-Product-Evolution-Strategy.md) | Approved — five-year strategy · Phase 1 in progress | Critical |
 | Architecture Decision Record Framework | [ES-052](../02_Engineering/ES-052-Architecture-Decision-Record-Framework.md) | Approved — ADR lifecycle · 6 ADRs · 3 Accepted | High |
 | Risk Management & Technical Debt Framework | [ES-053](../02_Engineering/ES-053-ORION-Risk-Management-Technical-Debt-Framework.md) | Approved — TD register · risk register planned | High |
-| Quality Assurance & Engineering Excellence | [ES-054](../02_Engineering/ES-054-ORION-Quality-Assurance-Engineering-Excellence-Framework.md) | Approved — 0% test coverage · CI planned | Critical |
+| Quality Assurance & Engineering Excellence | [ES-054](../02_Engineering/ES-054-ORION-Quality-Assurance-Engineering-Excellence-Framework.md) | **In Progress** — Vitest locally · CI planned | Critical |
 | DevSecOps & Continuous Delivery Architecture | [ES-055](../02_Engineering/ES-055-ORION-DevSecOps-Continuous-Delivery-Architecture.md) | Approved — manual delivery · pipeline planned | Critical |
 | Data Governance & Information Architecture | [ES-056](../02_Engineering/ES-056-ORION-Data-Governance-Information-Architecture.md) | Approved — static data · persistence partial | High |
 | AI Governance & Responsible Intelligence | [ES-057](../02_Engineering/ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md) | Approved — deterministic intelligence · no LLM | High |
 | Enterprise Operations & Service Management | [ES-058](../02_Engineering/ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) | Approved — manual delivery · no production ops | Critical |
 | Platform Security & Zero Trust Architecture | [ES-059](../02_Engineering/ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) | Approved — placeholder auth · no MFA | Critical |
-| Platform Extensibility, Plugin & Marketplace | [ES-060](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) | Approved — provider registry · no marketplace | Medium |
-| ORION v0.4 Master Development Plan | [ES-061](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) | Approved — master plan · implementation not started | Critical |
-| Sprint 4 Work Breakdown Structure | [ES-063](../02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) | Approved — 110 work packages · S4-001–S4-110 | Critical |
-| Sprint 4 Engineering Task Catalogue | [ES-064](../02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md) | Approved — 93 tasks · execution checklist | Critical |
-| Executive Intelligence Architecture | [ES-065](../02_Engineering/ES-065-Executive-Intelligence-Architecture.md) | Approved — pipeline · engines · AI | Critical |
+| Platform Extensibility, Plugin & Marketplace | [ES-060](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) | **In Progress** — Sprint 4 Provider Framework delivered | Medium |
+| ORION v0.4 Master Development Plan | [ES-061](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) | **In Progress** — ~45% Phase 1 complete | Critical |
+| Sprint 4 Implementation Plan | [ES-062](../02_Engineering/ES-062-Sprint-4-Implementation-Plan.md) | **In Progress** — core intelligence delivered · M9 pending | Critical |
+| Sprint 4 Work Breakdown Structure | [ES-063](../02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) | **In Progress** — 12 Done · 38 Partial · 60 Open | Critical |
+| Sprint 4 Engineering Task Catalogue | [ES-064](../02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md) | **In Progress** — 18 Done · 42 Partial · 33 Open | Critical |
+| Executive Intelligence Architecture | [ES-065](../02_Engineering/ES-065-Executive-Intelligence-Architecture.md) | **In Progress** — orchestrator delivered · legacy migration pending | Critical |
 | Hospitality Workspace | [ES-023](../02_Engineering/ES-023-Hospitality-Workspace.md) · [ES-047](../02_Engineering/ES-047-Sprint-3-Implementation-Plan.md) · [ES-048](../02_Engineering/ES-048-Sprint-3-Work-Breakdown-Structure.md) · [ES-049](../02_Engineering/ES-049-Sprint-3-Engineering-Task-Catalogue.md) | Partial — overview at `/hospitality` | High |
 | Commerce Workspace | — | Specified ([ES-024](./02_Engineering/ES-024-Commerce-Workspace.md)) | High |
 | Marketing Workspace | [ES-026](../02_Engineering/ES-026-Marketing-Workspace.md) | Approved — overview foundation only | Medium |
@@ -210,6 +211,26 @@ Per FA-003: *ORION should reduce executive effort — not increase it.*
 
 ---
 
+# Sprint 4 — Remaining Work (v0.4 Phase 1)
+
+**Status:** In Progress · M9 not met · Last synced 25 July 2026
+
+| Area | Completed | Remaining |
+|------|-----------|-----------|
+| Provider Framework | Mock providers · registry · manager · health | Real domain providers · TD-001/002 |
+| Intelligence Orchestrator | 10-stage pipeline · observability | Context sharing · caching · dedupe fetches |
+| Brief Engine | Sprint 4 module · dashboard wiring | Advisor migration · brief history · scheduling |
+| Recommendation Engine | Rule engine · scoring · dashboard cards | Explainability UI · Advisor wiring · acceptance tracking |
+| Alert Engine | Rule engine · alert panel · pipeline stage | Legacy interim removal · notification bridge · API |
+| Trend Engine | Pipeline aggregation from mock providers | Standalone ES-031 engine · chart widgets |
+| Executive Dashboard | `/dashboard` route · core widgets | Widget registry · canonical nav · loading states |
+| Quality | Vitest locally · audit reports | CI Phase B · M9 sign-off · RR-018 |
+| Platform | — | Auth · REST API · CI/CD · integrations · Copilot |
+
+**References:** [ES-062](../02_Engineering/ES-062-Sprint-4-Implementation-Plan.md) · [ES-063](../02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) · [ES-064](../02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md) · [Engineering Audit](../03_Quality/Engineering-Audit-Report.md) · [Performance Audit](../03_Quality/Performance-Audit.md)
+
+---
+
 # Platform Milestones
 
 | Version | Milestone | Status |
@@ -217,12 +238,13 @@ Per FA-003: *ORION should reduce executive effort — not increase it.*
 | v0.1.0 | Foundation Documents | Completed |
 | v0.2.0 | Design System Foundation | Completed |
 | v0.3.0 | Identity Platform Foundation | Completed |
-| v0.4.0 | Persistence Foundation | In Progress |
+| v0.4.0 | Business Intelligence (Sprint 4) | **In Progress** · orchestrator · `/dashboard` |
+| v0.4.0 | Persistence Foundation (RR-002) | Completed |
 | v0.5.0 | Platform Services | Planned |
 | v0.6.0 | ORANIA MVP | Planned |
 | v0.7.0 | ATSAR MVP | Planned |
-| v0.8.0 | CRM Foundation | Planned |
-| v0.9.0 | ORION Intelligence | Planned |
+| v0.8.0 | CRM Foundation | Completed (Missions 16A–16D) |
+| v0.9.0 | ORION Intelligence | **In Progress** (Sprint 4) |
 | v1.0.0 | Production Release | Planned |
 
 ---

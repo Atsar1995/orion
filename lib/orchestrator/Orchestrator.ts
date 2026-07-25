@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { listRegisteredEngines } from "@/lib/orchestrator/EngineRegistry";
 import { executionLogger } from "@/lib/orchestrator/ExecutionLogger";
 import { executionScheduler } from "@/lib/orchestrator/ExecutionScheduler";
@@ -11,6 +12,10 @@ import type {
   PipelineLogEntry,
 } from "@/types/orchestrator";
 
+const runCachedDashboardPipeline = cache(async () => {
+  return pipelineRunner.runDashboardPipeline();
+});
+
 /**
  * ORION Intelligence Orchestrator (ES-065 · Sprint 4).
  *
@@ -19,12 +24,12 @@ import type {
  */
 export class IntelligenceOrchestrator {
   async getDashboardSnapshot(): Promise<DashboardSnapshot> {
-    const output = await this.runDashboardPipeline();
+    const output = await runCachedDashboardPipeline();
     return output.snapshot;
   }
 
   async runDashboardPipeline(): Promise<OrchestratorPipelineOutput> {
-    return pipelineRunner.runDashboardPipeline();
+    return runCachedDashboardPipeline();
   }
 
   getRegisteredEngines(): EngineRegistration[] {

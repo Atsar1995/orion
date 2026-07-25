@@ -8,6 +8,65 @@ The format is based on "Keep a Changelog" principles.
 
 ---
 
+## v0.4.0-alpha — Executive Intelligence Foundations
+
+**Release Status:** Alpha · Internal  
+**Release Date:** 25 July 2026  
+**Git Baseline:** `main` @ `cc4a282`  
+**Release Notes:** [docs/releases/v0.4.0-alpha-Release-Notes.md](../releases/v0.4.0-alpha-Release-Notes.md)  
+**Release Checklist:** [docs/releases/v0.4.0-alpha-Release-Checklist.md](../releases/v0.4.0-alpha-Release-Checklist.md)  
+**Git Tag:** Not applied (alpha policy)
+
+### Summary
+
+Sprint 4 delivers the Provider Framework, Sprint 4 intelligence engines, Intelligence Orchestrator, Executive Intelligence Service, and the `/dashboard` Executive Dashboard — the first orchestrator-fed executive surface.
+
+### Added
+
+- Provider Framework (`lib/providers/`) — registry, manager, health, mock providers (Finance, CRM, Marketing, Hospitality, Commerce, Calendar, Email)
+- Provider data layer (`lib/providers/provider-data.ts`) — centralized contribution fetch
+- Shared provider aggregation (`lib/intelligence/shared/provider-aggregation.ts`)
+- Intelligence Orchestrator (`lib/orchestrator/`) — 10-stage dashboard pipeline with observability
+- Executive Brief Engine (`lib/intelligence/brief/`) — ES-028 Sprint 4 module
+- Recommendation Engine (`lib/intelligence/recommendations/`) — configuration-driven rules · ES-029
+- Alert Engine (`lib/intelligence/alerts/`) — rule engine · alert panel snapshot · ES-030
+- Executive Intelligence Service (`lib/intelligence/ExecutiveIntelligenceService.ts`)
+- Executive Dashboard at `/dashboard` — HealthScore, MetricCard, BriefCard, RecommendationCard, AlertPanel, TaskList
+- Dashboard components (`components/dashboard/`)
+- Sprint 4 types (`types/intelligence.ts`, `types/alerts.ts`, `types/brief.ts`, `types/recommendations.ts`, `types/orchestrator.ts`, `types/providers.ts`)
+- Vitest test suite (`tests/`, `vitest.config.ts`) — 84 tests · ~88% Sprint 4 coverage · local only
+- Engineering Audit Report (`docs/03_Quality/Engineering-Audit-Report.md`)
+- Performance Audit Report (`docs/03_Quality/Performance-Audit.md`)
+- Sprint 4 Testing Summary (`docs/03_Quality/Sprint-4-Testing-Summary.md`)
+- v0.4.0-alpha release documentation (`docs/releases/`)
+- ES-062 Sprint 4 Implementation Plan
+
+### Changed
+
+- Pipeline performance — single provider fetch · parallel engine stages · `React.cache()` · wall-clock metrics
+- `/dashboard` — `force-dynamic` rendering (was static prerender)
+- `CommandCenterHeader` — Server Component (removed unnecessary client boundary)
+- Documentation synchronized for Sprint 4 implementation state (ES-061 · ES-063 · ES-064 · ES-065)
+- Architecture Index updated with Sprint 4 orchestrator and dual-stack note
+
+### Known Gaps (Remaining Sprint 4)
+
+- Widget registry and ES-022 full acceptance
+- Legacy `intelligence-bus` migration from Advisor/CRM surfaces (C-01)
+- Standalone Trend Engine (ES-031)
+- REST API `/api/v1/`
+- Production authentication and CI/CD Phase A–B
+- RR-018 Release Record and M9 sprint acceptance
+
+| Check | Status |
+|-------|--------|
+| Build | PASS |
+| Lint | PASS |
+| Tests (local) | PASS · 84 tests · ~88% coverage |
+| CI | NOT CONFIGURED |
+
+---
+
 ## v1.2.0 – Business Platform (Foundation)
 
 **Release Status:** Released  
