@@ -90,6 +90,10 @@ Engineering Specifications
 - [ES-058 — ORION Enterprise Operations & Service Management Framework](./02_Engineering/ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) (Approved · ITSM · service management)
 - [ES-059 — ORION Platform Security & Zero Trust Architecture](./02_Engineering/ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) (Approved · Zero Trust · security)
 - [ES-060 — ORION Platform Extensibility, Plugin & Marketplace Architecture](./02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) (Approved · plugins · marketplace)
+- [ES-061 — ORION v0.4 Master Development Plan](./02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) (Approved · master plan · v0.4 programme)
+- [ES-063 — Sprint 4 Work Breakdown Structure](./02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) (Approved · 110 work packages · v0.4 Phase 1)
+- [ES-064 — Sprint 4 Engineering Task Catalogue](./02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md) (Approved · 93 tasks · execution checklist)
+- [ES-065 — Executive Intelligence Architecture](./02_Engineering/ES-065-Executive-Intelligence-Architecture.md) (Approved · intelligence pipeline · engines)
 
 Technical Decisions
 

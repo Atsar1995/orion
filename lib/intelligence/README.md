@@ -135,4 +135,6 @@ Register AI services in `ai-providers.ts`. AI consumes provider output through t
 - [ES-039 — AI Orchestration & Agent Framework](../docs/02_Engineering/ES-039-AI-Orchestration-Agent-Framework.md)
 - [ES-057 — AI Governance & Responsible Intelligence Framework](../docs/02_Engineering/ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md)
 - [ES-060 — Platform Extensibility, Plugin & Marketplace Architecture](../docs/02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md)
+- [ES-061 — ORION v0.4 Master Development Plan](../docs/02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md)
+- [ES-065 — Executive Intelligence Architecture](../docs/02_Engineering/ES-065-Executive-Intelligence-Architecture.md)
 - [ARCHITECTURE_INDEX.md](../docs/03_Architecture/ARCHITECTURE_INDEX.md)

@@ -36,6 +36,8 @@
 
 > **Platform extensibility & marketplace:** [ES-060 — ORION Platform Extensibility, Plugin & Marketplace Architecture](./ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) (Approved · plugins · SDK · marketplace)
 
+> **v0.4 master development plan:** [ES-061 — ORION v0.4 Master Development Plan](./ES-061-ORION-v0.4-Master-Development-Plan.md) (Approved · master plan · v0.4 programme)
+
 ---
 
 # Purpose

@@ -365,6 +365,7 @@ The Engineering Governance & Delivery Standards are complete when:
 | Operations & service management (canonical) | [ES-058](./ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) · [ES-038](./ES-038-Audit-Logging-Observability-Architecture.md) |
 | Platform security & Zero Trust (canonical) | [ES-059](./ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) · [ES-037](./ES-037-Authentication-Authorisation-Architecture.md) |
 | Platform extensibility & marketplace (canonical) | [ES-060](./ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) · [ES-034](./ES-034-Provider-Data-Contract-Standards.md) |
+| v0.4 master development plan (canonical) | [ES-061](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-051](./ES-051-ORION-Technical-Roadmap-Product-Evolution-Strategy.md) |
 | Work item lifecycle | [OS-002](../09_Standards/OS-002-Work-Item-Lifecycle.md) |
 | Naming | [OS-001](../09_Standards/OS-001-Naming-Standards.md) |
 | Platform governance | [ORION Governance Framework](../09_Standards/ORION_Governance_Framework.md) |
@@ -396,6 +397,7 @@ The Engineering Governance & Delivery Standards are complete when:
 | ES-058 Enterprise Operations & Service Management Framework | [ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md](./ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) |
 | ES-059 Platform Security & Zero Trust Architecture | [ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md](./ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) |
 | ES-060 Platform Extensibility, Plugin & Marketplace Architecture | [ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md](./ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) |
+| ES-061 ORION v0.4 Master Development Plan | [ES-061-ORION-v0.4-Master-Development-Plan.md](./ES-061-ORION-v0.4-Master-Development-Plan.md) |
 | Technical Debt Register | [Technical_Debt_Register.md](../09_Standards/Technical_Debt_Register.md) |
 | ADR-004 Technical Debt Governance | [ADR-004-Technical-Debt-Governance.md](../10_Decisions/ADR-004-Technical-Debt-Governance.md) |
 

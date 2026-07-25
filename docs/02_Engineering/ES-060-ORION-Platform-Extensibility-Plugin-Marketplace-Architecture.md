@@ -8,7 +8,7 @@
 
 **Author:** Founder & Chief Architect
 
-**Related specifications:** [ES-034 — Provider Data Contract Standards](./ES-034-Provider-Data-Contract-Standards.md) · [ES-035 — API Design Standards](./ES-035-API-Design-Standards.md) · [ES-050 — Enterprise Reference Architecture](./ES-050-ORION-Enterprise-Reference-Architecture.md) · [ES-055 — DevSecOps & CD](./ES-055-ORION-DevSecOps-Continuous-Delivery-Architecture.md) · [ES-056 — Data Governance](./ES-056-ORION-Data-Governance-Information-Architecture.md) · [ES-057 — AI Governance](./ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md) · [ES-059 — Platform Security & Zero Trust](./ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) · [ADR-006 — Executive Intelligence Provider Framework](../10_Decisions/ADR-006-Executive-Intelligence-Provider-Framework.md)
+**Related specifications:** [ES-034 — Provider Data Contract Standards](./ES-034-Provider-Data-Contract-Standards.md) · [ES-035 — API Design Standards](./ES-035-API-Design-Standards.md) · [ES-050 — Enterprise Reference Architecture](./ES-050-ORION-Enterprise-Reference-Architecture.md) · [ES-055 — DevSecOps & CD](./ES-055-ORION-DevSecOps-Continuous-Delivery-Architecture.md) · [ES-056 — Data Governance](./ES-056-ORION-Data-Governance-Information-Architecture.md) · [ES-057 — AI Governance](./ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md) · [ES-059 — Platform Security & Zero Trust](./ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) · [ES-061 — v0.4 Master Development Plan](./ES-061-ORION-v0.4-Master-Development-Plan.md) · [ADR-006 — Executive Intelligence Provider Framework](../10_Decisions/ADR-006-Executive-Intelligence-Provider-Framework.md)
 
 ---
 

@@ -411,6 +411,7 @@ The Technical Roadmap & Product Evolution Strategy is complete when:
 | Sprint Task Catalogues | [ES-042](./ES-042-Sprint-1-Engineering-Task-Catalogue.md) · [ES-046](./ES-046-Sprint-2-Engineering-Task-Catalogue.md) · [ES-049](./ES-049-Sprint-3-Engineering-Task-Catalogue.md) |
 | Construction Phase ES (006–060) | [02_Engineering/](./) |
 | ES-060 Platform Extensibility & Marketplace | [ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md](./ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) |
+| ES-061 ORION v0.4 Master Development Plan | [ES-061-ORION-v0.4-Master-Development-Plan.md](./ES-061-ORION-v0.4-Master-Development-Plan.md) |
 
 ---
 

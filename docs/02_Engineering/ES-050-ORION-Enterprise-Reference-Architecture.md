@@ -8,7 +8,7 @@
 
 **Author:** Founder & Chief Architect
 
-**Related specifications:** [ORION Platform Architecture](../03_Architecture/ORION_Platform_Architecture.md) · [ARCHITECTURE_INDEX](../03_Architecture/ARCHITECTURE_INDEX.md) · [ES-043 — Engineering Governance](./ES-043-Engineering-Governance-Delivery-Standards.md) · [ES-051 — Technical Roadmap](./ES-051-ORION-Technical-Roadmap-Product-Evolution-Strategy.md) · [ES-056 — Data Governance](./ES-056-ORION-Data-Governance-Information-Architecture.md) · [ES-057 — AI Governance](./ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md) · [ES-058 — Operations & Service Management](./ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) · [ES-059 — Platform Security & Zero Trust](./ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) · [ES-060 — Platform Extensibility & Marketplace](./ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) · Construction Phase ES-006–ES-060
+**Related specifications:** [ORION Platform Architecture](../03_Architecture/ORION_Platform_Architecture.md) · [ARCHITECTURE_INDEX](../03_Architecture/ARCHITECTURE_INDEX.md) · [ES-043 — Engineering Governance](./ES-043-Engineering-Governance-Delivery-Standards.md) · [ES-051 — Technical Roadmap](./ES-051-ORION-Technical-Roadmap-Product-Evolution-Strategy.md) · [ES-056 — Data Governance](./ES-056-ORION-Data-Governance-Information-Architecture.md) · [ES-057 — AI Governance](./ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md) · [ES-058 — Operations & Service Management](./ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) · [ES-059 — Platform Security & Zero Trust](./ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) · [ES-060 — Platform Extensibility & Marketplace](./ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) · [ES-061 — v0.4 Master Development Plan](./ES-061-ORION-v0.4-Master-Development-Plan.md) · Construction Phase ES-006–ES-061
 
 ---
 
@@ -587,6 +587,7 @@ The Enterprise Reference Architecture is complete when:
 | ES-058 Enterprise Operations & Service Management Framework | [ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md](./ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) |
 | ES-059 Platform Security & Zero Trust Architecture | [ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md](./ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) |
 | ES-060 Platform Extensibility, Plugin & Marketplace Architecture | [ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md](./ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) |
+| ES-061 ORION v0.4 Master Development Plan | [ES-061-ORION-v0.4-Master-Development-Plan.md](./ES-061-ORION-v0.4-Master-Development-Plan.md) |
 | ADR Index | [ORION_Decision_Log.md](../10_Decisions/ORION_Decision_Log.md) |
 
 ---

@@ -128,6 +128,10 @@ ORION v1.2.0 begins the Business Platform phase with the Finance Workspace — t
 - ES-058 ORION Enterprise Operations & Service Management Framework (Approved · ITSM · service catalogue)
 - ES-059 ORION Platform Security & Zero Trust Architecture (Approved · Zero Trust · identity)
 - ES-060 ORION Platform Extensibility, Plugin & Marketplace Architecture (Approved · plugins · SDK · marketplace)
+- ES-061 ORION v0.4 Master Development Plan (Approved · master plan · workspaces · intelligence · AI · integrations)
+- ES-063 Sprint 4 Work Breakdown Structure (Approved · 110 work packages · S4-001–S4-110)
+- ES-064 Sprint 4 Engineering Task Catalogue (Approved · 93 tasks · S4T-001–S4T-108)
+- ES-065 Executive Intelligence Architecture (Approved · pipeline · engines · AI integration)
 
 ### Engineering
 

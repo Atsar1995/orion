@@ -22,6 +22,8 @@ Governance is defined in [ADR-004 – Technical Debt Governance](../10_Decisions
 
 **Platform Extensibility & Marketplace:** [ES-060 — ORION Platform Extensibility, Plugin & Marketplace Architecture](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) (Approved · plugins · SDK · marketplace)
 
+**v0.4 Master Development Plan:** [ES-061 — ORION v0.4 Master Development Plan](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) (Approved · master plan · TD remediation tracked in deliverables checklist)
+
 Release Records reference items introduced or resolved in each release. Inline code markers use the register ID:
 
 ```ts

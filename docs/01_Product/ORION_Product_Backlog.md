@@ -74,6 +74,10 @@ Per FA-003: *ORION should reduce executive effort — not increase it.*
 | Enterprise Operations & Service Management | [ES-058](../02_Engineering/ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) | Approved — manual delivery · no production ops | Critical |
 | Platform Security & Zero Trust Architecture | [ES-059](../02_Engineering/ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) | Approved — placeholder auth · no MFA | Critical |
 | Platform Extensibility, Plugin & Marketplace | [ES-060](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) | Approved — provider registry · no marketplace | Medium |
+| ORION v0.4 Master Development Plan | [ES-061](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) | Approved — master plan · implementation not started | Critical |
+| Sprint 4 Work Breakdown Structure | [ES-063](../02_Engineering/ES-063-Sprint-4-Work-Breakdown-Structure.md) | Approved — 110 work packages · S4-001–S4-110 | Critical |
+| Sprint 4 Engineering Task Catalogue | [ES-064](../02_Engineering/ES-064-Sprint-4-Engineering-Task-Catalogue.md) | Approved — 93 tasks · execution checklist | Critical |
+| Executive Intelligence Architecture | [ES-065](../02_Engineering/ES-065-Executive-Intelligence-Architecture.md) | Approved — pipeline · engines · AI | Critical |
 | Hospitality Workspace | [ES-023](../02_Engineering/ES-023-Hospitality-Workspace.md) · [ES-047](../02_Engineering/ES-047-Sprint-3-Implementation-Plan.md) · [ES-048](../02_Engineering/ES-048-Sprint-3-Work-Breakdown-Structure.md) · [ES-049](../02_Engineering/ES-049-Sprint-3-Engineering-Task-Catalogue.md) | Partial — overview at `/hospitality` | High |
 | Commerce Workspace | — | Specified ([ES-024](./02_Engineering/ES-024-Commerce-Workspace.md)) | High |
 | Marketing Workspace | [ES-026](../02_Engineering/ES-026-Marketing-Workspace.md) | Approved — overview foundation only | Medium |

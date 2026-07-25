@@ -131,6 +131,8 @@ Product Construction Phase scope includes:
 
 **Platform Extensibility & Marketplace:** [ES-060 — ORION Platform Extensibility, Plugin & Marketplace Architecture](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) (Approved · plugins · SDK · marketplace)
 
+**v0.4 Master Development Plan:** [ES-061 — ORION v0.4 Master Development Plan](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) (Approved · master plan · v0.4 programme authorised)
+
 ---
 
 # Success Criteria

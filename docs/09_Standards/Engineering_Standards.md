@@ -16,6 +16,10 @@
 
 > **Platform extensibility & marketplace:** [ES-060 — ORION Platform Extensibility, Plugin & Marketplace Architecture](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) (Approved · plugins · SDK · marketplace)
 
+> **v0.4 master development plan:** [ES-061 — ORION v0.4 Master Development Plan](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) (Approved · master plan · v0.4 programme)
+
+> **Executive Intelligence Architecture:** [ES-065 — Executive Intelligence Architecture](../02_Engineering/ES-065-Executive-Intelligence-Architecture.md) (Approved · pipeline · engines · AI integration)
+
 Version 1.4
 
 > **Philosophy:** [ORION Engineering Manifesto v1.0](./ORION_Engineering_Manifesto.md) (Foundational · Engineering Blueprint)

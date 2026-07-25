@@ -29,6 +29,8 @@ Central index for ORION platform architecture documentation.
 | Enterprise Operations & Service Management | [ES-058](../02_Engineering/ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) · [ES-038](../02_Engineering/ES-038-Audit-Logging-Observability-Architecture.md) | Approved · manual ops · no production stack |
 | Platform Security & Zero Trust | [ES-059](../02_Engineering/ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) · [ES-037](../02_Engineering/ES-037-Authentication-Authorisation-Architecture.md) | Approved · placeholder auth · RBAC partial |
 | Platform Extensibility & Marketplace | [ES-060](../02_Engineering/ES-060-ORION-Platform-Extensibility-Plugin-Marketplace-Architecture.md) · [ES-034](../02_Engineering/ES-034-Provider-Data-Contract-Standards.md) · [ADR-006](../10_Decisions/ADR-006-Executive-Intelligence-Provider-Framework.md) | Approved · provider registry · Phase 5 marketplace |
+| v0.4 Master Development Plan | [ES-061](../02_Engineering/ES-061-ORION-v0.4-Master-Development-Plan.md) · [ES-051](../02_Engineering/ES-051-ORION-Technical-Roadmap-Product-Evolution-Strategy.md) | Approved · workspaces · intelligence · AI · integrations |
+| Executive Intelligence Architecture | [ES-065](../02_Engineering/ES-065-Executive-Intelligence-Architecture.md) · [ES-020](../02_Engineering/ES-020-Executive-Intelligence-Foundation.md) · [ADR-006](../10_Decisions/ADR-006-Executive-Intelligence-Provider-Framework.md) | Approved · pipeline · 3 engines delivered · Alert/Trend open |
 | System Context | [SYSTEM_CONTEXT.md](./SYSTEM_CONTEXT.md) | Approved |
 | System Map | [SYSTEM_MAP.md](./SYSTEM_MAP.md) | Approved |
 | Platform Architecture (PA-001) | [ORION_Platform_Architecture.md](./ORION_Platform_Architecture.md) | Frozen |
