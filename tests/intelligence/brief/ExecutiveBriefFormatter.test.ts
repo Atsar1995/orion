@@ -32,9 +32,11 @@ describe("ExecutiveBriefFormatter", () => {
   const actions: ExecutiveAction[] = [
     {
       id: "action-1",
-      label: "Respond to guest",
+      title: "Respond to guest",
       description: "Assign duty manager",
       priority: "critical",
+      source: "hospitality",
+      category: "actions",
     },
   ];
 

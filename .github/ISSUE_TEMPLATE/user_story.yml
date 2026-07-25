@@ -1,0 +1,121 @@
+name: User Story
+description: Executive capability or platform user story (US-NNN)
+title: "[US-XXX]: "
+labels: ["user-story", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use [Definition of Ready](docs/08_Standards/DEFINITION_OF_READY.md) before sprint commitment.
+        Reference [Engineering Backlog v1](docs/07_Engineering/Engineering_Backlog_v1.md) for ID conventions.
+
+  - type: input
+    id: story_id
+    attributes:
+      label: Story ID
+      placeholder: US-001
+    validations:
+      required: true
+
+  - type: dropdown
+    id: epic
+    attributes:
+      label: Epic
+      options:
+        - E1 — EC-000 Contracts
+        - E2 — Orchestrator & Snapshot
+        - E3 — EC-002 Health
+        - E4 — EC-003 Recommendations
+        - E5 — EC-001 Brief
+        - E6 — EC-004 Decisions
+        - E7 — EC-005 Copilot
+        - E8 — Executive UI Library
+        - E9 — Executive API
+        - E10 — Persistence
+        - E11 — AI Narration
+        - E12 — Learning & Memory
+        - E13 — QA / DevOps / Release
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: "As a [persona], I want [goal], so that [benefit]."
+    validations:
+      required: true
+
+  - type: textarea
+    id: business_value
+    attributes:
+      label: Business Value
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Testable conditions. One per line.
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      placeholder: US-010, E2, ADR-Navigation
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - P0 — Critical
+        - P1 — High
+        - P2 — Medium
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Estimated Complexity
+      options:
+        - XS
+        - S
+        - M
+        - L
+        - XL
+    validations:
+      required: true
+
+  - type: input
+    id: sprint
+    attributes:
+      label: Suggested Sprint
+      placeholder: Sprint 7
+    validations:
+      required: true
+
+  - type: input
+    id: story_points
+    attributes:
+      label: Story Points
+      placeholder: "3"
+
+  - type: checkboxes
+    id: dor
+    attributes:
+      label: Definition of Ready
+      options:
+        - label: Acceptance criteria are testable
+        - label: Dependencies identified
+        - label: EC spec section referenced (if applicable)
+        - label: Fits in one sprint

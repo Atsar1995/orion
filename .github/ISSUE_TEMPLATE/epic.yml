@@ -1,0 +1,59 @@
+name: Epic
+description: Epic-level engineering initiative (E1–E13)
+title: "[E#]: "
+labels: ["epic", "triage"]
+body:
+  - type: input
+    id: epic_id
+    attributes:
+      label: Epic ID
+      placeholder: E5
+    validations:
+      required: true
+
+  - type: input
+    id: initiative
+    attributes:
+      label: Initiative
+      placeholder: I3 — Executive Surfaces
+    validations:
+      required: true
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: Purpose
+    validations:
+      required: true
+
+  - type: textarea
+    id: business_value
+    attributes:
+      label: Business Value
+    validations:
+      required: true
+
+  - type: textarea
+    id: features
+    attributes:
+      label: Features
+      description: List feature IDs and titles
+    validations:
+      required: true
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Epic Dependencies
+      placeholder: E1, E2
+
+  - type: input
+    id: sprint_range
+    attributes:
+      label: Estimated Sprint Range
+      placeholder: Sprint 7–9
+
+  - type: input
+    id: story_points
+    attributes:
+      label: Total Story Points (estimate)

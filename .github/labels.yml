@@ -1,0 +1,138 @@
+# ORION GitHub Labels — sync with: gh label create (see Engineering_Backlog_v1.md)
+# Reference: docs/07_Engineering/Engineering_Backlog_v1.md § GitHub Labels
+
+- name: epic
+  color: "5319E7"
+  description: Epic-level initiative (E1–E13)
+
+- name: feature
+  color: "1D76DB"
+  description: Feature under an epic
+
+- name: user-story
+  color: "0E8A16"
+  description: User story (US-NNN)
+
+- name: task
+  color: "FBCA04"
+  description: Engineering task or subtask
+
+- name: bug
+  color: "D73A4A"
+  description: Defect or regression
+
+- name: spike
+  color: "D4C5F9"
+  description: Time-boxed research or ADR spike
+
+- name: triage
+  color: "EDEDED"
+  description: Needs prioritization
+
+- name: P0-critical
+  color: "B60205"
+  description: P0 — must ship this sprint
+
+- name: P1-high
+  color: "E99695"
+  description: P1 — high priority
+
+- name: P2-medium
+  color: "C5DEF5"
+  description: P2 — medium priority
+
+- name: sprint-6
+  color: "0052CC"
+  description: Sprint 6 commitment
+
+- name: sprint-7
+  color: "0052CC"
+  description: Sprint 7 commitment
+
+- name: sprint-8
+  color: "0052CC"
+  description: Sprint 8 commitment
+
+- name: sprint-9
+  color: "0052CC"
+  description: Sprint 9 commitment
+
+- name: sprint-10
+  color: "0052CC"
+  description: Sprint 10 commitment
+
+- name: ec-001
+  color: "F9D0C4"
+  description: EC-001 Morning Executive Brief
+
+- name: ec-002
+  color: "F9D0C4"
+  description: EC-002 Business Health Engine
+
+- name: ec-003
+  color: "F9D0C4"
+  description: EC-003 Recommendation Engine
+
+- name: ec-004
+  color: "F9D0C4"
+  description: EC-004 Decision Center
+
+- name: ec-005
+  color: "F9D0C4"
+  description: EC-005 AI Executive Copilot
+
+- name: ec-000
+  color: "BFDADC"
+  description: EC-000 Platform Contracts
+
+- name: frontend
+  color: "7057FF"
+  description: Frontend implementation
+
+- name: backend
+  color: "006B75"
+  description: Backend / service layer
+
+- name: api
+  color: "0075CA"
+  description: API routes and contracts
+
+- name: ai
+  color: "A2EEEF"
+  description: AI / narration / copilot
+
+- name: testing
+  color: "D876E3"
+  description: Tests and QA
+
+- name: devops
+  color: "5319E7"
+  description: CI/CD and infrastructure
+
+- name: documentation
+  color: "0075CA"
+  description: Docs and specs
+
+- name: accessibility
+  color: "FEF2C0"
+  description: Accessibility (a11y)
+
+- name: performance
+  color: "E4E669"
+  description: Performance optimization
+
+- name: security
+  color: "B60205"
+  description: Security and auth
+
+- name: tech-debt
+  color: "FBCA04"
+  description: Technical debt paydown
+
+- name: blocked
+  color: "000000"
+  description: Blocked on dependency
+
+- name: ready
+  color: "0E8A16"
+  description: Meets Definition of Ready

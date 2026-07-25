@@ -14,7 +14,6 @@ describe("Orchestrator execution support", () => {
 
     recordStageResult(context, {
       stageId: "refresh-providers",
-      engineId: "provider-framework",
       success: true,
       durationMs: 12,
       warnings: ["Provider sync delayed"],

@@ -1,0 +1,73 @@
+name: Engineering Task
+description: Implementation task linked to a user story or epic
+title: "[TASK-XX-NNN]: "
+labels: ["task", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Tag category with labels: `frontend`, `backend`, `api`, `ai`, `testing`, `devops`, `documentation`, `accessibility`, `performance`, `security`.
+
+  - type: input
+    id: task_id
+    attributes:
+      label: Task ID
+      placeholder: TASK-BE-007
+    validations:
+      required: true
+
+  - type: input
+    id: parent
+    attributes:
+      label: Parent Story / Epic
+      placeholder: US-001 / E5
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Category
+      options:
+        - Frontend
+        - Backend
+        - API
+        - AI
+        - Testing
+        - DevOps
+        - Documentation
+        - Accessibility
+        - Performance
+        - Security
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      value: |
+        - [ ]
+    validations:
+      required: true
+
+  - type: input
+    id: sprint
+    attributes:
+      label: Suggested Sprint
+      placeholder: Sprint 7
+
+  - type: textarea
+    id: subtasks
+    attributes:
+      label: Subtasks
+      description: One per line
+      value: |
+        - [ ]

@@ -15,6 +15,12 @@
 
 <!-- All items required before merge. See docs/08_Standards/DEFINITION_OF_DONE.md -->
 
+### Traceability
+
+- [ ] Linked user story (`US-NNN`) or task (`TASK-XX-NNN`) from [Engineering Backlog v1](docs/07_Engineering/Engineering_Backlog_v1.md)
+- [ ] Epic label applied (`E1`–`E13`)
+- [ ] Sprint label applied (if sprint commitment)
+
 ### Automated (Quality Gate must be green)
 
 - [ ] TypeScript passes (`npx tsc --noEmit`)

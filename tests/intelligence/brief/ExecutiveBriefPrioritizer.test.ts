@@ -16,7 +16,7 @@ function insight(partial: Partial<ExecutiveInsight>): ExecutiveInsight {
     content: partial.content ?? "Content",
     category: partial.category ?? "key-highlights",
     priority: partial.priority ?? "medium",
-    source: partial.source ?? "provider",
+    source: partial.source ?? "platform",
     impactScore: partial.impactScore ?? 200,
     ...partial,
   };

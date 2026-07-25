@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mockDashboardSnapshot } from "../fixtures/dashboard-snapshot";
+import {
+  createFailingMockDashboardProvider,
+  createMockDashboardProvider,
+} from "../fixtures/mock-provider";
 import { mockProviderContributions } from "../fixtures/provider-contributions";
 
 vi.mock("@/lib/providers/ProviderManager", () => ({
@@ -41,23 +45,17 @@ import {
   fetchProviderContributions,
 } from "@/lib/providers/dashboard-aggregator";
 
-function createMockProvider(contribution: (typeof mockProviderContributions)[number]) {
-  return {
-    id: contribution.providerId,
-    fetchDashboardContribution: vi.fn().mockResolvedValue({
-      success: true,
-      data: contribution,
-      providerId: contribution.providerId,
-      timestamp: "2026-07-25T10:00:00.000Z",
-    }),
-  };
-}
-
 describe("dashboard-aggregator", () => {
   beforeEach(() => {
     vi.mocked(providerManager.connectAll).mockResolvedValue(undefined);
     vi.mocked(providerManager.getAllProviders).mockReturnValue(
-      mockProviderContributions.map(createMockProvider),
+      mockProviderContributions.map((contribution) =>
+        createMockDashboardProvider({
+          id: contribution.providerId,
+          name: contribution.workspace ?? contribution.providerId,
+          contribution,
+        }),
+      ),
     );
     vi.mocked(buildAlertPanelSnapshot).mockResolvedValue(mockDashboardSnapshot.alertPanel);
     vi.mocked(buildExecutiveBriefForDashboard).mockResolvedValue(mockDashboardSnapshot.brief);
@@ -68,18 +66,15 @@ describe("dashboard-aggregator", () => {
   });
 
   it("fetches and filters successful provider contributions", async () => {
-    const failingProvider = {
-      id: "broken",
-      fetchDashboardContribution: vi.fn().mockResolvedValue({
-        success: false,
-        providerId: "broken",
-        timestamp: "2026-07-25T10:00:00.000Z",
-      }),
-    };
-
     vi.mocked(providerManager.getAllProviders).mockReturnValue([
-      ...mockProviderContributions.map(createMockProvider),
-      failingProvider,
+      ...mockProviderContributions.map((contribution) =>
+        createMockDashboardProvider({
+          id: contribution.providerId,
+          name: contribution.workspace ?? contribution.providerId,
+          contribution,
+        }),
+      ),
+      createFailingMockDashboardProvider("broken"),
     ]);
 
     const contributions = await fetchProviderContributions();
@@ -129,7 +124,11 @@ describe("dashboard-aggregator", () => {
 
   it("throws when required workspace metrics are missing", async () => {
     vi.mocked(providerManager.getAllProviders).mockReturnValue([
-      createMockProvider(mockProviderContributions[0]!),
+      createMockDashboardProvider({
+        id: mockProviderContributions[0]!.providerId,
+        name: mockProviderContributions[0]!.workspace ?? mockProviderContributions[0]!.providerId,
+        contribution: mockProviderContributions[0]!,
+      }),
     ]);
 
     await expect(buildExecutiveMetricsFromProviders()).rejects.toThrow(
