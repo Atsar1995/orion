@@ -71,6 +71,16 @@ export abstract class BaseProvider implements Provider {
       throw new Error(`Provider ${this.id} is not connected`);
     }
   }
+
+  /** Returns a snapshot of the current connection state for admin surfaces. */
+  getConnectionState(): ProviderConnection {
+    return { ...this.connection };
+  }
+
+  /** Returns the last known health snapshot for admin surfaces. */
+  getHealthState(): ProviderHealth {
+    return { ...this.health };
+  }
 }
 
 export { buildHealthReport };

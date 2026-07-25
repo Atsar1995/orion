@@ -1,48 +1,40 @@
-import { BusinessHealthOverview } from "@/components/command-center/BusinessHealthOverview";
-import { CommandCenterQuickActionsCard } from "@/components/command-center/CommandCenterQuickActionsCard";
-import { CriticalAttentionCard } from "@/components/command-center/CriticalAttentionCard";
-import { ExecutiveBriefingSection } from "@/components/command-center/ExecutiveBriefingSection";
-import { ExecutiveGreeting } from "@/components/command-center/ExecutiveGreeting";
-import { ExecutiveSummaryCard } from "@/components/command-center/ExecutiveSummaryCard";
-import { InsightOfTheDayCard } from "@/components/command-center/InsightOfTheDayCard";
-import { RecentActivityCard } from "@/components/command-center/RecentActivityCard";
-import { RecommendedActionsCard } from "@/components/command-center/RecommendedActionsCard";
-import { TodaysPrioritiesCard } from "@/components/command-center/TodaysPrioritiesCard";
-import { Divider } from "@/components/ui/Divider";
-import {
-  WORKSPACE_GRID_2_COL,
-  WORKSPACE_PAGE_CLASS,
-  WORKSPACE_SECTION_CLASS,
-} from "@/lib/constants";
+import { ActivityTimeline } from "@/components/command-center/ActivityTimeline";
+import { AlertPanel } from "@/components/command-center/AlertPanel";
+import { BusinessHealthPanel } from "@/components/command-center/BusinessHealthPanel";
+import { BusinessSnapshot } from "@/components/command-center/BusinessSnapshot";
+import { CommandCenterLayout } from "@/components/command-center/CommandCenterLayout";
+import { DecisionCenter } from "@/components/command-center/DecisionCenter";
+import { ExecutiveBriefPanel } from "@/components/command-center/ExecutiveBriefPanel";
+import { ExecutiveHeader } from "@/components/command-center/ExecutiveHeader";
+import { QuickActions } from "@/components/command-center/QuickActions";
+import { WORKSPACE_GRID_2_COL } from "@/lib/constants";
+import { executiveIntelligenceService } from "@/lib/intelligence/ExecutiveIntelligenceService";
 
-export default function ExecutiveCommandCenterPage() {
+export const dynamic = "force-dynamic";
+
+/** Sprint 5 Executive Command Center — orchestrator-fed executive surface. */
+export default async function ExecutiveCommandCenterPage() {
+  const snapshot = await executiveIntelligenceService.getDashboardSnapshot();
+
   return (
-    <div className={WORKSPACE_PAGE_CLASS}>
-      <ExecutiveGreeting />
+    <CommandCenterLayout>
+      <ExecutiveHeader snapshot={snapshot} />
 
-      <section aria-label="Executive Command Center" className={WORKSPACE_SECTION_CLASS}>
-        <ExecutiveSummaryCard />
+      <BusinessSnapshot snapshot={snapshot} />
 
-        <BusinessHealthOverview />
+      <div className={WORKSPACE_GRID_2_COL}>
+        <BusinessHealthPanel snapshot={snapshot} />
+        <ExecutiveBriefPanel snapshot={snapshot} />
+      </div>
 
-        <Divider />
+      <div className={WORKSPACE_GRID_2_COL}>
+        <DecisionCenter snapshot={snapshot} />
+        <AlertPanel snapshot={snapshot} />
+      </div>
 
-        <div className={WORKSPACE_GRID_2_COL}>
-          <ExecutiveBriefingSection />
-          <CriticalAttentionCard />
-        </div>
+      <ActivityTimeline snapshot={snapshot} />
 
-        <InsightOfTheDayCard />
-
-        <div className={WORKSPACE_GRID_2_COL}>
-          <TodaysPrioritiesCard />
-          <RecommendedActionsCard />
-        </div>
-
-        <RecentActivityCard />
-
-        <CommandCenterQuickActionsCard />
-      </section>
-    </div>
+      <QuickActions />
+    </CommandCenterLayout>
   );
 }
