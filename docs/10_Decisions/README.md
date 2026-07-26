@@ -23,9 +23,9 @@ Record a Decision Log entry (DL) for any significant decision not fully captured
 
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
-| [ADR-001](./ADR-001-Executive-Shell.md) | Executive Shell | Pending | — |
-| [ADR-002](./ADR-002-Advisor-Default-Landing.md) | Advisor Default Landing | Pending | — |
-| [ADR-003](./ADR-003-Global-Command-Palette.md) | Global Command Palette | Pending | — |
+| [ADR-001](./ADR-001-Executive-Shell.md) | Executive Shell | Accepted | 2026-07-22 |
+| [ADR-002](./ADR-002-Advisor-Default-Landing.md) | Advisor Default Landing | Accepted | 2026-07-23 |
+| [ADR-003](./ADR-003-Global-Command-Palette.md) | Global Command Palette | Accepted | 2026-07-23 |
 | [ADR-004](./ADR-004-Technical-Debt-Governance.md) | Technical Debt Governance | Accepted | 2026-07-23 |
 | [ADR-005](./ADR-005-Business-Workspace-Architecture.md) | Business Workspace Architecture | Accepted | 2026-07-23 |
 | [ADR-006](./ADR-006-Executive-Intelligence-Provider-Framework.md) | Executive Intelligence Provider Framework | Accepted | 2026-07-24 |

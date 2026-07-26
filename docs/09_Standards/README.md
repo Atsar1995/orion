@@ -38,6 +38,9 @@ docs/09_Standards/
 
 ## Current Standards
 
+- [Governance Index](./Governance_Index.md) — foundational documents, ADRs, frozen ES, changelog (v1.0, Active)
+- [ORION Constitution (Ratified)](./ORION_Constitution_Ratified.md) — highest governing document (v1.0, Ratified)
+- [ORION Engineering Principles](./ORION_Engineering_Principles.md) — engineering philosophy (v1.0, Active)
 - [ORION Governance Framework](./ORION_Governance_Framework.md) — documentation, approval, traceability (Foundational)
 - [ORION Constitution](./ORION_Constitution.md) — highest architectural document (v1.0, Ratified)
 - [ORION Engineering Manifesto](./ORION_Engineering_Manifesto.md) — foundational engineering philosophy (v1.0)

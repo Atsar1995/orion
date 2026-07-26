@@ -237,3 +237,12 @@ Approved by
 Founder
 
 Chief Architect (ORION CTO)
+
+---
+
+# Version History
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0 | 23 July 2026 | Founder & Chief Architect | Initial ratification · platform layer constitution |
+| 1.0 | 26 July 2026 | Founder & Chief Architect | Version history added · governance index reference |

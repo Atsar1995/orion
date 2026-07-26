@@ -242,12 +242,23 @@ This platform is personal. It is purposeful. It is permanent.
 
 When documents conflict, resolve in this order:
 
-1. **ORION Constitution** (this document) — engineering philosophy
-2. [ORION Product Bible](../00_BLUEPRINT/ORION_Product_Bible.md) — master blueprint
-3. [ORION Product Constitution](../01_Product/ORION_Product_Constitution.md) — product law
-4. [ORION Constitution (Ratified)](../09_Standards/ORION_Constitution.md) — platform articles
-5. Engineering Specifications (ES-NNN)
-6. Implementation code
+1. [ORION Constitution (Ratified)](../09_Standards/ORION_Constitution_Ratified.md) — highest governing document
+2. **ORION Constitution** (this document) — engineering philosophy
+3. [ORION Product Bible](../00_BLUEPRINT/ORION_Product_Bible.md) — master blueprint
+4. [Governance Index](../09_Standards/Governance_Index.md) — foundational document index
+5. [ORION Product Constitution](../01_Product/ORION_Product_Constitution.md) — product law
+6. [ORION Platform Constitution](../09_Standards/ORION_Constitution.md) — platform layer articles
+7. Engineering Specifications (ES-NNN)
+8. Implementation code
+
+---
+
+# Version History
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0.0 | 25 July 2026 | Founder & Chief Architect | Initial foundational release (GOV-001) |
+| 1.0.0 | 26 July 2026 | Founder & Chief Architect | Governance hierarchy updated · version history added |
 
 ---
 

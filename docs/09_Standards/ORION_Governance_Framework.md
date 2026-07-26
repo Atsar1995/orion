@@ -334,3 +334,12 @@ The purpose of governance is clarity.
 *Engineering clarity for better executive decisions.*
 
 **Let's build something remarkable.**
+
+---
+
+# Version History
+
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0 | 23 July 2026 | Founder & Chief Architect | Initial foundational release |
+| 1.0 | 26 July 2026 | Founder & Chief Architect | Version history added · governance index reference |

@@ -48,7 +48,12 @@ describe("AlertPrioritizer", () => {
         createdAt: staleCreatedAt,
         updatedAt: staleCreatedAt,
       }),
-      createTestAlert({ id: "fresh", severity: "medium" }),
+      createTestAlert({
+        id: "fresh",
+        severity: "medium",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }),
     ]);
 
     expect(escalated.find((alert) => alert.id === "stale")?.status).toBe("escalated");

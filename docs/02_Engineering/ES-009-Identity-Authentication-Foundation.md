@@ -9,8 +9,9 @@
 | Field | Value |
 |-------|-------|
 | **Version** | 1.0 |
-| **Status** | Approved for Development |
+| **Status** | **Frozen** |
 | **Sprint** | Sprint 9 |
+| **Release** | v0.3.0 — Identity Platform Foundation |
 | **Owner** | Mohammad Shafi Goroo — Founder & CEO |
 | **Co-Owner** | ORION — Chief AI Architect & CTO |
 
@@ -486,16 +487,16 @@ This document remains editable only during implementation.
 
 Upon successful implementation, testing, verification, and Sprint 9 completion, this specification shall be updated to:
 
-Status: Approved (Frozen)
+Status: **Frozen** (26 July 2026)
 
 ---
 
-## Approval
+# Version History
 
-| Role | Name | Status |
-|------|------|--------|
-| Founder & CEO | Mohammad Shafi Goroo | Pending Review |
-| Chief AI Architect & CTO | ORION | Pending Review |
+| Version | Date | Author | Changes |
+|---------|------|--------|---------|
+| 1.0 | 12 July 2026 | Founder & Chief Architect | Approved for Development |
+| 1.0 | 26 July 2026 | Founder & Chief Architect | Status frozen · identity foundation delivered in v0.3.0 |
 
 ---
 

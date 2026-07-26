@@ -15,6 +15,7 @@ export default defineConfig({
       reportsDirectory: "./coverage",
       include: [
         "lib/providers/**/*.ts",
+        "lib/business-health/**/*.ts",
         "lib/intelligence/alerts/**/*.ts",
         "lib/intelligence/brief/**/*.ts",
         "lib/intelligence/recommendations/**/*.ts",

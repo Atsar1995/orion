@@ -8,6 +8,50 @@ The format is based on "Keep a Changelog" principles.
 
 ---
 
+## [0.2.0] — Business Health Engine
+
+**Release Status:** Internal  
+**Release Date:** 26 July 2026  
+**Git Baseline:** `main` (pending commit)  
+**Engineering:** EC-002A · ES-009 · DC-009
+
+### Summary
+
+Delivers the provider-independent Business Health Engine — deterministic KPI scoring, category aggregation, and explainable health scores. Restores the engineering Quality Gate with comprehensive GA4 test coverage.
+
+### Added
+
+- Business Health Engine (`lib/business-health/`) — orchestration, provider-independent scoring pipeline
+- `WeightedAverageStrategy` — KPI, category, and overall weighted scoring with confidence
+- `KPIRegistry` — register, lookup, category queries, duplicate ID validation
+- Domain models — `KPI`, `Category`, `HealthScore`, `ScoreBreakdown`
+- Category scorers — Revenue, Marketing, Customer, Operations
+- Provider normalizers — GA4, Shopify, Meta
+- Utilities — `WeightCalculator`, `TrendCalculator`, `HealthUtils`
+- `HealthScoreService` — executive-facing facade
+- Unit tests (`tests/business-health/`) — registry, strategy, scorers, normalizers, engine, utilities
+- Engineering documentation — `docs/07_Engineering/EC-002A_Business_Health_Engine_Core.md`
+
+### Improved
+
+- GA4 testing — comprehensive suite for GA4Client, GoogleAnalyticsProvider, GA4Mapper, GA4Config, GA4Cache, GA4Authenticator, GA4Health, ProviderFactory
+- Coverage — business-health module included in vitest coverage; global gate ≥90%
+- CI — Quality Gate workflow validates typecheck, lint, build, test, and coverage on `main`
+
+### Fixed
+
+- Quality Gate — restored passing thresholds (statements/lines/functions ≥80%, branches ≥75%)
+
+| Check | Status |
+|-------|--------|
+| TypeScript | PASS |
+| Lint | PASS |
+| Tests | PASS · 194 tests |
+| Coverage | PASS · ~91% |
+| Build | PASS |
+
+---
+
 ## v0.4.0-alpha — Executive Intelligence Foundations
 
 **Release Status:** Alpha · Internal  
