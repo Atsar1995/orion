@@ -74,6 +74,29 @@ export {
   resolveAuditSeverity,
 } from "@/lib/platform/audit/AuditService";
 
+// EP-001 Executive Platform Framework contracts
+export type { PlatformEventBus } from "@/lib/platform/EventBus";
+export type {
+  PlatformContext,
+  PlatformContextMapper,
+  PlatformContextProvider,
+} from "@/lib/platform/PlatformContext";
+export {
+  InMemoryFeatureRegistry,
+  defaultFeatureRegistry,
+  type FeatureRegistry,
+  type PlatformFeatureCategory,
+  type PlatformFeatureDefinition,
+} from "@/lib/platform/FeatureRegistry";
+export {
+  StaticFeatureFlags,
+  DEFAULT_PLATFORM_FEATURE_FLAGS,
+  defaultFeatureFlags,
+  type FeatureFlags,
+  type PlatformFeatureFlagDefinition,
+  type PlatformFeatureFlagScope,
+} from "@/lib/platform/FeatureFlags";
+
 // Core types
 export { ServiceErrorCode, ServiceHealth, ServiceStatus } from "@/types/services";
 export type {

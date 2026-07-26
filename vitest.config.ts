@@ -16,6 +16,7 @@ export default defineConfig({
       include: [
         "lib/providers/**/*.ts",
         "lib/business-health/**/*.ts",
+        "lib/explainability/**/*.ts",
         "lib/intelligence/alerts/**/*.ts",
         "lib/intelligence/brief/**/*.ts",
         "lib/intelligence/recommendations/**/*.ts",

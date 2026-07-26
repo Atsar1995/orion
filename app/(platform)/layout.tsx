@@ -1,9 +1,9 @@
-import { DashboardLayout } from "@/components/layout/DashboardLayout";
+import { ExecutiveLayout } from "@/components/globals";
 
 export default function PlatformLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return <ExecutiveLayout>{children}</ExecutiveLayout>;
 }

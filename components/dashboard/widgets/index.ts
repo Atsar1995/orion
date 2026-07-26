@@ -1,0 +1,9 @@
+export { AlertCenterWidget } from "@/components/dashboard/widgets/AlertCenterWidget";
+export { AlertsWidget } from "@/components/dashboard/widgets/AlertsWidget";
+export { BusinessHealthWidget } from "@/components/dashboard/widgets/BusinessHealthWidget";
+export { ConfidenceWidget } from "@/components/dashboard/widgets/ConfidenceWidget";
+export { ExecutiveNarrativeWidget } from "@/components/dashboard/widgets/ExecutiveNarrativeWidget";
+export { KPIHighlightsWidget } from "@/components/dashboard/widgets/KPIHighlightsWidget";
+export { MorningBriefWidget } from "@/components/dashboard/widgets/MorningBriefWidget";
+export { PrioritiesWidget } from "@/components/dashboard/widgets/PrioritiesWidget";
+export { RecommendationPreviewWidget } from "@/components/dashboard/widgets/RecommendationPreviewWidget";
