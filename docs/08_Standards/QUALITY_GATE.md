@@ -4,7 +4,7 @@
 |-------|-------|
 | **Document ID** | OS-003 |
 | **Title** | ORION Quality Gate |
-| **Version** | 1.0.0 |
+| **Version** | 1.1.0 |
 | **Status** | Active |
 | **Effective Date** | 25 July 2026 |
 | **Owner** | Engineering · QA |
@@ -70,7 +70,7 @@ Executed by [`.github/workflows/quality-gate.yml`](../../.github/workflows/quali
 | G4 | Build | `npm run build` | Yes | Next.js production build |
 | G5 | Unit tests | `npm run test` | Yes | Vitest |
 | G6 | Coverage | `npm run test:coverage` | Yes | Thresholds in `vitest.config.ts` |
-| G7 | Dependency audit | `npm audit --audit-level=high` | Yes | No high/critical vulnerabilities |
+| G7 | Production dependency audit | `npm run audit:production` | Yes | Production runtime only · see §Dependency audit policy |
 | G8 | Unused exports | Manual / future automation | No* | See §Outstanding automation |
 | G9 | Formatting | Manual / future automation | No* | Prettier not yet configured |
 
@@ -88,6 +88,97 @@ Defined in `vitest.config.ts`:
 | Branches | 75% |
 
 Changes that expand scope must update `vitest.config.ts` coverage `include` and maintain thresholds for affected modules.
+
+---
+
+## Dependency audit policy (G7)
+
+### Scope
+
+The Quality Gate audits **production runtime dependencies only**.
+
+```bash
+npm audit --omit=dev
+```
+
+DevDependencies (ESLint, Vitest, testing libraries, TypeScript tooling) are **excluded** from CI blocking audit. They remain visible via local `npm audit` for engineering awareness but do not block merge while upstream toolchain advisories lack non-breaking fixes.
+
+### Security Exception Policy
+
+Security exceptions are permitted **only** when **all** of the following are true:
+
+- The vulnerability is **transitive**.
+- The dependency is owned by an **upstream framework**.
+- **No stable patch** exists.
+- The advisory is **documented** in the allowlist.
+- A **review date** is assigned (`reviewBy`).
+- **Critical** vulnerabilities are **never** exempt.
+- Exceptions require approval from the **ORION CTO** (or designated maintainer), recorded as `owner`.
+
+Full policy: [`.github/security/SECURITY_EXCEPTION_POLICY.md`](../../.github/security/SECURITY_EXCEPTION_POLICY.md)
+
+### Blocking rules
+
+The production audit **fails** when any of the following are true:
+
+| Condition | Action |
+|-----------|--------|
+| **Critical** severity in production tree | Always fail — never allowlisted |
+| **High** severity in production tree | Fail unless documented in allowlist |
+| **Direct dependency** (`dependencies` in `package.json`) with unallowlisted advisory | Fail |
+| **New** production advisory not in allowlist | Fail |
+| **Expired** allowlist entry (`reviewBy` date passed) | Fail — forces re-review |
+
+### Allowlist (upstream framework exceptions)
+
+Entries are permitted only under the [Security Exception Policy](../../.github/security/SECURITY_EXCEPTION_POLICY.md).
+
+**Allowlist file:** [`.github/security/npm-audit-allowlist.json`](../../.github/security/npm-audit-allowlist.json)
+
+**Audit runner:** [`scripts/audit-production.mjs`](../../scripts/audit-production.mjs)
+
+Current acknowledged upstream exceptions (review every 90 days):
+
+| Advisory | Package | Introduced by | Owner | Review by |
+|----------|---------|---------------|-------|-----------|
+| GHSA-qx2v-qp2m-jg93 | postcss | next@16.2.11 | ORION CTO | 2026-10-26 |
+| GHSA-6g55-p6wh-862q | postcss | next@16.2.11 | ORION CTO | 2026-10-26 |
+| GHSA-r28c-9q8g-f849 | postcss | next@16.2.11 | ORION CTO | 2026-10-26 |
+| GHSA-f88m-g3jw-g9cj | sharp | next@16.2.11 | ORION CTO | 2026-10-26 |
+
+Each entry in [`.github/security/npm-audit-allowlist.json`](../../.github/security/npm-audit-allowlist.json) uses:
+
+```json
+{
+  "advisory": "GHSA-qx2v-qp2m-jg93",
+  "package": "postcss",
+  "introducedBy": "next@16.2.11",
+  "reason": "Bundled by Next.js",
+  "reviewBy": "2026-10-26",
+  "owner": "ORION CTO"
+}
+```
+
+### Prohibited bypasses
+
+The following are **not permitted**:
+
+- `npm audit fix --force` in CI
+- `continue-on-error` on audit steps
+- Lowering `--audit-level` below `high` for production audit
+- Silencing audit without documented allowlist entry
+
+### Local verification
+
+```bash
+npm run audit:production
+```
+
+Optional — inspect full tree including devDependencies (informational):
+
+```bash
+npm audit --audit-level=high
+```
 
 ---
 
@@ -130,7 +221,7 @@ Author must still confirm documentation accuracy and cross-links. CHANGELOG upda
 |---------|--------|
 | Any blocking gate fails | PR cannot merge |
 | Flaky test | Fix or quarantine with issue + owner; no silent skip |
-| Audit failure | Upgrade dependency or document accepted risk in Decision Log |
+| Audit failure | Upgrade dependency, add allowlist entry with CTO approval, or document accepted risk in Decision Log |
 | Emergency hotfix | Post-merge gate run within 24 hours; retro in Decision Log |
 
 ---
@@ -146,6 +237,12 @@ npm run lint
 npm run build
 npm run test
 npm run test:coverage
+npm run audit:production
+```
+
+Optional informational check (includes devDependencies):
+
+```bash
 npm audit --audit-level=high
 ```
 

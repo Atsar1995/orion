@@ -48,8 +48,8 @@ jobs:
       - name: Coverage
         run: npm run test:coverage
 
-      - name: Dependency audit
-        run: npm audit --audit-level=high
+      - name: Production dependency audit
+        run: npm run audit:production
 
       # TODO(OS-003): Wire unused-export detection (e.g. knip / ts-prune)
       # - name: Unused exports

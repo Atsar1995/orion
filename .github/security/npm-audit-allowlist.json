@@ -1,0 +1,39 @@
+{
+  "policyVersion": "1.0.0",
+  "policy": ".github/security/SECURITY_EXCEPTION_POLICY.md",
+  "scope": "production-runtime",
+  "exceptions": [
+    {
+      "advisory": "GHSA-qx2v-qp2m-jg93",
+      "package": "postcss",
+      "introducedBy": "next@16.2.11",
+      "reason": "Bundled by Next.js",
+      "reviewBy": "2026-10-26",
+      "owner": "ORION CTO"
+    },
+    {
+      "advisory": "GHSA-6g55-p6wh-862q",
+      "package": "postcss",
+      "introducedBy": "next@16.2.11",
+      "reason": "Bundled by Next.js",
+      "reviewBy": "2026-10-26",
+      "owner": "ORION CTO"
+    },
+    {
+      "advisory": "GHSA-r28c-9q8g-f849",
+      "package": "postcss",
+      "introducedBy": "next@16.2.11",
+      "reason": "Bundled by Next.js",
+      "reviewBy": "2026-10-26",
+      "owner": "ORION CTO"
+    },
+    {
+      "advisory": "GHSA-f88m-g3jw-g9cj",
+      "package": "sharp",
+      "introducedBy": "next@16.2.11",
+      "reason": "Bundled by Next.js",
+      "reviewBy": "2026-10-26",
+      "owner": "ORION CTO"
+    }
+  ]
+}
