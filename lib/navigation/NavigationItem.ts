@@ -23,6 +23,7 @@ export type NavigationItem = {
   readonly label: string;
   readonly href: string;
   readonly icon: NavigationIcon;
+  readonly availability?: "available" | "coming-soon";
 };
 
 /** @deprecated Use NavigationItem */

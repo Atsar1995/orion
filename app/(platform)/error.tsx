@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { observabilityStore } from "@/lib/observability";
 import { WORKSPACE_PAGE_CLASS } from "@/lib/constants";
 
 type PlatformErrorProps = {
@@ -11,6 +13,15 @@ type PlatformErrorProps = {
 
 /** EP-001 platform route error boundary. */
 export default function PlatformError({ error, reset }: PlatformErrorProps) {
+  useEffect(() => {
+    observabilityStore.reportError({
+      message: error.message,
+      digest: error.digest,
+      route: "platform",
+      stack: error.stack,
+    });
+  }, [error]);
+
   return (
     <div className={WORKSPACE_PAGE_CLASS}>
       <EmptyState

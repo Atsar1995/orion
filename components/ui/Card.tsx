@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 
 type CardProps = {
   title: string;
+  subtitle?: string;
   children: ReactNode;
   className?: string;
   action?: ReactNode;
@@ -11,6 +12,7 @@ type CardProps = {
 
 export function Card({
   title,
+  subtitle,
   children,
   className,
   action,
@@ -30,10 +32,13 @@ export function Card({
         className="pointer-events-none absolute inset-0 bg-gradient-to-br from-orion-gold/[0.04] via-transparent to-transparent opacity-0 transition-opacity duration-[var(--orion-duration-slow)] group-hover:opacity-100"
       />
       <div className="relative flex h-full flex-col">
-        <header className="mb-4 flex items-center justify-between gap-3">
-          <h3 className="text-sm font-medium tracking-tight text-white/90">
-            {title}
-          </h3>
+        <header className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <h3 className="text-sm font-medium tracking-tight text-white/90">{title}</h3>
+            {subtitle ? (
+              <p className="mt-1 text-sm font-light text-orion-muted">{subtitle}</p>
+            ) : null}
+          </div>
           {action}
         </header>
         {children}

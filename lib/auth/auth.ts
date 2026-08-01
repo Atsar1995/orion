@@ -1,8 +1,9 @@
 /**
  * ORION Identity — authentication service contracts.
- * Placeholder implementations only. No provider or persistence logic.
+ * Delegates to the shared Identity Service (Mission S1A).
  */
 
+import { identityService } from "@/lib/identity";
 import type {
   AuthError,
   AuthResult,
@@ -16,17 +17,17 @@ import { AuthErrorCode } from "@/types/auth";
 
 /** Contract for authentication operations. */
 export interface AuthService {
-  login(credentials: LoginCredentials): AuthResult<Session>;
-  logout(session: Session): AuthResult<{ message: string }>;
-  forgotPassword(input: ForgotPasswordInput): AuthResult<{ message: string }>;
-  resetPassword(input: ResetPasswordInput): AuthResult<{ message: string }>;
+  login(credentials: LoginCredentials): Promise<AuthResult<Session>>;
+  logout(token: string | null): Promise<AuthResult<{ message: string }>>;
+  forgotPassword(input: ForgotPasswordInput): Promise<AuthResult<{ message: string }>>;
+  resetPassword(input: ResetPasswordInput): Promise<AuthResult<{ message: string }>>;
   changePassword(
     session: Session,
     input: ChangePasswordInput,
-  ): AuthResult<{ message: string }>;
+  ): Promise<AuthResult<{ message: string }>>;
   validateCredentials(
     credentials: LoginCredentials,
-  ): AuthResult<{ valid: boolean }>;
+  ): Promise<AuthResult<{ valid: boolean }>>;
 }
 
 const NOT_IMPLEMENTED_ERROR: AuthError = {
@@ -34,76 +35,63 @@ const NOT_IMPLEMENTED_ERROR: AuthError = {
   message: "Authentication service is not yet implemented.",
 };
 
-/** Creates a typed not-implemented failure result. */
 export function createNotImplementedResult<T>(): AuthResult<T> {
   return { success: false, error: NOT_IMPLEMENTED_ERROR };
 }
 
-/**
- * Authenticates a user and returns a session.
- * @placeholder Returns NOT_IMPLEMENTED until Phase 3.
- */
-export function login(credentials: LoginCredentials): AuthResult<Session> {
-  void credentials;
-  return createNotImplementedResult<Session>();
+export async function login(credentials: LoginCredentials): Promise<AuthResult<Session>> {
+  const result = await identityService.login(credentials);
+
+  if (!result.success) {
+    return result;
+  }
+
+  return { success: true, data: result.data.session };
 }
 
-/**
- * Ends an authenticated session.
- * @placeholder Returns NOT_IMPLEMENTED until Phase 3.
- */
-export function logout(session: Session): AuthResult<{ message: string }> {
-  void session;
-  return createNotImplementedResult<{ message: string }>();
+export async function logout(token: string | null): Promise<AuthResult<{ message: string }>> {
+  return identityService.logout(token);
 }
 
-/**
- * Initiates a password recovery flow.
- * @placeholder Returns NOT_IMPLEMENTED until Phase 3.
- */
-export function forgotPassword(
+export async function forgotPassword(
   input: ForgotPasswordInput,
-): AuthResult<{ message: string }> {
+): Promise<AuthResult<{ message: string }>> {
   void input;
   return createNotImplementedResult<{ message: string }>();
 }
 
-/**
- * Completes a password reset using a recovery token.
- * @placeholder Returns NOT_IMPLEMENTED until Phase 3.
- */
-export function resetPassword(
+export async function resetPassword(
   input: ResetPasswordInput,
-): AuthResult<{ message: string }> {
+): Promise<AuthResult<{ message: string }>> {
   void input;
   return createNotImplementedResult<{ message: string }>();
 }
 
-/**
- * Changes the password for an authenticated user.
- * @placeholder Returns NOT_IMPLEMENTED until Phase 3.
- */
-export function changePassword(
+export async function changePassword(
   session: Session,
   input: ChangePasswordInput,
-): AuthResult<{ message: string }> {
+): Promise<AuthResult<{ message: string }>> {
   void session;
   void input;
   return createNotImplementedResult<{ message: string }>();
 }
 
-/**
- * Validates credentials without creating a session.
- * @placeholder Returns NOT_IMPLEMENTED until Phase 3.
- */
-export function validateCredentials(
+export async function validateCredentials(
   credentials: LoginCredentials,
-): AuthResult<{ valid: boolean }> {
-  void credentials;
-  return createNotImplementedResult<{ valid: boolean }>();
+): Promise<AuthResult<{ valid: boolean }>> {
+  const result = await identityService.login(credentials);
+
+  if (!result.success) {
+    if (result.error.code === AuthErrorCode.InvalidCredentials) {
+      return { success: true, data: { valid: false } };
+    }
+
+    return result as AuthResult<{ valid: boolean }>;
+  }
+
+  return { success: true, data: { valid: true } };
 }
 
-/** Default authentication service contract backed by placeholder functions. */
 export const authService: AuthService = {
   login,
   logout,

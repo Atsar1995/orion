@@ -77,6 +77,9 @@ export function hasAnyRole(
 /** Returns true when the user is a Founder or Administrator. */
 export function isPrivilegedRole(user: Pick<User, "role">): boolean {
   return hasAnyRole(user, [
+    SystemRoleEnum.SuperAdmin,
+    SystemRoleEnum.OrganizationAdmin,
+    SystemRoleEnum.Executive,
     SystemRoleEnum.Founder,
     SystemRoleEnum.Administrator,
   ]);

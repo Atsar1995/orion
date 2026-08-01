@@ -4,10 +4,10 @@ import {
   WidgetFooter,
   WidgetHeader,
 } from "@/components/dashboard";
-import type { MockBusinessHealthData } from "@/lib/dashboard/mock/MockBusinessHealth";
+import type { DashboardBusinessHealthData } from "@/lib/dashboard/types";
 
 type BusinessHealthWidgetProps = {
-  data: MockBusinessHealthData;
+  data: DashboardBusinessHealthData;
 };
 
 const STATUS_LABEL = {

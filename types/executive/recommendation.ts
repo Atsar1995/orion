@@ -8,9 +8,19 @@ export type ExecutiveRecommendationCategory =
   | "risk"
   | "priority";
 
-export type ExecutiveRecommendationAction = "act" | "delegate" | "snooze" | "explain";
+export type ExecutiveRecommendationAction =
+  | "act"
+  | "delegate"
+  | "defer"
+  | "reject"
+  | "complete"
+  /** @deprecated Use `defer` */
+  | "snooze"
+  | "explain";
 
-/** Ranked executive recommendation with evidence and confidence (EC-003). */
+export type ExecutiveRecommendationRiskLevel = "low" | "medium" | "high" | "critical";
+
+/** Ranked executive recommendation with evidence and confidence (EC-003 / P-002). */
 export type ExecutiveRecommendation = {
   id: string;
   priority: number;
@@ -22,4 +32,10 @@ export type ExecutiveRecommendation = {
   evidence: ExecutiveEvidence[];
   confidence: ConfidenceScore;
   actions: ExecutiveRecommendationAction[];
+  href?: string;
+  businessValue?: string;
+  riskLevel?: ExecutiveRecommendationRiskLevel;
+  recommendedAction?: string;
+  alternativeActions?: readonly string[];
+  expectedOutcome?: string;
 };

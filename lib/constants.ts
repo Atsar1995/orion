@@ -39,6 +39,33 @@ export const WORKSPACE_PREMIUM_BODY_CLASS =
 export const WORKSPACE_SUMMARY_CLASS =
   "text-base font-light leading-relaxed text-white/75";
 
+/** In-page section title (h2) — below workspace page title. */
+export const WORKSPACE_INPAGE_SECTION_TITLE_CLASS =
+  "text-lg font-medium tracking-tight text-white/90 md:text-xl";
+
+/** Uppercase caption label used in cards, tables, and field groups. */
+export const WORKSPACE_CAPTION_CLASS =
+  "text-[10px] font-medium tracking-wide text-orion-muted uppercase";
+
+/** Standard muted body copy. */
+export const WORKSPACE_BODY_MUTED_CLASS = "text-sm font-light text-orion-muted";
+
+/** Card-equivalent shell when Card title layout is not suitable. */
+export const WORKSPACE_PANEL_CLASS =
+  "space-y-4 rounded-orion-lg border border-white/[0.07] bg-white/[0.03] p-5 md:p-6";
+
+/** Executive kicker — section labels across Brief and Command Center. */
+export const ORION_EXECUTIVE_KICKER_CLASS =
+  "text-[11px] font-medium tracking-[0.14em] text-orion-gold/80 uppercase";
+
+/** Consistent keyboard focus ring for executive surfaces. */
+export const ORION_FOCUS_RING_CLASS =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orion-gold/50";
+
+/** Calm secondary navigation link. */
+export const ORION_SECONDARY_LINK_CLASS =
+  "text-xs font-medium text-orion-gold/80 transition-colors hover:text-orion-gold";
+
 export const USER = {
   name: "Mohammad Shafi",
   initials: "MS",

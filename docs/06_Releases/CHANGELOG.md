@@ -8,6 +8,45 @@ The format is based on "Keep a Changelog" principles.
 
 ---
 
+## v0.4.1-alpha — Enterprise Data Platform (P-011 Phase I)
+
+**Release Status:** Alpha · Internal  
+**Release Date:** 31 July 2026  
+**Release Notes:** [docs/releases/v0.4.1-alpha-Release-Notes.md](../releases/v0.4.1-alpha-Release-Notes.md)  
+**Certification:** [ENTERPRISE DATA PLATFORM CERTIFICATE](../Data/Engineering/ENTERPRISE_DATA_PLATFORM_CERTIFICATE.md) · CONDITIONAL GO
+
+### Summary
+
+Delivers Enterprise Data Platform Phase I — Master Data Registry (P-011.1), Data Validation Framework (P-011.4), Synchronization Engine (P-011.5), and platform certification audit (P-011.8). Fifteen public services exposed via `DataPlatformFacade` at `@/lib/platform/data`.
+
+### Added
+
+- Master Data Registry — 23 canonical entity types, lifecycle management, immutable identity, discovery APIs
+- Validation Framework — eight-stage pipeline, rules, policies, reports, IIL events
+- Synchronization Engine — subscription registry, conflict resolution, retry, monitoring, audit
+- REST APIs — `/api/platform/data/entities`, `/validation`, `/synchronization`
+- Platform certificate — P-011.8 audit documentation
+- Release notes and checklist — v0.4.1-alpha
+
+### Deferred
+
+- P-011.2 Reference Data Framework
+- P-011.3 Metadata Framework
+- P-011.6 Data Governance Services
+- P-011.7 Executive Data Intelligence
+- D-012 Enterprise Master Data Model
+- ES-036 production persistence
+
+| Check | Status |
+|-------|--------|
+| TypeScript | PASS |
+| Lint | FAIL · 1 error |
+| Tests | FAIL · 703/721 pass |
+| Build | PASS |
+| Certification | CONDITIONAL GO (Phase I) |
+
+---
+
 ## [0.2.0] — Business Health Engine
 
 **Release Status:** Internal  

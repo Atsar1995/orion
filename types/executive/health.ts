@@ -6,6 +6,7 @@ export type DomainHealth = {
   label: string;
   status: HealthStatus;
   summary: string;
+  href?: string;
 };
 
 /** Platform health snapshot composed for executive surfaces. */

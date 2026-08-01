@@ -2,13 +2,18 @@
 
 import { useSessionContext } from "@/components/auth/SessionProvider";
 
-/** Provides access to the current placeholder session state. */
+/** Provides access to the current authenticated session state. */
 export function useSession() {
-  const { session, loading, isAuthenticated } = useSessionContext();
+  const { session, profile, loading, isAuthenticated, login, logout, refreshSession } =
+    useSessionContext();
 
   return {
     session,
+    profile,
     loading,
     isAuthenticated,
+    login,
+    logout,
+    refreshSession,
   };
 }

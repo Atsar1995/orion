@@ -70,8 +70,8 @@ Executives should understand business health within sixty seconds (Product Const
 
 ## Related Documents
 
-- [ADR-002 — Advisor Default Landing](../ADR-002-Advisor-Default-Landing.md) (Pending)
-- [ADR-006 — Executive Intelligence Provider Framework](../ADR-006-Executive-Intelligence-Provider-Framework.md)
+- [ADR-002 — Advisor Default Landing](../../11_Governance/ADR/ADR-002-Advisor-Default-Landing.md) (Pending)
+- [ADR-006 — Executive Intelligence Provider Framework](../../11_Governance/ADR/ADR-006-Executive-Intelligence-Provider-Framework.md)
 - [RR-007 — Mission 14A Experience Foundation](../../06_Releases/RR-007-Mission14A-Experience-Foundation.md)
 - [ORION Product Constitution](../../01_Product/ORION_Product_Constitution.md)
 

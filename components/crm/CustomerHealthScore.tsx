@@ -2,10 +2,14 @@ import { StatusIndicator } from "@/components/command-center/StatusIndicator";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { WORKSPACE_SUMMARY_CLASS } from "@/lib/constants";
-import { CUSTOMER_HEALTH_SCORE } from "@/lib/crm-insights";
+import type { CrmCustomerHealthView } from "@/lib/crm/models/overview";
+
+type CustomerHealthScoreProps = {
+  health: CrmCustomerHealthView;
+};
 
 /** Customer health score with trend and relationship drivers. */
-export function CustomerHealthScore() {
+export function CustomerHealthScore({ health }: CustomerHealthScoreProps) {
   return (
     <Card title="Customer Health Score" variant="premium">
       <div className="space-y-5">
@@ -15,18 +19,18 @@ export function CustomerHealthScore() {
               Score
             </p>
             <p className="mt-1 text-4xl font-semibold tracking-tight text-white">
-              {CUSTOMER_HEALTH_SCORE.score}
+              {health.score}
               <span className="text-lg font-light text-white/40">/100</span>
             </p>
           </div>
           <div className="flex flex-col items-end gap-2">
-            <StatusIndicator status={CUSTOMER_HEALTH_SCORE.status} />
-            <StatCard label="Trend" value={CUSTOMER_HEALTH_SCORE.trend} />
+            <StatusIndicator status={health.status} />
+            <StatCard label="Trend" value={health.trend} />
           </div>
         </div>
-        <p className={WORKSPACE_SUMMARY_CLASS}>{CUSTOMER_HEALTH_SCORE.summary}</p>
+        <p className={WORKSPACE_SUMMARY_CLASS}>{health.summary}</p>
         <ul className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-          {CUSTOMER_HEALTH_SCORE.drivers.map((driver) => (
+          {health.drivers.map((driver) => (
             <li
               key={driver.label}
               className="rounded-orion-md border border-white/[0.05] bg-white/[0.02] px-3 py-2.5"

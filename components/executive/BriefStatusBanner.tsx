@@ -29,14 +29,24 @@ const BANNER_COPY: Record<
   },
 };
 
-/** Lifecycle banner for updated, stale, incomplete, and offline brief states. */
+/** Lifecycle banner — calm confidence when fresh; clear guidance when not. */
 export function BriefStatusBanner({
   lifecycle,
   changesSinceLastView,
   lastSyncedAt,
 }: BriefStatusBannerProps) {
   if (lifecycle === "fresh") {
-    return null;
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        className="rounded-orion-md border border-orion-border bg-orion-surface/60 px-4 py-2.5 text-sm font-light text-orion-muted"
+      >
+        <span className="font-medium text-orion-text/85">Brief ready</span>
+        <span aria-hidden> · </span>
+        <span>Last synced {lastSyncedAt}</span>
+      </div>
+    );
   }
 
   const copy = BANNER_COPY[lifecycle];
@@ -44,6 +54,7 @@ export function BriefStatusBanner({
   return (
     <div
       role="status"
+      aria-live="polite"
       className={cn(
         "rounded-orion-md border px-4 py-3 text-sm font-light",
         copy.tone,

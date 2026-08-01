@@ -1,11 +1,9 @@
 import type { HealthStatus } from "@/lib/command-center-data";
+import type { CrmActivity } from "@/lib/crm/models/domain";
 
 // TD-002: Placeholder CRM data until customer intelligence service integration
 
-export type CrmActivity = {
-  time: string;
-  description: string;
-};
+export type { CrmActivity };
 
 export type CrmOpportunity = {
   name: string;
@@ -69,11 +67,11 @@ export const CRM_TOP_OPPORTUNITIES: CrmOpportunity[] = [
 ];
 
 export const CRM_RECENT_ACTIVITY: CrmActivity[] = [
-  { time: "10:20", description: "Call completed — OranIA Group renewal discussion" },
-  { time: "09:45", description: "Proposal sent — Commerce Partner platform expansion" },
-  { time: "Yesterday", description: "Meeting scheduled — Luxury Retreats new property" },
-  { time: "Yesterday", description: "At-risk flag raised — Retail Channel Co (no contact 30d)" },
-  { time: "Mon", description: "Pipeline review completed — 24 open opportunities" },
+  { time: "10:20", type: "Call", description: "OranIA Group renewal discussion" },
+  { time: "09:45", type: "Email", description: "Proposal sent — Commerce Partner platform expansion" },
+  { time: "Yesterday", type: "Meeting", description: "Luxury Retreats new property discovery" },
+  { time: "Yesterday", type: "Note", description: "At-risk flag raised — Retail Channel Co (no contact 30d)" },
+  { time: "Mon", type: "Call", description: "Pipeline review — 24 open opportunities" },
 ];
 
 export const CRM_EXECUTIVE_NOTES =

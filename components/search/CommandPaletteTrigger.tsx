@@ -26,7 +26,8 @@ export function CommandPaletteTrigger({ className }: CommandPaletteTriggerProps)
         className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-white/30"
         aria-hidden
       />
-      <span className="truncate">Search ORION...</span>
+      <span className="truncate hidden sm:inline">Search ORION...</span>
+      <span className="sr-only sm:hidden">Search</span>
       <span className="ml-auto pl-3">
         <KeyboardShortcut />
       </span>

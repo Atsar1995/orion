@@ -1,3 +1,8 @@
+import {
+  WORKSPACE_INPAGE_SECTION_TITLE_CLASS,
+  WORKSPACE_SUBTITLE_CLASS,
+} from "@/lib/constants";
+
 type SectionHeaderProps = {
   title: string;
   subtitle?: string;
@@ -5,6 +10,7 @@ type SectionHeaderProps = {
   as?: "header" | "div";
 };
 
+/** In-page section header — consistent typography across workspaces. */
 export function SectionHeader({
   title,
   subtitle,
@@ -13,12 +19,8 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <Tag className={className}>
-      <h2 className="text-2xl font-semibold tracking-tight text-white md:text-3xl">
-        {title}
-      </h2>
-      {subtitle ? (
-        <p className="mt-1 text-sm font-light text-white/45">{subtitle}</p>
-      ) : null}
+      <h2 className={WORKSPACE_INPAGE_SECTION_TITLE_CLASS}>{title}</h2>
+      {subtitle ? <p className={`mt-1 ${WORKSPACE_SUBTITLE_CLASS}`}>{subtitle}</p> : null}
     </Tag>
   );
 }

@@ -1,5 +1,8 @@
 export { AiExecutiveSummaryCard } from "@/components/executive/AiExecutiveSummary";
+export { BriefAdditionalRecommendations } from "@/components/executive/BriefAdditionalRecommendations";
+export { BriefDisclosure, BriefDisclosurePanel } from "@/components/executive/BriefDisclosure";
 export { BriefEndSummary } from "@/components/executive/BriefEndSummary";
+export { BriefQuickNav } from "@/components/executive/BriefQuickNav";
 export { BriefLayout } from "@/components/executive/BriefLayout";
 export { BriefPageContent } from "@/components/executive/BriefPageContent";
 export { BriefSection } from "@/components/executive/BriefSection";

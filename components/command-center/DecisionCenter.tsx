@@ -1,24 +1,35 @@
 "use client";
 
+import Link from "next/link";
 import { RecommendationPanel } from "@/components/command-center/RecommendationPanel";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { ORION_SECONDARY_LINK_CLASS, WORKSPACE_BODY_MUTED_CLASS } from "@/lib/constants";
 import type { DashboardSnapshot } from "@/types/intelligence";
 
 type DecisionCenterProps = {
   snapshot: DashboardSnapshot;
 };
 
-/** Decision Center — top recommendations with executive action controls (UI-only). */
+/** Decision Center — ranked recommendations with executive action controls. */
 export function DecisionCenter({ snapshot }: DecisionCenterProps) {
   return (
-    <Card title="Decision Center">
-      <p className="mb-4 text-sm font-light text-orion-muted">Top Recommendations</p>
+    <Card
+      title="Decision Center"
+      action={
+        <Link href="/brief" className={ORION_SECONDARY_LINK_CLASS}>
+          Morning Brief →
+        </Link>
+      }
+    >
+      <p className={`mb-4 ${WORKSPACE_BODY_MUTED_CLASS}`}>
+        Top recommendations requiring judgment — act, delegate, or defer.
+      </p>
 
       {snapshot.recommendations.length > 0 ? (
         <RecommendationPanel snapshot={snapshot} />
       ) : (
-        <p className="text-sm font-light text-orion-muted">No recommendations at this time.</p>
+        <p className={WORKSPACE_BODY_MUTED_CLASS}>No recommendations at this time.</p>
       )}
 
       <div

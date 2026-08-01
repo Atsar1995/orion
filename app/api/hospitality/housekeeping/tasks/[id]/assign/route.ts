@@ -1,0 +1,27 @@
+import { NextResponse } from "next/server";
+import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { hospitalityHousekeepingService } from "@/lib/hospitality";
+
+export const dynamic = "force-dynamic";
+
+type RouteContext = { params: Promise<{ id: string }> };
+
+export async function POST(request: Request, { params }: RouteContext) {
+  const { context, executiveName } = await getDecisionServiceContext();
+  const { id } = await params;
+  const body = (await request.json()) as { assignedTo: string };
+
+  try {
+    const task = hospitalityHousekeepingService.cleaning.assign(
+      { taskId: id, assignedTo: body.assignedTo },
+      context,
+      executiveName,
+    );
+    return NextResponse.json({ success: true, data: task });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "ASSIGN_FAILED";
+    const status =
+      message === "TASK_NOT_FOUND" ? 404 : message === "INVALID_TASK_STATUS" ? 400 : 500;
+    return NextResponse.json({ success: false, error: message }, { status });
+  }
+}

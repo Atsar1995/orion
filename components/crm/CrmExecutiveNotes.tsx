@@ -1,12 +1,15 @@
 import { Card } from "@/components/ui/Card";
 import { WORKSPACE_SUMMARY_CLASS } from "@/lib/constants";
-import { CRM_EXECUTIVE_NOTES } from "@/lib/crm-data";
+
+type CrmExecutiveNotesProps = {
+  notes: string;
+};
 
 /** Executive notes and decision context for customer intelligence. */
-export function CrmExecutiveNotes() {
+export function CrmExecutiveNotes({ notes }: CrmExecutiveNotesProps) {
   return (
     <Card title="Executive Notes">
-      <p className={WORKSPACE_SUMMARY_CLASS}>{CRM_EXECUTIVE_NOTES}</p>
+      <p className={WORKSPACE_SUMMARY_CLASS}>{notes}</p>
     </Card>
   );
 }

@@ -1,8 +1,8 @@
 import { Widget, WidgetBody, WidgetFooter, WidgetHeader } from "@/components/dashboard";
-import type { MockRecommendationPreviewData } from "@/lib/dashboard/mock/MockKPIs";
+import type { DashboardRecommendationPreviewData } from "@/lib/dashboard/types";
 
 type RecommendationPreviewWidgetProps = {
-  data: MockRecommendationPreviewData;
+  data: DashboardRecommendationPreviewData;
 };
 
 /** EP-002 recommendation preview widget — presentation only. */

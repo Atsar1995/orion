@@ -20,14 +20,38 @@ export type {
   ExecutiveRecommendation,
   ExecutiveRecommendationAction,
   ExecutiveRecommendationCategory,
+  ExecutiveRecommendationRiskLevel,
 } from "@/types/executive/recommendation";
 export type {
   AiExecutiveSummary,
   BriefAlert,
+  BriefBusinessHealth,
+  BriefDecisionItem,
   BriefEndSummary,
   BriefGreeting,
+  BriefHealthInsight,
   BriefLifecycleState,
+  BriefOperatingMode,
   BriefPriority,
+  BriefPriorityDecision,
   BriefView,
+  BusinessTrendItem,
+  CrossWorkspaceSignal,
+  ExecutiveDecisionsSummary,
+  ExecutiveMemoryItem,
+  MorningBriefSummary,
   OvernightChange,
 } from "@/types/executive/snapshot";
+
+export type {
+  CreateMemoryInput,
+  KnowledgeRetrievalContext,
+  MemoryAnalyticsSnapshot,
+  MemoryCategory,
+  MemoryEntry,
+  MemoryPattern,
+  MemoryRelationship,
+  MemorySearchFilter,
+  MemorySearchResult,
+  MemoryTimelineEntry,
+} from "@/types/executive/memory";

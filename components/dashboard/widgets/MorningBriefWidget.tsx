@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { Widget, WidgetBody, WidgetFooter, WidgetHeader } from "@/components/dashboard";
-import type { MockMorningBriefData } from "@/lib/dashboard/mock/MockMorningBrief";
+import type { DashboardMorningBriefData } from "@/lib/dashboard/types";
 
 type MorningBriefWidgetProps = {
-  data: MockMorningBriefData;
+  data: DashboardMorningBriefData;
 };
 
 /** EP-002 morning brief widget — presentation only. */

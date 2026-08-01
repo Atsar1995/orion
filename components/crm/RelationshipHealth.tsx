@@ -1,14 +1,19 @@
 import { StatusIndicator } from "@/components/command-center/StatusIndicator";
 import { Card } from "@/components/ui/Card";
 import { WORKSPACE_FIELD_ROW_CLASS } from "@/lib/constants";
-import { RELATIONSHIP_HEALTH } from "@/lib/crm-insights";
+import type { CrmRelationshipSegment } from "@/lib/crm/models/domain";
 
-/** Relationship health segments across the customer base. */
-export function RelationshipHealth() {
+type RelationshipHealthProps = {
+  segments: CrmRelationshipSegment[];
+  title?: string;
+};
+
+/** Customer health / relationship segments across the customer base. */
+export function RelationshipHealth({ segments, title = "Relationship Health" }: RelationshipHealthProps) {
   return (
-    <Card title="Relationship Health">
+    <Card title={title}>
       <ul className="space-y-4" aria-label="Relationship health segments">
-        {RELATIONSHIP_HEALTH.map((segment) => (
+        {segments.map((segment) => (
           <li key={segment.label} className={WORKSPACE_FIELD_ROW_CLASS}>
             <div className="flex items-center gap-3">
               <StatusIndicator status={segment.status} />

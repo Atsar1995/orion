@@ -3,6 +3,7 @@ import {
   buildPrioritiesFromTasks,
 } from "@/lib/command-center/snapshot-view";
 import { USER } from "@/lib/constants";
+import { DEMO_ORGANIZATION } from "@/lib/identity/data/demo-organizations";
 import type { DashboardSnapshot } from "@/types/intelligence";
 import type {
   AiExecutiveSummary,
@@ -12,7 +13,6 @@ import type {
   BriefPriority,
   BriefView,
   ExecutiveRecommendation,
-  HealthSnapshot,
   OvernightChange,
 } from "@/types/executive";
 
@@ -48,7 +48,7 @@ function formatSyncTime(iso: string): string {
   });
 }
 
-function mapHealth(snapshot: DashboardSnapshot): HealthSnapshot {
+function mapHealth(snapshot: DashboardSnapshot) {
   const { businessHealth } = snapshot;
 
   return {
@@ -65,7 +65,9 @@ function mapHealth(snapshot: DashboardSnapshot): HealthSnapshot {
       summary: driver.label,
     })),
     explanationAvailable: true,
-  };
+    majorRisks: [],
+    majorOpportunities: [],
+  } as const;
 }
 
 function mapAlerts(snapshot: DashboardSnapshot): BriefAlert[] {
@@ -140,6 +142,9 @@ function mapGreeting(snapshot: DashboardSnapshot): BriefGreeting {
     headline: snapshot.brief.headline,
     subheadline: "Review priorities and act on the highest-impact item first.",
     dateLabel: formatBriefDate(generatedAt),
+    organizationName: DEMO_ORGANIZATION.name,
+    profileLabel: "Executive",
+    operatingMode: "standard",
   };
 }
 
@@ -177,6 +182,23 @@ export function mapDashboardSnapshotToBriefView(
     overnightChanges: mapOvernightChanges(snapshot),
     recommendations: mapRecommendations(snapshot),
     priorities: mapPriorities(snapshot),
+    priorityDecisions: [],
+    executiveDecisions: {
+      pending: [],
+      delegated: [],
+      awaitingReview: [],
+      recentlyCompleted: [],
+    },
+    crossWorkspaceSignals: [],
+    executiveMemory: [],
+    businessTrends: [],
+    morningSummary: {
+      todaySummary: snapshot.brief.body,
+      criticalDecisions: [],
+      businessHealthHeadline: snapshot.businessHealth.summary,
+      priorityActions: [],
+      executiveNotes: [],
+    },
     aiSummary: mapAiSummary(snapshot),
     endSummary: mapEndSummary(snapshot),
   };

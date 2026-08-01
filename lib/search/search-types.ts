@@ -1,5 +1,10 @@
 /** Search category identifiers for grouped results. */
-export type SearchCategoryId = "navigation" | "commands" | "reports" | "settings";
+export type SearchCategoryId =
+  | "navigation"
+  | "commands"
+  | "reports"
+  | "settings"
+  | "entities";
 
 export type SearchItem = {
   id: string;

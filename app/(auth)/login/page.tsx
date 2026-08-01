@@ -1,29 +1,44 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Divider } from "@/components/ui/Divider";
 import { Input } from "@/components/ui/Input";
 import { LoadingState } from "@/components/ui/LoadingState";
+import { useSession } from "@/hooks/useSession";
 import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login } = useSession();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showValidationPlaceholder, setShowValidationPlaceholder] =
-    useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setShowValidationPlaceholder(true);
+    setErrorMessage(null);
     setIsLoading(true);
 
-    window.setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
+    const formData = new FormData(event.currentTarget);
+    const email = String(formData.get("email") ?? "");
+    const password = String(formData.get("password") ?? "");
+
+    const result = await login({ email, password });
+    setIsLoading(false);
+
+    if (!result.success) {
+      setErrorMessage(result.error.message);
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const from = params.get("from");
+    router.replace(from && from.startsWith("/") ? from : "/brief");
   }
 
   return (
@@ -42,6 +57,12 @@ export default function LoginPage() {
           <LoadingState label="Signing in..." />
         ) : (
           <>
+            {errorMessage ? (
+              <p role="alert" className="text-sm font-light text-orion-danger">
+                {errorMessage}
+              </p>
+            ) : null}
+
             <div className="space-y-2">
               <label
                 htmlFor="login-email"
@@ -56,19 +77,7 @@ export default function LoginPage() {
                 autoComplete="email"
                 placeholder="you@company.com"
                 required
-                aria-describedby={
-                  showValidationPlaceholder ? "login-email-error" : undefined
-                }
               />
-              {showValidationPlaceholder ? (
-                <p
-                  id="login-email-error"
-                  role="alert"
-                  className="text-sm font-light text-orion-danger"
-                >
-                  Please enter a valid email address.
-                </p>
-              ) : null}
             </div>
 
             <div className="space-y-2">
@@ -87,9 +96,6 @@ export default function LoginPage() {
                   placeholder="Enter your password"
                   required
                   className="pr-12"
-                  aria-describedby={
-                    showValidationPlaceholder ? "login-password-error" : undefined
-                  }
                 />
                 <button
                   type="button"
@@ -103,15 +109,6 @@ export default function LoginPage() {
                   {showPassword ? "Hide" : "Show"}
                 </button>
               </div>
-              {showValidationPlaceholder ? (
-                <p
-                  id="login-password-error"
-                  role="alert"
-                  className="text-sm font-light text-orion-danger"
-                >
-                  Password is required.
-                </p>
-              ) : null}
             </div>
 
             <div className="flex items-center justify-between gap-4">
@@ -123,9 +120,7 @@ export default function LoginPage() {
                   onChange={(event) => setRememberMe(event.target.checked)}
                   className="h-4 w-4 rounded border-white/20 bg-white/[0.04] text-orion-gold focus:ring-orion-gold/30 focus:ring-offset-0"
                 />
-                <span className="text-sm font-light text-white/60">
-                  Remember me
-                </span>
+                <span className="text-sm font-light text-white/60">Remember me</span>
               </label>
 
               <Link

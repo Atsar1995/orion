@@ -2,16 +2,20 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { SessionProvider } from "@/components/auth/SessionProvider";
+import { PlatformProviders } from "@/components/platform/PlatformProviders";
+import { SkipToContent } from "@/components/platform/SkipToContent";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -31,8 +35,11 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <SkipToContent />
         <SessionProvider>
-          <AuthGuard>{children}</AuthGuard>
+          <PlatformProviders>
+            <AuthGuard>{children}</AuthGuard>
+          </PlatformProviders>
         </SessionProvider>
       </body>
     </html>

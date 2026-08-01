@@ -56,7 +56,7 @@ Option 3 unblocks Sprint 4 delivery while preserving working Advisor/CRM paths. 
 - [ES-062 — Sprint 4 Implementation Plan](../02_Engineering/ES-062-Sprint-4-Implementation-Plan.md)
 - [Engineering Audit Report](../03_Quality/Engineering-Audit-Report.md) (C-01, C-02, C-03)
 - [Performance Audit Report](../03_Quality/Performance-Audit.md)
-- [ADR-006 — Executive Intelligence Provider Framework](./ADR-006-Executive-Intelligence-Provider-Framework.md)
+- [ADR-006 — Executive Intelligence Provider Framework](../../11_Governance/ADR/ADR-006-Executive-Intelligence-Provider-Framework.md)
 
 ## Approved By
 

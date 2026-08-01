@@ -12,6 +12,7 @@ type SearchResultsProps = {
 };
 
 const CATEGORY_ORDER: SearchItem["category"][] = [
+  "entities",
   "navigation",
   "commands",
   "reports",

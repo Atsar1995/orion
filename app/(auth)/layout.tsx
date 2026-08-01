@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_100%,rgba(255,255,255,0.02),transparent_60%)]"
       />
 
-      <main className="relative flex min-h-screen flex-col items-center justify-center px-4 py-8 sm:px-6">
+      <main id="main-content" className="relative flex min-h-screen flex-col items-center justify-center px-4 py-8 sm:px-6">
         <header className="mb-8 flex max-w-md flex-col items-center text-center">
           <OrionLogo size="md" />
           <h1 className="mt-4 text-2xl font-semibold tracking-tight text-white">

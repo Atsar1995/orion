@@ -1,6 +1,6 @@
 import type { BriefRepository } from "@/lib/executive/brief/BriefRepository";
 import { mapDashboardSnapshotToBriefView } from "@/lib/executive/brief/map-dashboard-to-brief";
-import { MockBriefRepository } from "@/lib/executive/brief/MockBriefRepository";
+import { mapIntelligenceBusToBriefView } from "@/lib/executive/brief/map-intelligence-bus-to-brief";
 import { getDashboardSnapshot } from "@/lib/orchestrator/Orchestrator";
 import type { BriefView } from "@/types/executive";
 
@@ -12,21 +12,28 @@ export class OrchestratorBriefRepository implements BriefRepository {
   }
 }
 
+/** Live repository — Intelligence Bus with CRM and Finance executive providers (Mission 16A.7). */
+export class IntelligenceBusBriefRepository implements BriefRepository {
+  async getBriefView(executiveName?: string): Promise<BriefView> {
+    return mapIntelligenceBusToBriefView(executiveName);
+  }
+}
+
 export class BriefService {
   constructor(private readonly repository: BriefRepository) {}
 
-  async getMorningBrief(): Promise<BriefView> {
-    return this.repository.getBriefView();
+  async getMorningBrief(executiveName?: string): Promise<BriefView> {
+    return this.repository.getBriefView(executiveName);
   }
 }
 
 export function createBriefService(repository?: BriefRepository): BriefService {
-  return new BriefService(repository ?? new MockBriefRepository());
+  return new BriefService(repository ?? new IntelligenceBusBriefRepository());
 }
 
-/** Default EC-001 service — mock repository until live integration (Sprint 9+). */
+/** Default EC-001 service — Intelligence Bus with CRM executive contribution. */
 export const briefService = createBriefService();
 
-export async function getMorningExecutiveBrief(): Promise<BriefView> {
-  return briefService.getMorningBrief();
+export async function getMorningExecutiveBrief(executiveName?: string): Promise<BriefView> {
+  return briefService.getMorningBrief(executiveName);
 }

@@ -1,4 +1,5 @@
 import { ConfigurationQuickActionsCard } from "@/components/configuration/ConfigurationQuickActionsCard";
+import { ExecutiveFocusSelector } from "@/components/executive/ExecutiveFocusSelector";
 import { ConfigurationSectionCard } from "@/components/configuration/ConfigurationSectionCard";
 import { ConfigurationWorkspaceHeader } from "@/components/configuration/ConfigurationWorkspaceHeader";
 import { IntegrationCard } from "@/components/configuration/IntegrationCard";
@@ -27,6 +28,8 @@ export default function ConfigurationWorkspacePage() {
       <ConfigurationWorkspaceHeader />
 
       <section aria-label="Configuration Workspace" className={WORKSPACE_SECTION_CLASS}>
+        <ExecutiveFocusSelector />
+
         <div className={WORKSPACE_GRID_2_COL}>
           <ConfigurationSectionCard
             title="Organization Information"

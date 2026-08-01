@@ -16,7 +16,9 @@ export function ExecutiveContent({
 }: ExecutiveContentProps) {
   return (
     <main
+      id="main-content"
       aria-label={ariaLabel}
+      tabIndex={-1}
       className={cn("flex-1 px-6 py-6 md:px-8 md:py-8", className)}
     >
       {children}

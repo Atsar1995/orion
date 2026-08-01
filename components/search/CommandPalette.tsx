@@ -14,13 +14,15 @@ import { NoResults } from "@/components/search/NoResults";
 import { RecentItems } from "@/components/search/RecentItems";
 import { SearchInput } from "@/components/search/SearchInput";
 import { SearchResults } from "@/components/search/SearchResults";
-import { rankSearchItems } from "@/lib/search/search-index";
+import { searchCommandPalette } from "@/lib/search/search-index";
 import type { SearchItem } from "@/lib/search/search-types";
 import {
   clampIndex,
+  getCommandPaletteShortcutLabel,
   getFavoriteItems,
   getRecentItems,
 } from "@/lib/search/search-utils";
+import { recordPaletteSelection } from "@/lib/search/palette-history";
 import { cn } from "@/lib/utils";
 
 type CommandPaletteProps = {
@@ -42,11 +44,11 @@ export function CommandPalette({ onClose }: CommandPaletteProps) {
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+  const [recentItems] = useState(() => getRecentItems());
+  const [favoriteItems] = useState(() => getFavoriteItems());
 
-  const recentItems = useMemo(() => getRecentItems(), []);
-  const favoriteItems = useMemo(() => getFavoriteItems(), []);
   const searchResults = useMemo(
-    () => rankSearchItems(query),
+    () => searchCommandPalette(query),
     [query],
   );
 
@@ -72,6 +74,8 @@ export function CommandPalette({ onClose }: CommandPaletteProps) {
 
   const handleSelect = useCallback(
     (item: SearchItem) => {
+      recordPaletteSelection(item);
+
       if (item.href) {
         router.push(item.href);
       }
@@ -244,9 +248,9 @@ export function CommandPalette({ onClose }: CommandPaletteProps) {
           )}
         </div>
 
-        <footer className="flex items-center justify-between gap-4 border-t border-white/[0.06] px-4 py-2.5 text-[11px] font-light text-white/35">
-          <span>Navigate with ↑ ↓ · Select with Enter</span>
-          <span>Esc to close</span>
+        <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-white/[0.06] px-4 py-2.5 text-[11px] font-light text-white/35">
+          <span>↑ ↓ navigate · Enter select · customer: · opportunity: · finance:</span>
+          <span>Esc close · {getCommandPaletteShortcutLabel()} palette</span>
         </footer>
       </div>
     </div>

@@ -1,14 +1,24 @@
 # ORION Engineering Manifesto
 
-> **Master reference:** [ORION Product Bible](../00_BLUEPRINT/ORION_Product_Bible.md) takes precedence where conflicts exist.
+> **Supreme authority:** [ORION Canon v1.0](../00_FOUNDATION/ORION_CANON_v1.md) (Ratified · Frozen · Effective 29 July 2026) — Chapter 6 Engineering Constitution prevails for engineering standards where conflict exists.
+>
+> **Master reference:** [ORION Product Bible](../00_BLUEPRINT/ORION_Product_Bible.md)
 
 **Version:** 1.0
 
-**Status:** Foundational
+**Status:** Foundational (subordinate to ORION Canon v1.0)
 
 **Classification:** Engineering Blueprint
 
 **Author:** Founder & Chief Architect
+
+---
+
+## Governance
+
+The ORION Canon v1.0 is the supreme governing document of the platform.
+
+In the event of conflict between any engineering, product, design, AI, architecture, or workspace documentation, the ORION Canon shall prevail.
 
 ---
 

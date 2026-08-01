@@ -42,6 +42,7 @@ When documents conflict, resolve in this order:
 | ORION Engineering Manifesto | [ORION_Engineering_Manifesto.md](./ORION_Engineering_Manifesto.md) | 1.0 | Foundational |
 | ORION Intelligence Constitution | [ORION_Intelligence_Constitution.md](../05_AI/ORION_Intelligence_Constitution.md) | 1.0 | Foundational |
 | ORION Governance Framework | [ORION_Governance_Framework.md](./ORION_Governance_Framework.md) | 1.0 | Foundational |
+| G-001 Enterprise Architecture Governance Charter | [../11_Governance/Governance/G-001-Enterprise-Architecture-Governance-Charter.md](../11_Governance/Governance/G-001-Enterprise-Architecture-Governance-Charter.md) | 1.0 | Ratified |
 
 ---
 

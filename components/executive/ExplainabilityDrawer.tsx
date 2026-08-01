@@ -5,11 +5,15 @@ import type { ExecutiveExplanation } from "@/types/executive";
 
 type ExplainabilityDrawerProps = {
   explanation: ExecutiveExplanation;
+  defaultOpen?: boolean;
 };
 
 /** Lightweight explainability panel for executive intelligence outputs. */
-export function ExplainabilityDrawer({ explanation }: ExplainabilityDrawerProps) {
-  const [open, setOpen] = useState(false);
+export function ExplainabilityDrawer({
+  explanation,
+  defaultOpen = false,
+}: ExplainabilityDrawerProps) {
+  const [open, setOpen] = useState(defaultOpen);
 
   return (
     <div className="space-y-3">

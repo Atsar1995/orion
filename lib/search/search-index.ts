@@ -1,4 +1,5 @@
 import { SEARCH_ITEMS } from "@/lib/search/search-data";
+import { searchExecutiveEntities } from "@/lib/search/entity-search";
 import type { RankedSearchItem, SearchItem } from "@/lib/search/search-types";
 
 const EXACT_MATCH_SCORE = 1000;
@@ -69,4 +70,23 @@ export function rankSearchItems(
       return a.item.label.localeCompare(b.item.label);
     })
     .map((entry) => entry.item);
+}
+
+/** Merges static palette items with executive entity matches. */
+export function searchCommandPalette(
+  query: string,
+  items: SearchItem[] = SEARCH_ITEMS,
+): SearchItem[] {
+  const entityResults = searchExecutiveEntities(query);
+  const staticResults = rankSearchItems(query, items);
+  const seen = new Set<string>();
+
+  return [...entityResults, ...staticResults].filter((item) => {
+    if (seen.has(item.id)) {
+      return false;
+    }
+
+    seen.add(item.id);
+    return true;
+  });
 }

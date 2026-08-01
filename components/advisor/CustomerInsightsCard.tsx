@@ -4,7 +4,7 @@ import { CrmKpiSummaryRow } from "@/components/crm/CrmEnhancedKpiCards";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { WORKSPACE_GRID_2_COL, WORKSPACE_SUMMARY_CLASS } from "@/lib/constants";
-import type { CrmCustomerProfile } from "@/lib/crm-insights";
+import { crmService, type CrmCustomerProfile } from "@/lib/crm";
 import {
   getProvider,
   getProviderBriefingLine,
@@ -114,12 +114,20 @@ export function CustomerInsightsCard() {
       title="Customer Intelligence"
       variant="premium"
       action={
-        <Link
-          href="/crm"
-          className="text-xs font-medium text-orion-gold/90 transition-colors hover:text-orion-gold"
-        >
-          Open CRM →
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/crm/insights"
+            className="text-xs font-medium text-orion-gold/90 transition-colors hover:text-orion-gold"
+          >
+            Insights →
+          </Link>
+          <Link
+            href="/crm"
+            className="text-xs font-medium text-white/45 transition-colors hover:text-white/70"
+          >
+            CRM →
+          </Link>
+        </div>
       }
     >
       <div className="space-y-5">
@@ -139,7 +147,7 @@ export function CustomerInsightsCard() {
             <StatCard label="Trend" value={snapshot.trend} />
           </div>
         </div>
-        <CrmKpiSummaryRow />
+        <CrmKpiSummaryRow metrics={crmService.getOverview().kpis} />
         <div className={WORKSPACE_GRID_2_COL}>
           <PriorityRelationshipBlock
             label="Highest Priority Relationship"
@@ -169,6 +177,18 @@ export function CustomerInsightsCard() {
               value={snapshot.weeklyRelationshipHealth.engagementChange}
             />
             <StatCard label="At Risk" value={snapshot.weeklyRelationshipHealth.atRiskChange} />
+          </div>
+        </div>
+        <div className="rounded-orion-md border border-white/[0.05] bg-white/[0.02] px-4 py-3">
+          <p className="text-xs font-medium tracking-wide text-white/40 uppercase">
+            Intelligence Summary
+          </p>
+          <p className="mt-2 text-sm font-light text-white/60">{snapshot.intelligenceSummary}</p>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <StatCard label="Forecast" value={snapshot.revenueForecastDisplay} />
+            <StatCard label="Follow-ups Due" value={String(snapshot.followUpDueCount)} />
+            <StatCard label="High-Risk Deals" value={String(snapshot.highRiskDealCount)} />
+            <StatCard label="Loss Signals" value={String(snapshot.lostOpportunityCount)} />
           </div>
         </div>
         <div className="rounded-orion-md border border-white/[0.05] bg-white/[0.02] px-4 py-3">

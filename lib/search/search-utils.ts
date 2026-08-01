@@ -3,6 +3,8 @@ import {
   RECENT_ITEM_IDS,
   SEARCH_ITEMS,
 } from "@/lib/search/search-data";
+import { getFocusBoostedFavoriteIds, getExecutivePreferences } from "@/lib/executive/personalization";
+import { getDynamicRecentItems } from "@/lib/search/palette-history";
 import type { SearchItem } from "@/lib/search/search-types";
 
 export function isMacPlatform(): boolean {
@@ -22,12 +24,29 @@ export function getSearchItemById(id: string): SearchItem | undefined {
 }
 
 export function getRecentItems(): SearchItem[] {
+  const dynamic = getDynamicRecentItems();
+
+  if (dynamic.length > 0) {
+    return dynamic;
+  }
+
   return RECENT_ITEM_IDS.map(getSearchItemById).filter(
     (item): item is SearchItem => item !== undefined,
   );
 }
 
 export function getFavoriteItems(): SearchItem[] {
+  if (typeof window !== "undefined") {
+    const focusIds = getFocusBoostedFavoriteIds(getExecutivePreferences().focus);
+    const focused = focusIds
+      .map(getSearchItemById)
+      .filter((item): item is SearchItem => item !== undefined);
+
+    if (focused.length > 0) {
+      return focused;
+    }
+  }
+
   return FAVORITE_ITEM_IDS.map(getSearchItemById).filter(
     (item): item is SearchItem => item !== undefined,
   );

@@ -1,58 +1,140 @@
 import { PROVIDER_VERSION, WORKSPACE_IDS } from "@/lib/intelligence/constants";
-import type { RegisteredExecutiveProvider } from "@/lib/intelligence/provider-registry";
-import { CRM_INTELLIGENCE } from "@/lib/crm/crm-intelligence-pipeline";
 
-/** Customer Intelligence Executive Provider (ADR-006). */
+import type { RegisteredExecutiveProvider } from "@/lib/intelligence/provider-registry";
+
+import {
+
+  crmService,
+
+  defaultCrmRepository,
+
+  mapCrmProviderMetrics,
+
+} from "@/lib/crm";
+
+import {
+
+  mapCrmBriefExecutiveSummary,
+
+  mapCrmBriefPlatformAlerts,
+
+  mapCrmBriefPlatformRecommendations,
+
+} from "@/lib/crm/mappers/brief-contribution";
+
+
+
+function getIntelligence() {
+
+  return crmService.getIntelligence();
+
+}
+
+
+
+/** Customer Intelligence Executive Provider (ADR-006 / Mission 16A.7). */
+
 export const crmExecutiveProvider: RegisteredExecutiveProvider = {
+
   id: WORKSPACE_IDS.CRM,
+
   workspace: "Customer Intelligence",
+
   version: PROVIDER_VERSION,
 
+
+
   getHealth() {
-    return CRM_INTELLIGENCE.health.customer;
+
+    return getIntelligence().health.customer;
+
   },
+
+
 
   getAlerts() {
-    return CRM_INTELLIGENCE.recommendations.riskAlerts;
+
+    const intelligence = getIntelligence();
+
+    return mapCrmBriefPlatformAlerts(defaultCrmRepository, intelligence);
+
   },
+
+
 
   getRecommendations() {
-    return CRM_INTELLIGENCE.brief.snapshot.executiveRecommendations;
+
+    return mapCrmBriefPlatformRecommendations(getIntelligence());
+
   },
+
+
 
   getExecutiveSummary() {
+
+    const intelligence = getIntelligence();
+
+
+
     return {
+
       headline: "Customer Intelligence",
-      body: CRM_INTELLIGENCE.brief.weeklySummary,
-      status: CRM_INTELLIGENCE.health.customer.status,
+
+      body: mapCrmBriefExecutiveSummary(intelligence),
+
+      status: intelligence.signals.executiveSummary.status,
+
     };
+
   },
+
+
 
   getMetrics() {
-    return [
-      { label: "Customer Health", value: `${CRM_INTELLIGENCE.health.customer.score}/100` },
-      { label: "Pipeline Value", value: "₹1.8Cr" },
-      { label: "Open Opportunities", value: "24" },
-    ];
+
+    return mapCrmProviderMetrics(getIntelligence());
+
   },
+
+
 
   getRisks() {
-    return CRM_INTELLIGENCE.recommendations.riskAlerts.map((alert) => ({
+
+    return mapCrmBriefPlatformAlerts(defaultCrmRepository, getIntelligence()).map((alert) => ({
+
       severity: alert.severity,
+
       message: alert.message,
+
       source: alert.category ?? "crm",
+
     }));
+
   },
+
+
 
   getPriorities() {
-    return CRM_INTELLIGENCE.recommendations.executivePriorities;
+
+    return getIntelligence().recommendations.executivePriorities;
+
   },
+
+
 
   getBriefingLine() {
-    return CRM_INTELLIGENCE.brief.briefingLine;
+
+    return getIntelligence().brief.briefingLine;
+
   },
 
+
+
   getBriefCardSnapshot() {
-    return CRM_INTELLIGENCE.brief.snapshot;
+
+    return getIntelligence().brief.snapshot;
+
   },
+
 };
+

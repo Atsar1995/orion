@@ -1,8 +1,8 @@
 import { Widget, WidgetBody, WidgetFooter, WidgetHeader } from "@/components/dashboard";
-import type { MockKPIData } from "@/lib/dashboard/mock/MockKPIs";
+import type { DashboardKPIData } from "@/lib/dashboard/types";
 
 type KPIHighlightsWidgetProps = {
-  data: MockKPIData;
+  data: DashboardKPIData;
 };
 
 const TREND_CLASS = {

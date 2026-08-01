@@ -4,13 +4,22 @@ Versioned release documentation for the ORION Platform.
 
 | Version | Status | Release Notes | Checklist |
 |---------|--------|---------------|-----------|
+| **v0.4.1-alpha** | Alpha · Internal · 31 July 2026 | [Release Notes](./v0.4.1-alpha-Release-Notes.md) | [Checklist](./v0.4.1-alpha-Release-Checklist.md) |
 | **v0.4.0-alpha** | Alpha · Internal · 25 July 2026 | [Release Notes](./v0.4.0-alpha-Release-Notes.md) | [Checklist](./v0.4.0-alpha-Release-Checklist.md) |
 
 **Policy (alpha):** Documentation and internal verification only. No git tag. No production deployment.
 
-**Changelog:** [docs/06_Releases/CHANGELOG.md](../06_Releases/CHANGELOG.md)
+---
 
-**Quality audits:** [docs/03_Quality/](../03_Quality/)
+## v0.4.1-alpha — Enterprise Data Platform (P-011 Phase I)
+
+Alpha release of the Enterprise Data Platform epic — Master Data Registry, Validation Framework, Synchronization Engine, and P-011.8 certification.
+
+**Delivered:** P-011.1 · P-011.4 · P-011.5 · P-011.8 · 15 public services · 7 API routes · IIL integration.
+
+**Not delivered:** P-011.2 Reference Data · P-011.3 Metadata · P-011.6 Governance · P-011.7 Executive Intelligence · D-012 · production persistence.
+
+**Certification:** CONDITIONAL GO (Phase I) · NO-GO (full production epic).
 
 ---
 

@@ -18,6 +18,14 @@
 | **Last Updated** | 14 July 2026 |
 | **Scope** | Entire ORION Platform |
 
+## Governance
+
+The **ORION Canon v1.0** is the supreme governing document of the platform. Chapter 3 (Platform Architecture) is the architectural constitution.
+
+In the event of conflict between this document and the ORION Canon, **the Canon shall prevail**.
+
+Reference: [ORION Canon v1.0](../00_FOUNDATION/ORION_CANON_v1.md)
+
 This document is the **master architecture reference** for the ORION Platform.
 
 **Enterprise consolidation:** [ES-050 — ORION Enterprise Reference Architecture](../02_Engineering/ES-050-ORION-Enterprise-Reference-Architecture.md) (Approved · Construction Phase ES-006–ES-049 mapped to six enterprise layers)

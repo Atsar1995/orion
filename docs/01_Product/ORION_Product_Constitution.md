@@ -1,16 +1,26 @@
 # ORION Product Constitution
 
-> **Master reference:** [ORION Product Bible](../00_BLUEPRINT/ORION_Product_Bible.md) takes precedence where conflicts exist.
+> **Supreme authority:** [ORION Canon v1.0](../00_FOUNDATION/ORION_CANON_v1.md) (Ratified · Frozen · Effective 29 July 2026) — prevails over all documentation where conflict exists.
+>
+> **Master reference:** [ORION Product Bible](../00_BLUEPRINT/ORION_Product_Bible.md)
 >
 > **Non-negotiables:** [ORION Non-Negotiables](../00_BLUEPRINT/ORION_Non_Negotiables.md) — never compromised.
 
 **Version:** 1.0
 
-**Status:** Foundational
+**Status:** Foundational (subordinate to ORION Canon v1.0)
 
 **Classification:** Product Blueprint
 
 **Author:** Founder & Chief Architect
+
+---
+
+## Governance
+
+The ORION Canon v1.0 is the supreme governing document of the platform.
+
+In the event of conflict between any engineering, product, design, AI, architecture, or workspace documentation, the ORION Canon shall prevail.
 
 ---
 

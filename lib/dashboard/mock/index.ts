@@ -53,5 +53,7 @@ export function createMockDashboardState(): DashboardState {
     narrative: MOCK_EXECUTIVE_NARRATIVE,
     recommendations: MOCK_RECOMMENDATIONS,
     generatedAt: MOCK_DASHBOARD_GENERATED_AT,
+    lastUpdatedAt: MOCK_DASHBOARD_GENERATED_AT,
+    sourceProviders: ["Finance", "CRM", "Hospitality"],
   };
 }

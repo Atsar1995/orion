@@ -10,39 +10,51 @@ export type NavigationSection = {
 
 /** Executive intelligence layer — founder daily briefing surfaces. */
 export const executiveNav: NavigationItem[] = [
-  { label: "Executive Brief", href: "/brief", icon: "advisor" },
+  { label: "Morning Brief", href: "/brief", icon: "advisor" },
+  { label: "Executive Memory", href: "/memory", icon: "intelligence" },
+  { label: "Decision Intelligence", href: "/decisions", icon: "intelligence" },
   { label: "Command Center", href: "/command-center", icon: "command-center" },
   { label: "Mission Control", href: "/mission-control", icon: "mission-control" },
 ];
 
 export const primaryNav: NavigationItem[] = [
+  { label: "Organization", href: "/organization", icon: "configuration" },
+  { label: "Users", href: "/users", icon: "settings" },
+  { label: "Roles", href: "/roles", icon: "settings" },
   { label: "Intelligence", href: "/intelligence", icon: "intelligence" },
+  { label: "Integration Layer", href: "/intelligence/integration", icon: "integrations" },
   { label: "Engineering", href: "/engineering", icon: "engineering" },
   { label: "Configuration", href: "/configuration", icon: "configuration" },
-  { label: "Tasks", href: "/tasks", icon: "tasks" },
-  { label: "Calendar", href: "/calendar", icon: "calendar" },
-  { label: "Messages", href: "/messages", icon: "messages" },
+];
+
+export const comingSoonPrimaryNav: NavigationItem[] = [
+  { label: "Tasks", href: "/tasks", icon: "tasks", availability: "coming-soon" },
+  { label: "Calendar", href: "/calendar", icon: "calendar", availability: "coming-soon" },
+  { label: "Messages", href: "/messages", icon: "messages", availability: "coming-soon" },
 ];
 
 export const moduleNav: NavigationItem[] = [
   { label: "Hospitality", href: "/hospitality", icon: "hospitality" },
   { label: "Marketing", href: "/marketing", icon: "marketing" },
-  { label: "Commerce", href: "/commerce", icon: "commerce" },
   { label: "CRM", href: "/crm", icon: "crm" },
   { label: "Finance", href: "/finance", icon: "finance" },
-  { label: "Knowledge Vault", href: "/knowledge", icon: "knowledge" },
   { label: "Integrations", href: "/integrations", icon: "integrations" },
 ];
 
+export const comingSoonModuleNav: NavigationItem[] = [
+  { label: "Commerce", href: "/commerce", icon: "commerce", availability: "coming-soon" },
+  { label: "Knowledge Vault", href: "/knowledge", icon: "knowledge", availability: "coming-soon" },
+];
+
 export const utilityNav: NavigationItem[] = [
-  { label: "Settings", href: "/settings", icon: "settings" },
+  { label: "Settings", href: "/configuration", icon: "settings" },
 ];
 
 /** Default navigation sections for the executive platform shell. */
 export const DEFAULT_NAVIGATION_SECTIONS: readonly NavigationSection[] = [
-  { id: "executive", label: "Executive", items: executiveNav },
-  { id: "primary", label: "Platform", items: primaryNav },
-  { id: "modules", label: "Workspaces", items: moduleNav },
+  { id: "executive", label: "Daily Briefing", items: executiveNav },
+  { id: "primary", label: "Platform", items: [...primaryNav, ...comingSoonPrimaryNav] },
+  { id: "modules", label: "Workspaces", items: [...moduleNav, ...comingSoonModuleNav] },
   { id: "utility", items: utilityNav },
 ];
 

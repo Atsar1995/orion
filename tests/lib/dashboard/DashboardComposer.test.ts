@@ -9,7 +9,7 @@ import {
 
 describe("DashboardComposer", () => {
   it("composes all default layout sections from mock state", () => {
-    const composition = composeDashboard();
+    const composition = composeDashboard({ state: createMockDashboardState() });
 
     expect(composition.state.generatedAt).toBe(MOCK_DASHBOARD_GENERATED_AT);
     expect(composition.sections).toHaveLength(DEFAULT_DASHBOARD_LAYOUT.length);
@@ -23,7 +23,7 @@ describe("DashboardComposer", () => {
   });
 
   it("orders widgets within a section by configured order", () => {
-    const composition = composeDashboard();
+    const composition = composeDashboard({ state: createMockDashboardState() });
     const overview = composition.sections.find((section) => section.id === "overview");
 
     expect(overview?.widgets.map((widget) => widget.id)).toEqual([

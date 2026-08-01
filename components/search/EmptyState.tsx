@@ -6,7 +6,7 @@ export function EmptyState() {
     <div className="space-y-4 px-4 py-6">
       <UiEmptyState
         title="Start typing..."
-        description="Search navigation, commands, reports, and settings across ORION."
+        description="Search navigation, customers, opportunities, finance, commands, and reports."
         className="items-start text-left sm:items-start sm:text-left"
       />
       <div>

@@ -1,5 +1,7 @@
 # ORION Engineering Standards
 
+> **Supreme authority:** [ORION Canon v1.0](../00_FOUNDATION/ORION_CANON_v1.md) (Ratified · Frozen · Effective 29 July 2026) — Chapter 6 Engineering Constitution governs verification gates and engineering review.
+
 > **Canonical specification:** [ES-043 — Engineering Governance & Delivery Standards](../02_Engineering/ES-043-Engineering-Governance-Delivery-Standards.md) (Approved · extends this document for Construction Phase delivery governance)
 
 > **Quality assurance:** [ES-054 — ORION Quality Assurance & Engineering Excellence Framework](../02_Engineering/ES-054-ORION-Quality-Assurance-Engineering-Excellence-Framework.md) (Approved · testing strategy · CI/CD targets)
@@ -23,6 +25,18 @@
 Version 1.4
 
 > **Philosophy:** [ORION Engineering Manifesto v1.0](./ORION_Engineering_Manifesto.md) (Foundational · Engineering Blueprint)
+
+---
+
+## Governance
+
+The ORION Canon v1.0 is the supreme governing document of the platform.
+
+In the event of conflict between any engineering, product, design, AI, architecture, or workspace documentation, the ORION Canon shall prevail.
+
+Reference: [ORION Canon v1.0](../00_FOUNDATION/ORION_CANON_v1.md) · [Compliance Matrix](../00_FOUNDATION/CANON_COMPLIANCE_MATRIX.md)
+
+---
 >
 > This document defines operational engineering rules. The Manifesto defines the engineering philosophy behind them.
 

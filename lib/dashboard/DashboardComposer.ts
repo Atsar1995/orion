@@ -6,7 +6,6 @@ import {
   DashboardWidgetRegistry,
   defaultDashboardWidgetRegistry,
 } from "@/lib/dashboard/WidgetRegistry";
-import { createMockDashboardState } from "@/lib/dashboard/mock";
 
 /** Composed widget ready for layout rendering. */
 export type ComposedDashboardWidget = {
@@ -33,19 +32,18 @@ export type DashboardComposition = {
 
 type ComposeDashboardOptions = {
   readonly layout?: readonly DashboardSectionConfig[];
-  readonly state?: DashboardState;
+  readonly state: DashboardState;
   readonly registry?: DashboardWidgetRegistry;
 };
 
 /** Configuration-driven dashboard composition — presentation only. */
-export function composeDashboard(options: ComposeDashboardOptions = {}): DashboardComposition {
+export function composeDashboard(options: ComposeDashboardOptions): DashboardComposition {
   const layout = options.layout ?? DEFAULT_DASHBOARD_LAYOUT;
-  const state = options.state ?? createMockDashboardState();
   const registry = options.registry ?? defaultDashboardWidgetRegistry;
 
   return {
-    state,
-    sections: layout.map((section) => composeDashboardSection(section, state, registry)),
+    state: options.state,
+    sections: layout.map((section) => composeDashboardSection(section, options.state, registry)),
   };
 }
 

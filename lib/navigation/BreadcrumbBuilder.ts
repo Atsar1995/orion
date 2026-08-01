@@ -3,8 +3,8 @@ import type { NavigationRegistry } from "@/lib/navigation/NavigationRegistry";
 import { defaultNavigationRegistry } from "@/lib/navigation/NavigationRegistry";
 
 const ROOT_BREADCRUMB: BreadcrumbItem = {
-  label: "ORION",
-  href: "/",
+  label: "Morning Brief",
+  href: "/brief",
 };
 
 /** Builds a deterministic breadcrumb trail from a pathname. */
@@ -13,6 +13,11 @@ export function buildBreadcrumbs(
   registry: NavigationRegistry = defaultNavigationRegistry,
 ): readonly BreadcrumbItem[] {
   const normalized = normalizePath(pathname);
+
+  if (normalized === ROOT_BREADCRUMB.href) {
+    return [ROOT_BREADCRUMB];
+  }
+
   const segments = normalized.split("/").filter(Boolean);
 
   if (segments.length === 0) {

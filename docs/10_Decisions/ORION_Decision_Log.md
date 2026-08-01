@@ -30,7 +30,7 @@ The Decision Log serves as the institutional memory of ORION.
 
 | Format | Scope | Location |
 |--------|-------|----------|
-| **ADR** | Major architectural decisions affecting platform structure, patterns, or standards | `docs/10_Decisions/ADR-*.md` |
+| **ADR** | Major architectural decisions affecting platform structure, patterns, or standards | `docs/11_Governance/ADR/ADR-*.md` |
 | **DL** | Significant decisions across architecture, engineering, product, design, security, business, and process | `docs/10_Decisions/decisions/DL-*.md` |
 
 ADRs are formal architecture records. Decision Log entries capture broader decisions and may reference related ADRs.

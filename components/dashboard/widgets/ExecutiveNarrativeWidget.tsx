@@ -1,8 +1,8 @@
 import { Widget, WidgetBody, WidgetFooter, WidgetHeader } from "@/components/dashboard";
-import type { MockExecutiveNarrativeData } from "@/lib/dashboard/mock/MockMorningBrief";
+import type { DashboardExecutiveNarrativeData } from "@/lib/dashboard/types";
 
 type ExecutiveNarrativeWidgetProps = {
-  data: MockExecutiveNarrativeData;
+  data: DashboardExecutiveNarrativeData;
 };
 
 /** EP-002 executive narrative widget — presentation only. */

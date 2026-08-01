@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
-import type { CrmKpiMetric, CrmTrendDirection } from "@/lib/crm-insights";
-import { CRM_ENHANCED_KPIS } from "@/lib/crm-insights";
+import type { CrmKpiMetric, CrmTrendDirection } from "@/lib/crm/models/domain";
 import { cn } from "@/lib/utils";
 
 const TREND_CLASS: Record<CrmTrendDirection, string> = {
@@ -26,12 +25,17 @@ function EnhancedKpiCard({ metric }: { metric: CrmKpiMetric }) {
   );
 }
 
+type CrmEnhancedKpiCardsProps = {
+  metrics: CrmKpiMetric[];
+  title?: string;
+};
+
 /** Enhanced customer intelligence KPI cards with trend indicators. */
-export function CrmEnhancedKpiCards() {
+export function CrmEnhancedKpiCards({ metrics, title = "Key Metrics" }: CrmEnhancedKpiCardsProps) {
   return (
-    <Card title="Key Metrics">
+    <Card title={title}>
       <div className="grid grid-cols-2 gap-2.5 md:grid-cols-3 xl:grid-cols-6">
-        {CRM_ENHANCED_KPIS.map((metric) => (
+        {metrics.map((metric) => (
           <EnhancedKpiCard key={metric.label} metric={metric} />
         ))}
       </div>
@@ -39,9 +43,13 @@ export function CrmEnhancedKpiCards() {
   );
 }
 
+type CrmKpiSummaryRowProps = {
+  metrics: CrmKpiMetric[];
+};
+
 /** Compact KPI row for Executive Brief integration. */
-export function CrmKpiSummaryRow() {
-  const summaryMetrics = CRM_ENHANCED_KPIS.slice(0, 4);
+export function CrmKpiSummaryRow({ metrics }: CrmKpiSummaryRowProps) {
+  const summaryMetrics = metrics.slice(0, 4);
 
   return (
     <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">

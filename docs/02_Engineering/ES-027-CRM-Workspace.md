@@ -345,6 +345,7 @@ The workspace shall:
 | Executive relationship intelligence | 16D | [RR-015](../06_Releases/RR-015-Mission16D-Executive-Relationship-Intelligence-AI-Readiness.md) |
 | Executive Provider | 17A | [RR-016](../06_Releases/RR-016-Mission17A-Executive-Intelligence-Foundation.md) |
 | Intelligence engines refactor | 17B | [RR-017](../06_Releases/RR-017-Mission17B-Executive-Intelligence-Engines.md) |
+| CRM v1.0 release readiness | 16A.8 | [RR-018](../06_Releases/RR-018-Mission16A8-CRM-Workspace-v1-Release-Readiness.md) |
 | ES-027 canonical spec | — | This document |
 
 **Construction Phase gaps:** `/crm/companies` · nav label alignment (Contacts/Analytics) · dimensional Relationship Health · full communications channels · cross-domain timeline

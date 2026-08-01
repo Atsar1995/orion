@@ -6,7 +6,7 @@ type CrmSectionPlaceholderProps = {
   description: string;
 };
 
-/** Placeholder section for Customer Intelligence sub-pages pending Mission 16B+. */
+/** Placeholder section for CRM sub-pages pending data integrations (Mission 16A.1+). */
 export function CrmSectionPlaceholder({
   title,
   description,

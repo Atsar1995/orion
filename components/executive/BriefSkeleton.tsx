@@ -1,4 +1,5 @@
 import { BriefLayout } from "@/components/executive/BriefLayout";
+import { BriefQuickNav } from "@/components/executive/BriefQuickNav";
 import { LoadingState } from "@/components/ui/LoadingState";
 import {
   WORKSPACE_HEADER_BLOCK_CLASS,
@@ -22,21 +23,23 @@ export function BriefSkeleton() {
     <div className={WORKSPACE_PAGE_CLASS}>
       <BriefLayout>
         <div className={WORKSPACE_HEADER_BLOCK_CLASS}>
-          <SkeletonBlock className="h-5 w-48" />
-          <SkeletonBlock className="mt-3 h-10 w-72 max-w-full" />
-          <SkeletonBlock className="mt-2 h-4 w-56" />
+          <SkeletonBlock className="h-5 w-64 max-w-full" />
+          <SkeletonBlock className="mt-2 h-8 w-96 max-w-full" />
+          <SkeletonBlock className="mt-2 h-4 w-72 max-w-full" />
         </div>
+
+        <BriefQuickNav />
 
         <LoadingState label="Preparing your Morning Executive Brief..." />
 
         <section className={WORKSPACE_SECTION_CLASS}>
+          <SkeletonBlock className="h-24" />
           <div className={WORKSPACE_GRID_2_COL}>
-            <SkeletonBlock className="h-64" />
-            <SkeletonBlock className="h-64" />
+            <SkeletonBlock className="h-56" />
+            <SkeletonBlock className="h-56" />
           </div>
-          <SkeletonBlock className="h-28" />
-          <SkeletonBlock className="h-48" />
-          <SkeletonBlock className="h-36" />
+          <SkeletonBlock className="h-44" />
+          <SkeletonBlock className="h-32" />
         </section>
       </BriefLayout>
     </div>

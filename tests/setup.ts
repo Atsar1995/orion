@@ -12,6 +12,28 @@ vi.mock("next/link", () => ({
     React.createElement("a", { href, ...props }, children),
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    replace: vi.fn(),
+    prefetch: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+  }),
+  usePathname: () => "/",
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+vi.mock("@/hooks/useDecisionActions", () => ({
+  useDecisionActions: () => ({
+    loading: false,
+    error: null,
+    lastDecision: null,
+    recordRecommendationAction: vi.fn().mockResolvedValue(null),
+  }),
+}));
+
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();

@@ -1,4 +1,9 @@
+"use client";
+
+import Link from "next/link";
+import { useMemo, useState } from "react";
 import { StatusIndicator } from "@/components/command-center/StatusIndicator";
+import { ExplainabilityDrawer } from "@/components/executive/ExplainabilityDrawer";
 import type { HealthSnapshot } from "@/types/executive";
 import { cn } from "@/lib/utils";
 
@@ -7,14 +12,40 @@ type BusinessHealthCardProps = {
   className?: string;
 };
 
+function isHealthyDomain(status: HealthSnapshot["domains"][number]["status"]): boolean {
+  return status === "healthy";
+}
+
 /** EC-001 / EC-002 business health card with score, domains, and trend. */
 export function BusinessHealthCard({ health, className }: BusinessHealthCardProps) {
+  const [showHealthyDomains, setShowHealthyDomains] = useState(false);
+
+  const { attentionDomains, healthyDomains } = useMemo(() => {
+    const attention = health.domains.filter((domain) => !isHealthyDomain(domain.status));
+    const healthy = health.domains.filter((domain) => isHealthyDomain(domain.status));
+
+    return { attentionDomains: attention, healthyDomains: healthy };
+  }, [health.domains]);
+
+  const visibleDomains = showHealthyDomains
+    ? health.domains
+    : attentionDomains.length > 0
+      ? attentionDomains
+      : health.domains.slice(0, 2);
+
   const trendClass =
     health.trendDirection === "up"
       ? "text-orion-success"
       : health.trendDirection === "down"
         ? "text-red-300"
         : "text-orion-muted";
+
+  const explanation = {
+    question: "why-this-score" as const,
+    title: "Why this score?",
+    summary: health.summary,
+    factors: health.domains.map((domain) => `${domain.label}: ${domain.summary}`),
+  };
 
   return (
     <article
@@ -26,16 +57,8 @@ export function BusinessHealthCard({ health, className }: BusinessHealthCardProp
     >
       <div className="flex items-start justify-between gap-3">
         <p className="text-[length:var(--orion-text-caption-md)] font-medium tracking-[var(--orion-tracking-wide)] text-orion-muted uppercase">
-          Business Health
+          What Happened · Business Health
         </p>
-        {health.explanationAvailable ? (
-          <button
-            type="button"
-            className="text-xs font-medium text-orion-gold/80 transition-colors hover:text-orion-gold"
-          >
-            Why this score?
-          </button>
-        ) : null}
       </div>
 
       <div className="mt-[var(--orion-space-3)] flex items-end gap-[var(--orion-space-2)]">
@@ -56,21 +79,48 @@ export function BusinessHealthCard({ health, className }: BusinessHealthCardProp
         {health.summary}
       </p>
 
+      {health.explanationAvailable ? (
+        <div className="mt-[var(--orion-space-3)]">
+          <ExplainabilityDrawer explanation={explanation} />
+        </div>
+      ) : null}
+
       {health.domains.length > 0 ? (
-        <ul className="mt-[var(--orion-space-4)] grid grid-cols-1 gap-2 border-t border-orion-border pt-[var(--orion-space-3)] sm:grid-cols-2">
-          {health.domains.map((domain) => (
-            <li
-              key={domain.id}
-              className="flex items-center justify-between gap-3 rounded-orion-md border border-orion-border bg-orion-surface px-3 py-2"
+        <div className="mt-[var(--orion-space-4)] border-t border-orion-border pt-[var(--orion-space-3)]">
+          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {visibleDomains.map((domain) => (
+              <li
+                key={domain.id}
+                className="flex items-center justify-between gap-3 rounded-orion-md border border-orion-border bg-orion-surface px-3 py-2"
+              >
+                <div className="min-w-0">
+                  {domain.href ? (
+                    <Link href={domain.href} className="hover:text-orion-gold">
+                      <p className="text-sm font-medium text-orion-text/85">{domain.label}</p>
+                    </Link>
+                  ) : (
+                    <p className="text-sm font-medium text-orion-text/85">{domain.label}</p>
+                  )}
+                  <p className="truncate text-xs font-light text-orion-muted">{domain.summary}</p>
+                </div>
+                <StatusIndicator status={domain.status} showLabel={false} />
+              </li>
+            ))}
+          </ul>
+
+          {healthyDomains.length > 0 && attentionDomains.length > 0 ? (
+            <button
+              type="button"
+              aria-expanded={showHealthyDomains}
+              className="mt-3 text-xs font-medium text-orion-gold/80 transition-colors hover:text-orion-gold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orion-gold/50"
+              onClick={() => setShowHealthyDomains((value) => !value)}
             >
-              <div className="min-w-0">
-                <p className="text-sm font-medium text-orion-text/85">{domain.label}</p>
-                <p className="truncate text-xs font-light text-orion-muted">{domain.summary}</p>
-              </div>
-              <StatusIndicator status={domain.status} showLabel={false} />
-            </li>
-          ))}
-        </ul>
+              {showHealthyDomains
+                ? "Hide healthy domains"
+                : `Show ${healthyDomains.length} healthy domain${healthyDomains.length === 1 ? "" : "s"}`}
+            </button>
+          ) : null}
+        </div>
       ) : null}
     </article>
   );

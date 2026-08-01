@@ -1,8 +1,8 @@
 import { Widget, WidgetBody, WidgetFooter, WidgetHeader } from "@/components/dashboard";
-import type { MockConfidenceData } from "@/lib/dashboard/mock/MockBusinessHealth";
+import type { DashboardConfidenceData } from "@/lib/dashboard/types";
 
 type ConfidenceWidgetProps = {
-  data: MockConfidenceData;
+  data: DashboardConfidenceData;
 };
 
 const BAND_LABEL = {
@@ -11,7 +11,7 @@ const BAND_LABEL = {
   low: "Low confidence",
 } as const;
 
-/** EP-002 confidence widget — presentation only, no EC-002B logic. */
+/** EP-002 confidence widget — provider-backed signal consistency. */
 export function ConfidenceWidget({ data }: ConfidenceWidgetProps) {
   const percentage = Math.round(data.score * 100);
 
@@ -34,7 +34,7 @@ export function ConfidenceWidget({ data }: ConfidenceWidgetProps) {
           ))}
         </ul>
       </WidgetBody>
-      <WidgetFooter>Explainability surface — mock snapshot</WidgetFooter>
+      <WidgetFooter>Aggregated from registered workspace providers</WidgetFooter>
     </Widget>
   );
 }

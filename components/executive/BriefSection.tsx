@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { ORION_EXECUTIVE_KICKER_CLASS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 type BriefSectionProps = {
@@ -25,7 +26,7 @@ export function BriefSection({
         <div>
           <h2
             id={id ?? `${title}-heading`}
-            className="text-[11px] font-medium tracking-[0.14em] text-orion-gold/80 uppercase"
+            className={ORION_EXECUTIVE_KICKER_CLASS}
           >
             {title}
           </h2>

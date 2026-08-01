@@ -1,17 +1,6 @@
-import { RelationshipTimeline } from "@/components/crm/RelationshipTimeline";
-import { CrmSectionHeader } from "@/components/crm/CrmSectionHeader";
-import { WORKSPACE_SECTION_CLASS } from "@/lib/constants";
+import { redirect } from "next/navigation";
 
-export default function CrmActivityPage() {
-  return (
-    <>
-      <CrmSectionHeader
-        title="Activity"
-        subtitle="Calls, meetings, and customer touchpoints."
-      />
-      <section aria-label="CRM Activity" className={WORKSPACE_SECTION_CLASS}>
-        <RelationshipTimeline title="Activity Timeline" />
-      </section>
-    </>
-  );
+/** Legacy route — redirects to Mission 16A.1 activities path. */
+export default function CrmActivityRedirectPage() {
+  redirect("/crm/activities");
 }

@@ -4,15 +4,31 @@
 
 import type { RoleSlug, User } from "@/types/auth";
 
-/** Predefined platform roles. */
+/** Predefined platform roles (Mission S1A). */
 export enum SystemRole {
-  Founder = "founder",
-  Administrator = "administrator",
+  SuperAdmin = "super_admin",
+  OrganizationAdmin = "organization_admin",
+  Executive = "executive",
   Manager = "manager",
+  Analyst = "analyst",
+  ReadOnly = "read_only",
+  /** @deprecated Use {@link SystemRole.Executive} */
+  Founder = "founder",
+  /** @deprecated Use {@link SystemRole.OrganizationAdmin} */
+  Administrator = "administrator",
+  /** @deprecated Use {@link SystemRole.Analyst} */
   Staff = "staff",
+  /** @deprecated Use {@link SystemRole.ReadOnly} */
   Guest = "guest",
   ServiceAccount = "service_account",
 }
+
+const LEGACY_ROLE_ALIASES: Record<string, SystemRole> = {
+  founder: SystemRole.Executive,
+  administrator: SystemRole.OrganizationAdmin,
+  staff: SystemRole.Analyst,
+  guest: SystemRole.ReadOnly,
+};
 
 /** Resolves a role slug or enum value to a {@link SystemRole}, if valid. */
 export function toSystemRole(role: RoleSlug | SystemRole): SystemRole | null {
@@ -20,17 +36,25 @@ export function toSystemRole(role: RoleSlug | SystemRole): SystemRole | null {
     return role as SystemRole;
   }
 
-  return null;
+  return LEGACY_ROLE_ALIASES[role] ?? null;
 }
 
-/** Returns true when the role is {@link SystemRole.Founder}. */
+export function isSuperAdmin(role: RoleSlug | SystemRole): boolean {
+  return role === SystemRole.SuperAdmin || role === SystemRole.ServiceAccount;
+}
+
+export function isOrganizationAdmin(role: RoleSlug | SystemRole): boolean {
+  return role === SystemRole.OrganizationAdmin || role === SystemRole.Administrator;
+}
+
+/** Returns true when the role is {@link SystemRole.Founder} or {@link SystemRole.Executive}. */
 export function isFounder(role: RoleSlug | SystemRole): boolean {
-  return role === SystemRole.Founder;
+  return role === SystemRole.Founder || role === SystemRole.Executive;
 }
 
 /** Returns true when the role is {@link SystemRole.Administrator}. */
 export function isAdministrator(role: RoleSlug | SystemRole): boolean {
-  return role === SystemRole.Administrator;
+  return isOrganizationAdmin(role);
 }
 
 /** Returns true when the role is {@link SystemRole.Manager}. */
@@ -38,14 +62,14 @@ export function isManager(role: RoleSlug | SystemRole): boolean {
   return role === SystemRole.Manager;
 }
 
-/** Returns true when the role is {@link SystemRole.Staff}. */
+/** Returns true when the role is {@link SystemRole.Staff} or {@link SystemRole.Analyst}. */
 export function isStaff(role: RoleSlug | SystemRole): boolean {
-  return role === SystemRole.Staff;
+  return role === SystemRole.Staff || role === SystemRole.Analyst;
 }
 
-/** Returns true when the role is {@link SystemRole.Guest}. */
+/** Returns true when the role is {@link SystemRole.Guest} or {@link SystemRole.ReadOnly}. */
 export function isGuest(role: RoleSlug | SystemRole): boolean {
-  return role === SystemRole.Guest;
+  return role === SystemRole.Guest || role === SystemRole.ReadOnly;
 }
 
 /** Returns true when the role is {@link SystemRole.ServiceAccount}. */
@@ -53,27 +77,22 @@ export function isServiceAccount(role: RoleSlug | SystemRole): boolean {
   return role === SystemRole.ServiceAccount;
 }
 
-/** Returns true when the user holds the {@link SystemRole.Founder} role. */
 export function userIsFounder(user: Pick<User, "role">): boolean {
   return isFounder(user.role);
 }
 
-/** Returns true when the user holds the {@link SystemRole.Administrator} role. */
 export function userIsAdministrator(user: Pick<User, "role">): boolean {
   return isAdministrator(user.role);
 }
 
-/** Returns true when the user holds the {@link SystemRole.Manager} role. */
 export function userIsManager(user: Pick<User, "role">): boolean {
   return isManager(user.role);
 }
 
-/** Returns true when the user holds the {@link SystemRole.Staff} role. */
 export function userIsStaff(user: Pick<User, "role">): boolean {
   return isStaff(user.role);
 }
 
-/** Returns true when the user holds the {@link SystemRole.Guest} role. */
 export function userIsGuest(user: Pick<User, "role">): boolean {
   return isGuest(user.role);
 }
@@ -81,11 +100,16 @@ export function userIsGuest(user: Pick<User, "role">): boolean {
 /** Human-readable label for a system role. */
 export function getRoleLabel(role: RoleSlug | SystemRole): string {
   const labels: Record<SystemRole, string> = {
-    [SystemRole.Founder]: "Founder",
-    [SystemRole.Administrator]: "Administrator",
+    [SystemRole.SuperAdmin]: "Super Admin",
+    [SystemRole.OrganizationAdmin]: "Organization Admin",
+    [SystemRole.Executive]: "Executive",
     [SystemRole.Manager]: "Manager",
-    [SystemRole.Staff]: "Staff",
-    [SystemRole.Guest]: "Guest",
+    [SystemRole.Analyst]: "Analyst",
+    [SystemRole.ReadOnly]: "Read Only",
+    [SystemRole.Founder]: "Executive",
+    [SystemRole.Administrator]: "Organization Admin",
+    [SystemRole.Staff]: "Analyst",
+    [SystemRole.Guest]: "Read Only",
     [SystemRole.ServiceAccount]: "Service Account",
   };
 

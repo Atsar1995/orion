@@ -1,18 +1,20 @@
 import { Card } from "@/components/ui/Card";
 import { ARRIVALS_DEPARTURES } from "@/lib/hospitality-data";
 
+type ArrivalsDeparturesProps = {
+  items?: readonly { guest: string; room: string; time: string; type: "arrival" | "departure" }[];
+};
+
 /** Today's arrivals and departures schedule. */
-export function ArrivalsDepartures() {
-  const arrivals = ARRIVALS_DEPARTURES.filter((item) => item.type === "arrival");
-  const departures = ARRIVALS_DEPARTURES.filter((item) => item.type === "departure");
+export function ArrivalsDepartures({ items = ARRIVALS_DEPARTURES }: ArrivalsDeparturesProps) {
+  const arrivals = items.filter((item) => item.type === "arrival");
+  const departures = items.filter((item) => item.type === "departure");
 
   return (
     <Card title="Arrivals & Departures">
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div>
-          <p className="mb-3 text-xs font-medium tracking-wide text-white/40 uppercase">
-            Arrivals
-          </p>
+          <p className="mb-3 text-xs font-medium tracking-wide text-white/40 uppercase">Arrivals</p>
           <ul className="space-y-2.5">
             {arrivals.map((item) => (
               <li
@@ -23,17 +25,13 @@ export function ArrivalsDepartures() {
                   <p className="text-sm font-medium text-white/85">{item.guest}</p>
                   <p className="text-xs font-light text-white/45">Room {item.room}</p>
                 </div>
-                <span className="text-xs font-medium tabular-nums text-orion-gold/90">
-                  {item.time}
-                </span>
+                <span className="text-xs font-medium tabular-nums text-orion-gold/90">{item.time}</span>
               </li>
             ))}
           </ul>
         </div>
         <div>
-          <p className="mb-3 text-xs font-medium tracking-wide text-white/40 uppercase">
-            Departures
-          </p>
+          <p className="mb-3 text-xs font-medium tracking-wide text-white/40 uppercase">Departures</p>
           <ul className="space-y-2.5">
             {departures.map((item) => (
               <li
@@ -44,9 +42,7 @@ export function ArrivalsDepartures() {
                   <p className="text-sm font-medium text-white/85">{item.guest}</p>
                   <p className="text-xs font-light text-white/45">Room {item.room}</p>
                 </div>
-                <span className="text-xs font-medium tabular-nums text-white/50">
-                  {item.time}
-                </span>
+                <span className="text-xs font-medium tabular-nums text-white/50">{item.time}</span>
               </li>
             ))}
           </ul>

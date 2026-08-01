@@ -1,8 +1,8 @@
 import { Widget, WidgetBody, WidgetFooter, WidgetHeader } from "@/components/dashboard";
-import type { MockPrioritiesData } from "@/lib/dashboard/mock/MockAlerts";
+import type { DashboardPrioritiesData } from "@/lib/dashboard/types";
 
 type PrioritiesWidgetProps = {
-  data: MockPrioritiesData;
+  data: DashboardPrioritiesData;
 };
 
 /** EP-002 priorities widget — presentation only. */

@@ -5,17 +5,18 @@ export const SEARCH_CATEGORY_LABELS = {
   commands: "Commands",
   reports: "Reports",
   settings: "Settings",
+  entities: "Quick Open",
 } as const;
 
 export const SEARCH_ITEMS: SearchItem[] = [
   // Navigation
   {
-    id: "nav-advisor",
-    label: "Advisor",
+    id: "nav-brief",
+    label: "Morning Brief",
     category: "navigation",
     description: "Executive Brief and daily founder briefing",
-    href: "/advisor",
-    keywords: ["executive brief", "brief", "advisor"],
+    href: "/brief",
+    keywords: ["executive brief", "brief", "morning"],
     favorite: true,
     recent: true,
   },
@@ -51,16 +52,8 @@ export const SEARCH_ITEMS: SearchItem[] = [
     category: "navigation",
     description: "Financial overview and cash position",
     href: "/finance",
-    keywords: ["revenue", "cash"],
+    keywords: ["revenue", "cash", "finance dashboard"],
     recent: true,
-  },
-  {
-    id: "nav-finance-dashboard",
-    label: "Finance Dashboard",
-    category: "navigation",
-    description: "Finance workspace dashboard",
-    href: "/finance",
-    keywords: ["finance", "dashboard"],
   },
   {
     id: "nav-finance-cash",
@@ -152,28 +145,12 @@ export const SEARCH_ITEMS: SearchItem[] = [
     keywords: ["opportunities", "pipeline", "deals"],
   },
   {
-    id: "nav-crm-relationships",
-    label: "CRM — Relationships",
+    id: "nav-crm-activities",
+    label: "CRM — Activities",
     category: "navigation",
-    description: "Contact hierarchies and stakeholders",
-    href: "/crm/relationships",
-    keywords: ["relationships", "contacts", "stakeholders"],
-  },
-  {
-    id: "nav-crm-activity",
-    label: "CRM — Activity",
-    category: "navigation",
-    description: "Calls, meetings, and touchpoints",
-    href: "/crm/activity",
-    keywords: ["activity", "calls", "meetings"],
-  },
-  {
-    id: "nav-crm-communications",
-    label: "CRM — Communications",
-    category: "navigation",
-    description: "Email and outreach history",
-    href: "/crm/communications",
-    keywords: ["communications", "email", "outreach"],
+    description: "Calls, meetings, and customer touchpoints",
+    href: "/crm/activities",
+    keywords: ["activities", "activity", "calls", "meetings"],
   },
   {
     id: "nav-crm-insights",
@@ -182,30 +159,6 @@ export const SEARCH_ITEMS: SearchItem[] = [
     description: "Customer intelligence recommendations",
     href: "/crm/insights",
     keywords: ["insights", "intelligence", "recommendations"],
-  },
-  {
-    id: "nav-crm-reports",
-    label: "CRM — Reports",
-    category: "navigation",
-    description: "CRM reports and exports",
-    href: "/crm/reports",
-    keywords: ["reports", "crm", "pipeline"],
-  },
-  {
-    id: "nav-crm-settings",
-    label: "CRM — Settings",
-    category: "navigation",
-    description: "Customer Intelligence workspace preferences",
-    href: "/crm/settings",
-    keywords: ["crm settings", "pipeline stages"],
-  },
-  {
-    id: "nav-commerce",
-    label: "Commerce",
-    category: "navigation",
-    description: "Orders and ATSAR commerce",
-    href: "/commerce",
-    keywords: ["atsar", "orders"],
   },
   {
     id: "nav-engineering",
@@ -229,7 +182,8 @@ export const SEARCH_ITEMS: SearchItem[] = [
     category: "navigation",
     description: "Executive command center",
     href: "/command-center",
-    keywords: ["executive"],
+    keywords: ["executive", "monitor"],
+    favorite: true,
   },
   {
     id: "nav-intelligence",
@@ -242,35 +196,20 @@ export const SEARCH_ITEMS: SearchItem[] = [
 
   // Commands
   {
-    id: "cmd-create-task",
-    label: "Create Task",
-    category: "commands",
-    description: "Add a new task",
-    href: "/tasks",
-    keywords: ["task", "todo"],
-  },
-  {
     id: "cmd-create-contact",
-    label: "Create Contact",
+    label: "Open CRM",
     category: "commands",
-    description: "Add a CRM contact",
+    description: "Customer relationships and pipeline",
     href: "/crm",
-    keywords: ["contact", "crm"],
-  },
-  {
-    id: "cmd-open-calendar",
-    label: "Open Calendar",
-    category: "commands",
-    description: "View today's schedule",
-    href: "/calendar",
-    keywords: ["calendar", "schedule"],
+    keywords: ["contact", "crm", "customer"],
   },
   {
     id: "cmd-open-reports",
-    label: "Open Reports",
+    label: "Open Finance Reports",
     category: "commands",
-    description: "Browse executive reports",
-    keywords: ["reports", "analytics"],
+    description: "Browse financial reports",
+    href: "/finance/reports",
+    keywords: ["reports", "analytics", "finance"],
   },
   {
     id: "cmd-open-dashboard",
@@ -282,11 +221,11 @@ export const SEARCH_ITEMS: SearchItem[] = [
   },
   {
     id: "cmd-review-brief",
-    label: "Review Executive Brief",
+    label: "Review Morning Brief",
     category: "commands",
     description: "Open today's executive brief",
-    href: "/advisor",
-    keywords: ["executive brief", "brief", "advisor"],
+    href: "/brief",
+    keywords: ["executive brief", "brief", "morning"],
   },
   {
     id: "cmd-launch-marketing",
@@ -303,8 +242,8 @@ export const SEARCH_ITEMS: SearchItem[] = [
     label: "Executive Brief",
     category: "reports",
     description: "Daily founder briefing report",
-    href: "/advisor",
-    keywords: ["brief", "executive"],
+    href: "/brief",
+    keywords: ["brief", "executive", "morning"],
     favorite: true,
   },
   {
@@ -344,11 +283,11 @@ export const SEARCH_ITEMS: SearchItem[] = [
   // Settings
   {
     id: "settings-profile",
-    label: "Profile",
+    label: "Profile & Preferences",
     category: "settings",
-    description: "Founder profile settings",
-    href: "/settings",
-    keywords: ["profile", "account"],
+    description: "Founder profile and platform preferences",
+    href: "/configuration",
+    keywords: ["profile", "account", "preferences"],
   },
   {
     id: "settings-preferences",
@@ -377,21 +316,21 @@ export const SEARCH_ITEMS: SearchItem[] = [
 ];
 
 export const EMPTY_STATE_SUGGESTIONS = [
-  "Advisor",
-  "Marketing",
-  "Create Task",
+  "Morning Brief",
+  "CRM",
+  "Cash",
   "Revenue Report",
 ] as const;
 
 export const RECENT_ITEM_IDS = [
-  "nav-advisor",
-  "nav-marketing",
-  "nav-hospitality",
+  "nav-brief",
+  "nav-crm",
   "nav-finance",
+  "nav-command-center",
 ] as const;
 
 export const FAVORITE_ITEM_IDS = [
-  "nav-advisor",
+  "nav-brief",
   "report-executive-brief",
   "report-revenue",
 ] as const;

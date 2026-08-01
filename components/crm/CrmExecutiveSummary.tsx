@@ -1,12 +1,15 @@
 import { Card } from "@/components/ui/Card";
 import { WORKSPACE_SUMMARY_CLASS } from "@/lib/constants";
-import { CRM_EXECUTIVE_SUMMARY } from "@/lib/crm-data";
+
+type CrmExecutiveSummaryProps = {
+  summary: string;
+};
 
 /** Executive-level customer intelligence summary. */
-export function CrmExecutiveSummary() {
+export function CrmExecutiveSummary({ summary }: CrmExecutiveSummaryProps) {
   return (
     <Card title="Executive Summary" variant="premium">
-      <p className={WORKSPACE_SUMMARY_CLASS}>{CRM_EXECUTIVE_SUMMARY}</p>
+      <p className={WORKSPACE_SUMMARY_CLASS}>{summary}</p>
     </Card>
   );
 }

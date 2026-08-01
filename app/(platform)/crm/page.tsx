@@ -1,71 +1,54 @@
-import { CustomerAlerts } from "@/components/crm/CustomerAlerts";
-import { CustomerHealthScore } from "@/components/crm/CustomerHealthScore";
+import { RecommendationCard } from "@/components/dashboard/RecommendationCard";
 import { CrmEnhancedKpiCards } from "@/components/crm/CrmEnhancedKpiCards";
-import { CrmExecutiveInsights } from "@/components/crm/CrmExecutiveInsights";
-import { CrmExecutiveNotes } from "@/components/crm/CrmExecutiveNotes";
-import { CrmExecutiveSummary } from "@/components/crm/CrmExecutiveSummary";
-import { CrmOpportunityPipeline } from "@/components/crm/CrmOpportunityPipeline";
 import { CrmRecentActivity } from "@/components/crm/CrmRecentActivity";
 import { RelationshipHealth } from "@/components/crm/RelationshipHealth";
-import { FOUNDER_NAME } from "@/lib/command-center-data";
-import {
-  WORKSPACE_GREETING_CLASS,
-  WORKSPACE_GRID_2_COL,
-  WORKSPACE_HEADER_BLOCK_CLASS,
-  WORKSPACE_SECTION_CLASS,
-  WORKSPACE_SUBTITLE_CLASS,
-  WORKSPACE_TITLE_CLASS,
-} from "@/lib/constants";
+import { Card } from "@/components/ui/Card";
+import { StatCard } from "@/components/ui/StatCard";
+import { WorkspacePageHeader } from "@/components/workspace/WorkspacePageHeader";
+import { WORKSPACE_GRID_2_COL, WORKSPACE_SECTION_CLASS } from "@/lib/constants";
+import { crmService } from "@/lib/crm";
 
-function getGreetingPeriod(): string {
-  const hour = new Date().getHours();
+/** CRM Overview — executive dashboard (Mission 16A.2). */
+export default function CrmOverviewPage() {
+  const dashboard = crmService.getDashboard();
 
-  if (hour < 12) {
-    return "Good Morning";
-  }
-
-  if (hour < 17) {
-    return "Good Afternoon";
-  }
-
-  return "Good Evening";
-}
-
-function formatTodayDate(): string {
-  return new Date().toLocaleDateString("en-GB", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
-
-export default function CustomerIntelligenceOverviewPage() {
   return (
     <>
-      <header className={WORKSPACE_HEADER_BLOCK_CLASS}>
-        <p className={WORKSPACE_GREETING_CLASS}>
-          {getGreetingPeriod()}, {FOUNDER_NAME}
-        </p>
-        <h1 className={WORKSPACE_TITLE_CLASS}>Customer Intelligence</h1>
-        <p className={WORKSPACE_SUBTITLE_CLASS}>{formatTodayDate()}</p>
-      </header>
+      <WorkspacePageHeader {...dashboard.header} />
 
-      <section
-        aria-label="Customer Intelligence Overview"
-        className={WORKSPACE_SECTION_CLASS}
-      >
-        <CrmExecutiveSummary />
-        <CustomerHealthScore />
-        <CrmEnhancedKpiCards />
-        <CrmOpportunityPipeline />
-        <RelationshipHealth />
+      <section aria-label="CRM Dashboard" className={WORKSPACE_SECTION_CLASS}>
+        <CrmEnhancedKpiCards metrics={dashboard.kpis} title="KPI Summary" />
+
         <div className={WORKSPACE_GRID_2_COL}>
-          <CrmExecutiveInsights />
-          <CustomerAlerts />
+          <RelationshipHealth
+            segments={dashboard.customerHealthDistribution}
+            title="Customer Health"
+          />
+          <Card title="Sales Pipeline Overview">
+            <p className="mb-4 text-sm font-light text-white/50">
+              Total pipeline value:{" "}
+              <span className="font-medium text-orion-gold/90">{dashboard.pipelineValue}</span>
+            </p>
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-5">
+              {dashboard.pipelineStages.map((stage) => (
+                <StatCard key={stage.label} label={stage.label} value={stage.displayValue} />
+              ))}
+            </div>
+          </Card>
         </div>
-        <CrmRecentActivity />
-        <CrmExecutiveNotes />
+
+        <div className={WORKSPACE_GRID_2_COL}>
+          <CrmRecentActivity activities={dashboard.recentActivity} />
+          <Card title="Executive Recommendations" variant="premium">
+            <ul className="grid grid-cols-1 gap-3" aria-label="Executive Recommendations">
+              {dashboard.recommendations.map((recommendation) => (
+                <li key={recommendation.id}>
+                  <RecommendationCard recommendation={recommendation} />
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
       </section>
     </>
   );

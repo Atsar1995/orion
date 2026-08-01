@@ -1,13 +1,17 @@
 import { Card } from "@/components/ui/Card";
 import { WORKSPACE_FIELD_LIST_CLASS } from "@/lib/constants";
-import { CRM_EXECUTIVE_INSIGHTS } from "@/lib/crm-insights";
+import type { CrmInsight } from "@/lib/crm/models/domain";
+
+type CrmExecutiveInsightsProps = {
+  insights: CrmInsight[];
+};
 
 /** Prioritised executive insights for customer intelligence. */
-export function CrmExecutiveInsights() {
+export function CrmExecutiveInsights({ insights }: CrmExecutiveInsightsProps) {
   return (
     <Card title="Executive Insights">
       <ol className={WORKSPACE_FIELD_LIST_CLASS}>
-        {CRM_EXECUTIVE_INSIGHTS.map((insight) => (
+        {insights.map((insight) => (
           <li
             key={insight.priority}
             className="border-b border-white/[0.04] pb-4 last:border-b-0 last:pb-0"

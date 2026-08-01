@@ -75,6 +75,11 @@ export type CrmAdvisorSnapshot = {
   };
   weeklyExecutiveSummary: string;
   executiveRecommendations: ExecutiveRecommendation[];
+  intelligenceSummary: string;
+  revenueForecastDisplay: string;
+  followUpDueCount: number;
+  highRiskDealCount: number;
+  lostOpportunityCount: number;
 };
 
 /** CRM workspace brief with advisor card snapshot. */
@@ -82,8 +87,11 @@ export type CrmWorkspaceBrief = WorkspaceBriefContribution & {
   snapshot: CrmAdvisorSnapshot;
 };
 
+import type { CrmWorkspaceIntelligence } from "@/lib/crm/models/intelligence";
+
 /** Full CRM intelligence pipeline result. */
 export type CrmIntelligenceResult = {
+  signals: CrmWorkspaceIntelligence;
   health: {
     customer: HealthScore;
     relationship: RelationshipHealthSummary;

@@ -25,3 +25,12 @@ export {
   MOCK_RECOMMENDATIONS,
   createMockDashboardState,
 } from "@/lib/dashboard/mock";
+export type {
+  DashboardBusinessHealthData,
+  DashboardConfidenceData,
+  DashboardExecutiveNarrativeData,
+  DashboardKPIData,
+  DashboardMorningBriefData,
+  DashboardPrioritiesData,
+  DashboardRecommendationPreviewData,
+} from "@/lib/dashboard/types";

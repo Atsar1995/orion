@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CurrentSpecificationCard } from "@/components/engineering/CurrentSpecificationCard";
 import { EngineeringDocumentCard } from "@/components/engineering/EngineeringDocumentCard";
 import { EngineeringQuickActionsCard } from "@/components/engineering/EngineeringQuickActionsCard";
@@ -32,6 +33,18 @@ export default function EngineeringWorkspacePage() {
       <EngineeringWorkspaceHeader />
 
       <section aria-label="Engineering Workspace" className="space-y-6">
+        <div className="rounded-orion-lg border border-orion-border bg-orion-surface/40 p-4">
+          <p className="text-sm font-light text-orion-muted">
+            Production readiness assessment for platform deployment.
+          </p>
+          <Link
+            href="/engineering/readiness"
+            className="mt-2 inline-block text-sm font-medium text-orion-gold hover:text-orion-gold-light"
+          >
+            Open Release Readiness Dashboard →
+          </Link>
+        </div>
+
         <EngineeringStatusCard />
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

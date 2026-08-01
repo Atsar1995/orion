@@ -10,6 +10,8 @@ export function FinanceSubNav() {
       items={FINANCE_NAV}
       basePath={FINANCE_BASE_PATH}
       ariaLabel="Finance sections"
+      primaryItemCount={2}
+      preferenceKey="financeNavExpanded"
     />
   );
 }

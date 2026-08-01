@@ -8,7 +8,7 @@
 
 **Author:** Founder & Chief Architect
 
-**Related specifications:** [ES-036 — Database & Persistence Architecture](./ES-036-Database-Persistence-Architecture.md) · [ES-034 — Provider Data Contract Standards](./ES-034-Provider-Data-Contract-Standards.md) · [ES-050 — Enterprise Reference Architecture](./ES-050-ORION-Enterprise-Reference-Architecture.md) · [ES-053 — Risk & Technical Debt](./ES-053-ORION-Risk-Management-Technical-Debt-Framework.md)
+**Related specifications:** [ES-036 — Database & Persistence Architecture](./ES-036-Database-Persistence-Architecture.md) · [ES-034 — Provider Data Contract Standards](./ES-034-Provider-Data-Contract-Standards.md) · [ES-050 — Enterprise Reference Architecture](./ES-050-ORION-Enterprise-Reference-Architecture.md) · [ES-053 — Risk & Technical Debt](./ES-053-ORION-Risk-Management-Technical-Debt-Framework.md) · [D-011 — Enterprise Data Architecture Blueprint](../Data/Blueprints/D-011_Enterprise_Data_Architecture_Blueprint.md) · [D-013 — Enterprise Data Governance](../Data/Governance/D-013_Enterprise_Data_Governance.md) · [ES-DATA-001 — Enterprise Data Platform Engineering Specification](../Data/Engineering/ES-DATA-001-Enterprise-Data-Platform-Engineering-Specification.md)
 
 ---
 
@@ -19,6 +19,8 @@ The ORION Data Governance & Information Architecture establishes the enterprise 
 It defines how data is created, classified, governed, secured, integrated, retained, archived, and consumed across the ORION Executive Operating System.
 
 This framework ensures that data remains accurate, trustworthy, secure, compliant, and valuable for operational intelligence and AI-driven decision-making.
+
+**Architectural north star:** [D-011](../Data/Blueprints/D-011_Enterprise_Data_Architecture_Blueprint.md) · [D-013](../Data/Governance/D-013_Enterprise_Data_Governance.md) · [ES-DATA-001](../Data/Engineering/ES-DATA-001-Enterprise-Data-Platform-Engineering-Specification.md). This document (ES-056) tracks operational governance maturity against those specifications.
 
 **Current state:** ORION delivers **persistence contracts and tenant-scoped in-memory repositories** for platform identity entities ([ES-036](./ES-036-Database-Persistence-Architecture.md) · [ES-010](./ES-010-Persistence-Foundation.md)) with **business domain data in static `lib/*-data.ts` modules** ([TD-001](../09_Standards/Technical_Debt_Register.md) · [TD-002](../09_Standards/Technical_Debt_Register.md)). **Enterprise data governance is largely undocumented operationally**: no MDM, no formal classification enforcement, no backup/DR, no lineage tooling, and no privacy/compliance runtime. This document **defines the target information architecture** mapped against codebase reality.
 

@@ -1,0 +1,10 @@
+export { organizationService } from "@/lib/platform/organization/OrganizationService";
+export { platformIdentityService, PlatformIdentityService } from "@/lib/platform/organization/PlatformIdentityService";
+export { userManagementService, UserManagementService } from "@/lib/platform/organization/UserManagementService";
+export { roleService, RoleService } from "@/lib/platform/organization/RoleService";
+export { permissionService, PermissionService } from "@/lib/platform/organization/PermissionService";
+export { delegationService, DelegationService } from "@/lib/platform/organization/DelegationService";
+export { hierarchyService, HierarchyService } from "@/lib/platform/organization/HierarchyService";
+export { syncOrganizationMemory } from "@/lib/platform/organization/org-memory-bridge";
+export type { OrganizationPlatformRepository } from "@/lib/platform/organization/repository/OrganizationPlatformRepository";
+export type { VerifiedIdentity } from "@/lib/platform/organization/PlatformIdentityService";

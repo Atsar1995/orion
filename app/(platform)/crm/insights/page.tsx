@@ -1,23 +1,42 @@
-import { CustomerAlerts } from "@/components/crm/CustomerAlerts";
-import { CrmExecutiveInsights } from "@/components/crm/CrmExecutiveInsights";
+import { CrmInsightsWorkspace } from "@/components/crm/CrmInsightsWorkspace";
+
 import { CrmSectionHeader } from "@/components/crm/CrmSectionHeader";
-import { ExecutiveRecommendations } from "@/components/crm/ExecutiveRecommendations";
-import { WORKSPACE_GRID_2_COL, WORKSPACE_SECTION_CLASS } from "@/lib/constants";
+
+import { WORKSPACE_SECTION_CLASS } from "@/lib/constants";
+
+import { crmService } from "@/lib/crm";
+
+
+
+/** CRM Insights — intelligence dashboard and executive decision support (Mission 16A.6). */
 
 export default function CrmInsightsPage() {
+
+  const view = crmService.getInsights();
+
+
+
   return (
+
     <>
+
       <CrmSectionHeader
+
         title="Insights"
+
         subtitle="Customer intelligence recommendations and risk signals."
+
       />
+
       <section aria-label="CRM Insights" className={WORKSPACE_SECTION_CLASS}>
-        <ExecutiveRecommendations />
-        <div className={WORKSPACE_GRID_2_COL}>
-          <CrmExecutiveInsights />
-          <CustomerAlerts />
-        </div>
+
+        <CrmInsightsWorkspace view={view} />
+
       </section>
+
     </>
+
   );
+
 }
+

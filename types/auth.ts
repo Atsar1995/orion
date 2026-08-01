@@ -20,9 +20,14 @@ export enum OrganizationStatus {
 
 /** System role slug identifiers aligned with {@link SystemRole} in lib/auth/roles.ts. */
 export type RoleSlug =
+  | "super_admin"
+  | "organization_admin"
+  | "executive"
+  | "manager"
+  | "analyst"
+  | "read_only"
   | "founder"
   | "administrator"
-  | "manager"
   | "staff"
   | "guest"
   | "service_account";
@@ -47,6 +52,8 @@ export interface Organization {
   name: string;
   slug: string;
   status: OrganizationStatus;
+  timeZone?: string;
+  locale?: string;
 }
 
 /** Business environment within an organization. */

@@ -35,7 +35,7 @@ export function SearchInput({
         autoComplete="off"
         autoCorrect="off"
         spellCheck={false}
-        placeholder="Search ORION..."
+        placeholder="Search ORION, customers, deals, finance..."
         value={value}
         onChange={(event) => onChange(event.target.value)}
         className={cn(

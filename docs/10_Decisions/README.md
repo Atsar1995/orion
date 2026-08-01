@@ -1,6 +1,6 @@
 # ORION Architecture Decision Records
 
-This directory contains Architecture Decision Records (ADRs), the ORION Decision Log, and individual decision records.
+This directory contains the ORION Decision Log and individual decision records. Architecture Decision Records (ADRs) are maintained under [`docs/11_Governance/ADR/`](../11_Governance/ADR/).
 
 **Framework:** [ES-052 — Architecture Decision Record Framework](../02_Engineering/ES-052-Architecture-Decision-Record-Framework.md) (Approved · lifecycle · extended template)
 
@@ -23,12 +23,12 @@ Record a Decision Log entry (DL) for any significant decision not fully captured
 
 | ADR | Title | Status | Date |
 |-----|-------|--------|------|
-| [ADR-001](./ADR-001-Executive-Shell.md) | Executive Shell | Accepted | 2026-07-22 |
-| [ADR-002](./ADR-002-Advisor-Default-Landing.md) | Advisor Default Landing | Accepted | 2026-07-23 |
-| [ADR-003](./ADR-003-Global-Command-Palette.md) | Global Command Palette | Accepted | 2026-07-23 |
-| [ADR-004](./ADR-004-Technical-Debt-Governance.md) | Technical Debt Governance | Accepted | 2026-07-23 |
-| [ADR-005](./ADR-005-Business-Workspace-Architecture.md) | Business Workspace Architecture | Accepted | 2026-07-23 |
-| [ADR-006](./ADR-006-Executive-Intelligence-Provider-Framework.md) | Executive Intelligence Provider Framework | Accepted | 2026-07-24 |
+| [ADR-001](../11_Governance/ADR/ADR-001-Executive-Shell.md) | Executive Shell | Accepted | 2026-07-22 |
+| [ADR-002](../11_Governance/ADR/ADR-002-Advisor-Default-Landing.md) | Advisor Default Landing | Accepted | 2026-07-23 |
+| [ADR-003](../11_Governance/ADR/ADR-003-Global-Command-Palette.md) | Global Command Palette | Accepted | 2026-07-23 |
+| [ADR-004](../11_Governance/ADR/ADR-004-Technical-Debt-Governance.md) | Technical Debt Governance | Accepted | 2026-07-23 |
+| [ADR-005](../11_Governance/ADR/ADR-005-Business-Workspace-Architecture.md) | Business Workspace Architecture | Accepted | 2026-07-23 |
+| [ADR-006](../11_Governance/ADR/ADR-006-Executive-Intelligence-Provider-Framework.md) | Executive Intelligence Provider Framework | Accepted | 2026-07-24 |
 
 **Related DL:** [DL-2026-001](./decisions/DL-2026-001-Executive-Brief-Default-Landing.md) (Executive Brief default landing)
 

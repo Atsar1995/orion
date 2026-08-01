@@ -1,7 +1,7 @@
 import type { ExecutiveEvidence } from "@/types/executive";
 
 type EvidenceListProps = {
-  evidence: ExecutiveEvidence[];
+  evidence: readonly ExecutiveEvidence[];
   compact?: boolean;
 };
 

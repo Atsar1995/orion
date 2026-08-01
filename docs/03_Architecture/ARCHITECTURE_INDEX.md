@@ -2,6 +2,19 @@
 
 Central index for ORION platform architecture documentation.
 
+## Governance
+
+The **ORION Canon v1.0** is the supreme governing document of the platform. Chapter 3 (Platform Architecture) governs layer model and shared services.
+
+In the event of conflict between any engineering, product, design, AI, architecture, or workspace documentation, the **ORION Canon shall prevail**.
+
+- **Canon:** [ORION Canon v1.0](../00_FOUNDATION/ORION_CANON_v1.md) (Ratified · Frozen · Effective 29 July 2026)
+- **Compliance Matrix:** [CANON_COMPLIANCE_MATRIX.md](../00_FOUNDATION/CANON_COMPLIANCE_MATRIX.md)
+
+**Phase II — Production Platform: ACTIVE**
+
+---
+
 **Master Blueprint:** [ORION Product Bible](../00_BLUEPRINT/ORION_Product_Bible.md) (Living Document)
 
 **Governance:** [ORION Governance Framework](../09_Standards/ORION_Governance_Framework.md) (Foundational)
@@ -24,7 +37,7 @@ Central index for ORION platform architecture documentation.
 | Risk Management & Technical Debt | [ES-053](../02_Engineering/ES-053-ORION-Risk-Management-Technical-Debt-Framework.md) · [Technical Debt Register](../09_Standards/Technical_Debt_Register.md) | Approved · TD-001–002 |
 | Quality Assurance & Engineering Excellence | [ES-054](../02_Engineering/ES-054-ORION-Quality-Assurance-Engineering-Excellence-Framework.md) | Approved · Vitest locally · CI planned |
 | DevSecOps & Continuous Delivery | [ES-055](../02_Engineering/ES-055-ORION-DevSecOps-Continuous-Delivery-Architecture.md) | Approved · manual delivery · pipeline planned |
-| Data Governance & Information Architecture | [ES-056](../02_Engineering/ES-056-ORION-Data-Governance-Information-Architecture.md) · [ES-036](../02_Engineering/ES-036-Database-Persistence-Architecture.md) | Approved · in-memory · static domain data |
+| Data Governance & Information Architecture | [ES-056](../02_Engineering/ES-056-ORION-Data-Governance-Information-Architecture.md) · [ES-036](../02_Engineering/ES-036-Database-Persistence-Architecture.md) · [D-011](../Data/Blueprints/D-011_Enterprise_Data_Architecture_Blueprint.md) · [D-013](../Data/Governance/D-013_Enterprise_Data_Governance.md) · [ES-DATA-001](../Data/Engineering/ES-DATA-001-Enterprise-Data-Platform-Engineering-Specification.md) | Approved · in-memory · static domain data |
 | AI Governance & Responsible Intelligence | [ES-057](../02_Engineering/ES-057-ORION-AI-Governance-Responsible-Intelligence-Framework.md) · [ES-039](../02_Engineering/ES-039-AI-Orchestration-Agent-Framework.md) | Approved · deterministic intelligence · no LLM |
 | Enterprise Operations & Service Management | [ES-058](../02_Engineering/ES-058-ORION-Enterprise-Operations-Service-Management-Framework.md) · [ES-038](../02_Engineering/ES-038-Audit-Logging-Observability-Architecture.md) | Approved · manual ops · no production stack |
 | Platform Security & Zero Trust | [ES-059](../02_Engineering/ES-059-ORION-Platform-Security-Zero-Trust-Architecture.md) · [ES-037](../02_Engineering/ES-037-Authentication-Authorisation-Architecture.md) | Approved · placeholder auth · RBAC partial |
@@ -114,6 +127,29 @@ Central index for ORION platform architecture documentation.
 | Hospitality | `/hospitality` | Sprint 12 overview · [ES-023](../02_Engineering/ES-023-Hospitality-Workspace.md) (Mission 19A) | Mock provider in Sprint 4 framework |
 | Commerce | — | Planned · [ES-024](../02_Engineering/ES-024-Commerce-Workspace.md) (Mission 20A) | — |
 | Marketing | `/marketing` | Overview foundation · [ES-026](../02_Engineering/ES-026-Marketing-Workspace.md) | `marketingExecutiveProvider` (planned) |
+| Human Capital Management (HCM) | `/hcm` *(planned)* | D-014 blueprint · D-015 domain model *(planned)* | — |
+
+---
+
+## Enterprise Human Capital Management (HCM)
+
+| Document | Description | Status |
+|----------|-------------|--------|
+| [D-014 — Enterprise HCM Architecture Blueprint](../HCM/Blueprints/D-014_Enterprise_HCM_Architecture_Blueprint.md) | Workforce domain vision, aggregates, services, events, integrations | Draft · blueprint only |
+| D-015 — Enterprise Workforce Domain Model | Canonical workforce entities and relationships | Planned |
+
+## Enterprise Data Architecture
+
+| Document | Description | Status |
+|----------|-------------|--------|
+| [D-011 — Enterprise Data Architecture Blueprint](../Data/Blueprints/D-011_Enterprise_Data_Architecture_Blueprint.md) | Enterprise data vision, principles, governance, canonical strategy | Draft · blueprint only |
+| [D-013 — Enterprise Data Governance](../Data/Governance/D-013_Enterprise_Data_Governance.md) | Ownership, stewardship, quality, lifecycle, privacy, compliance | Draft · governance only |
+| [ES-DATA-001 — Enterprise Data Platform Engineering Spec](../Data/Engineering/ES-DATA-001-Enterprise-Data-Platform-Engineering-Specification.md) | Package layout, services, repositories, validation pipeline | Draft · engineering spec |
+| [P-011.1 — Master Data Registry](../Data/Engineering/P-011.1-Enterprise-Master-Data-Registry.md) | Master entity registry implementation | Complete |
+| [ENTERPRISE DATA PLATFORM CERTIFICATE](../Data/Engineering/ENTERPRISE_DATA_PLATFORM_CERTIFICATE.md) | P-011.8 certification audit | CONDITIONAL GO · v0.4.1-alpha |
+| [v0.4.1-alpha Release Notes](../../releases/v0.4.1-alpha-Release-Notes.md) | Enterprise Data Platform alpha release | 31 July 2026 |
+| [ES-056 — Data Governance & Information Architecture](../02_Engineering/ES-056-ORION-Data-Governance-Information-Architecture.md) | Operational governance framework and maturity tracking | Approved |
+| [ES-036 — Database & Persistence Architecture](../02_Engineering/ES-036-Database-Persistence-Architecture.md) | Persistence contracts and repository patterns | Approved |
 
 ---
 

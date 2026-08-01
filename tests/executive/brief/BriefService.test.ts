@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   BriefService,
+  IntelligenceBusBriefRepository,
   MockBriefRepository,
   OrchestratorBriefRepository,
   createBriefService,
@@ -47,5 +48,11 @@ describe("mapDashboardSnapshotToBriefView", () => {
 describe("OrchestratorBriefRepository", () => {
   it("implements BriefRepository contract", () => {
     expect(new OrchestratorBriefRepository().getBriefView).toBeTypeOf("function");
+  });
+});
+
+describe("IntelligenceBusBriefRepository", () => {
+  it("implements BriefRepository contract", () => {
+    expect(new IntelligenceBusBriefRepository().getBriefView).toBeTypeOf("function");
   });
 });
