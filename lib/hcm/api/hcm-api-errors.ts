@@ -28,6 +28,8 @@ export function resolveHcmErrorStatus(message: string): number {
   if (NOT_FOUND_CODES.has(message)) return 404;
   if (CONFLICT_CODES.has(message)) return 409;
   if (message === "MISSING_PARAMS" || message.startsWith("INVALID_")) return 400;
+  if (message === "UNAUTHORIZED") return 401;
+  if (message === "FORBIDDEN" || message === "PERMISSION_DENIED") return 403;
   if (message.startsWith("CIRCULAR_")) return 422;
   return 400;
 }

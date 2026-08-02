@@ -5,7 +5,7 @@ import type { CreateApplicationInput } from "@/lib/hcm/recruitment/services/Recr
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
 
   try {
     const body = (await request.json()) as CreateApplicationInput;

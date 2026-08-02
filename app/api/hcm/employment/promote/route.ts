@@ -5,7 +5,7 @@ import type { PromotionInput } from "@/types/hcm-employment";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
 
   try {
     const body = (await request.json()) as PromotionInput;

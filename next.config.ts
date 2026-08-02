@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ["@/components/dashboard", "@/components/executive"],
   },
+  serverExternalPackages: ["pg"],
   async headers() {
     return [
       {

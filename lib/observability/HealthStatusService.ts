@@ -1,5 +1,13 @@
 import { validateEnvironment } from "@/lib/config/env";
 import { observabilityStore } from "@/lib/observability/PerformanceMonitor";
+import {
+  securityHealthService,
+  toObservabilitySecurityStatus,
+} from "@/lib/platform/security/SecurityHealthService";
+import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
+import { toObservabilityHealthStatus } from "@/lib/platform/store/PlatformStore";
+import { createPlatformStoreHealthReport } from "@/lib/platform/store/PlatformStoreHealth";
+import { loadStoreConfiguration, StoreProvider } from "@/lib/platform/store/StoreConfiguration";
 
 export type HealthCheckStatus = "healthy" | "degraded" | "unhealthy";
 
@@ -47,6 +55,30 @@ export class HealthStatusService {
         recentErrors.length === 0
           ? "No recent client errors recorded."
           : `${recentErrors.length} recent error(s) recorded.`,
+    });
+
+    const storeConfig = loadStoreConfiguration();
+    const storeHealth =
+      storeConfig.provider === StoreProvider.InMemory
+        ? new InMemoryPlatformStore({ configuration: storeConfig }).getHealth()
+        : createPlatformStoreHealthReport({
+            provider: storeConfig.provider,
+            status: "healthy",
+            initialized: true,
+            message: "Relational platform store configured for server runtime.",
+            migrationReady: true,
+          });
+    checks.push({
+      name: "platform_store",
+      status: toObservabilityHealthStatus(storeHealth.status),
+      message: storeHealth.message,
+    });
+
+    const securityHealth = securityHealthService.getReport();
+    checks.push({
+      name: "platform_security",
+      status: toObservabilitySecurityStatus(securityHealth.status),
+      message: securityHealth.message,
     });
 
     const unhealthy = checks.some((check) => check.status === "unhealthy");

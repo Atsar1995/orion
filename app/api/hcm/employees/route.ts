@@ -28,7 +28,7 @@ function buildEmployeeQuery(url: URL): EmployeeSearchQuery {
 }
 
 export async function GET(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
   const url = new URL(request.url);
   const query = buildEmployeeQuery(url);
   const items = hcmFacade.searchEmployees(query, context);
@@ -39,7 +39,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
 
   try {
     const body = (await request.json()) as CreateEmployeeInput;

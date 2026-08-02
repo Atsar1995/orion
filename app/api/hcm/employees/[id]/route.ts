@@ -8,7 +8,7 @@ type RouteParams = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, { params }: RouteParams) {
   const { id } = await params;
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(_request);
   const employee = hcmFacade.getEmployee(id, context);
 
   if (!employee) {
@@ -20,7 +20,7 @@ export async function GET(_request: Request, { params }: RouteParams) {
 
 export async function PATCH(request: Request, { params }: RouteParams) {
   const { id } = await params;
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
 
   try {
     const body = (await request.json()) as Omit<UpdateEmployeeInput, "employeeId">;

@@ -5,7 +5,7 @@ import {
   financeEventPipelineService,
   financeService,
   FINANCE_FOUNDATION_CAPABILITIES,
-  FINANCE_MISSION_EVENT_PIPELINE,
+  FINANCE_MISSION_EXECUTIVE_INTELLIGENCE,
 } from "@/lib/finance";
 import type { ServiceContext } from "@/types/services";
 
@@ -64,7 +64,7 @@ describe("P-009.6 Enterprise Financial Event Pipeline Certification", () => {
 
     expect(status.eventPipelineImplemented).toBe(true);
     expect(status.readyForExecutiveIntelligence).toBe(true);
-    expect(bootstrap.mission).toBe(FINANCE_MISSION_EVENT_PIPELINE);
+    expect(bootstrap.mission).toBe(FINANCE_MISSION_EXECUTIVE_INTELLIGENCE);
   });
 
   it("provides dead letter queue contracts", () => {

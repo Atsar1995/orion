@@ -15,6 +15,7 @@ export type PlatformLogEntry = {
   readonly message: string;
   readonly timestamp: string;
   readonly source?: string;
+  readonly correlationId?: string;
   readonly metadata?: Record<string, string>;
 };
 
@@ -40,18 +41,32 @@ class PlatformLoggerStore {
     }
 
     if (process.env.NODE_ENV !== "test") {
+      const useJson = process.env.ORION_LOG_FORMAT === "json";
       const prefix = `[ORION:${input.category}]`;
       const payload = input.source ? `${prefix} [${input.source}] ${input.message}` : `${prefix} ${input.message}`;
 
-      switch (input.level) {
-        case "error":
-          console.error(payload);
-          break;
-        case "warn":
-          console.warn(payload);
-          break;
-        default:
-          console.info(payload);
+      if (useJson) {
+        const json = JSON.stringify({
+          timestamp: entry.timestamp,
+          level: input.level,
+          message: input.message,
+          category: input.category,
+          source: input.source,
+          correlationId: input.correlationId,
+          metadata: input.metadata,
+        });
+        console.info(json);
+      } else {
+        switch (input.level) {
+          case "error":
+            console.error(payload);
+            break;
+          case "warn":
+            console.warn(payload);
+            break;
+          default:
+            console.info(payload);
+        }
       }
     }
 

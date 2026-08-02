@@ -2,15 +2,16 @@
 
 **Document ID:** HCM-TD-001  
 **Parent:** [ES-HCM-001](./ES-HCM-001_Enterprise_HCM_Engineering_Specification.md)  
-**Canonical Register:** [docs/11_Governance/TECHNICAL_DEBT.md](../../11_Governance/TECHNICAL_DEBT.md)
+**Canonical Register:** [docs/11_Governance/TECHNICAL_DEBT.md](../../11_Governance/TECHNICAL_DEBT.md)  
+**Last Updated:** 23 August 2026 — P-015.7 Wave 1 sync
 
 ---
 
 ## Summary
 
-Enterprise HCM v1.0 delivers complete domain services, facade integration, foundation and time REST APIs, IIL events, and workflow orchestration. The items below are **known limitations** — not blockers for domain service usage via `hcmFacade`.
+Enterprise HCM v1.0 delivers complete domain services, facade integration, foundation and time REST APIs, IIL events, and workflow orchestration. Wave 1 missions P-015.5 (PostgreSQL persistence) and P-015.6 (RBAC) resolve the two P0 items that blocked enterprise HCM certification.
 
-`hcmFacade.getDomainStatus().readyForEnterpriseHcmCertification` remains `false` until debt items TD-HCM-001 through TD-HCM-004 are resolved.
+`hcmFacade.getDomainStatus().readyForEnterpriseHcmCertification` may advance to `true` upon staging persistence and RBAC verification (Wave 2 operational gate).
 
 ---
 
@@ -20,12 +21,12 @@ Enterprise HCM v1.0 delivers complete domain services, facade integration, found
 
 | Field | Value |
 |-------|-------|
-| **Priority** | High |
-| **Status** | Open |
-| **Description** | All repositories use `InMemoryHcmStore`. Data does not survive process restart. |
-| **Impact** | Not production-ready for stateful deployments |
-| **Mitigation** | Repository interfaces designed for swap-in persistent implementations |
-| **Target** | Post v1.0 infrastructure mission |
+| **Priority** | High → **P0 (resolved)** |
+| **Status** | **Resolved** (P-015.5) |
+| **Description** | All repositories used `InMemoryHcmStore`. Data did not survive process restart. |
+| **Resolution** | `PlatformStore` abstraction · PostgreSQL persistence · HCM persister · migration runner · integration tests |
+| **Evidence** | `lib/platform/persistence/` · `lib/platform/store/PostgresPlatformStore.ts` · `tests/lib/platform/` |
+| **Note** | In-memory adapter remains for local dev when `DATABASE_URL` unset |
 
 ### TD-HCM-002 — Payroll and Talent REST APIs
 
@@ -64,12 +65,12 @@ Enterprise HCM v1.0 delivers complete domain services, facade integration, found
 
 | Field | Value |
 |-------|-------|
-| **Priority** | Medium |
-| **Status** | Open |
-| **Description** | API routes use platform session context but do not enforce HCM-specific permission matrix. |
-| **Impact** | All authenticated users with API access can invoke HCM operations |
-| **Mitigation** | Organization isolation still enforced |
-| **Target** | Platform permissions integration |
+| **Priority** | Medium → **P0 (resolved)** |
+| **Status** | **Resolved** (P-015.6) |
+| **Description** | API routes used platform session context but did not enforce HCM-specific permission matrix. |
+| **Resolution** | HCM permission catalog · route-derived permissions on all 38 HCM API routes · fail-closed 401/403 · platform security health check |
+| **Evidence** | `lib/hcm/auth/hcm-permission-catalog.ts` · `lib/platform/security/` · `tests/lib/platform/security/` |
+| **Note** | Production/staging fail-closed verification scheduled Wave 2 |
 
 ### TD-HCM-006 — Domain Model Documents (D-015, D-016)
 
@@ -88,7 +89,7 @@ Enterprise HCM v1.0 delivers complete domain services, facade integration, found
 | Decision | Rationale |
 |----------|-----------|
 | Single `hcmFacade` export | Prevents repository bypass; simplifies consumer contracts |
-| In-memory store for v1.0 | Accelerates mission delivery; repository interfaces preserve migration path |
+| In-memory store for local dev | Accelerates developer workflow; PostgreSQL required for staging/production |
 | Foundation events via facade wrapper | Ensures consistent IIL publication without modifying service business rules |
 | `CustomEvent` + `hcmEventType` payload | Aligns with platform IIL conventions; avoids event type proliferation |
 | No payroll/talent REST in v1.0 | S-002.7 scope limited to foundation + time route rationalization |
@@ -104,4 +105,4 @@ Enterprise HCM v1.0 delivers complete domain services, facade integration, found
 
 ---
 
-*Maintained under S-002.8. Update when debt items are resolved or new items discovered.*
+*Maintained under S-002.8 · Synced with central register P-015.7 · Update when debt items are resolved or new items discovered.*

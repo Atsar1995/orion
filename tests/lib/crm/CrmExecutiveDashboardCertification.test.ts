@@ -13,7 +13,8 @@ const CONTEXT: ServiceContext = {
 
 const API_ROOT = join(process.cwd(), "app", "api", "crm", "executive");
 const UI_ROOT = join(process.cwd(), "app", "(platform)", "crm");
-const DOCS_ROOT = join(process.cwd(), "docs", "03_Architecture");
+const ARCH_DOCS = join(process.cwd(), "docs", "03_Architecture");
+const CERT_DOCS = join(process.cwd(), "docs", "11_Governance", "Certification");
 
 describe("P-008.7 Commercial Executive Dashboard Certification", () => {
   it("ships executive dashboard API routes", () => {
@@ -39,8 +40,8 @@ describe("P-008.7 Commercial Executive Dashboard Certification", () => {
   });
 
   it("ships architecture documentation", () => {
-    expect(existsSync(join(DOCS_ROOT, "P-008.7-CRM-Executive-Dashboard-Platform.md"))).toBe(true);
-    expect(existsSync(join(DOCS_ROOT, "P-008.7-CRM-Executive-Dashboard-Certification.md"))).toBe(true);
+    expect(existsSync(join(ARCH_DOCS, "P-008.7-CRM-Executive-Dashboard-Platform.md"))).toBe(true);
+    expect(existsSync(join(CERT_DOCS, "P-008.7-CRM-Executive-Dashboard-Certification.md"))).toBe(true);
   });
 
   it("meets P-008.7 acceptance criteria", () => {

@@ -7,7 +7,7 @@ type RouteParams = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, { params }: RouteParams) {
   const { id } = await params;
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(_request);
   const employment = hcmFacade.getEmployment(id, context);
 
   if (!employment) {

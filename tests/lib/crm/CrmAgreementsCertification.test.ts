@@ -13,7 +13,8 @@ const CONTEXT: ServiceContext = {
 
 const API_ROOT = join(process.cwd(), "app", "api", "crm");
 const UI_ROOT = join(process.cwd(), "app", "(platform)", "crm");
-const DOCS_ROOT = join(process.cwd(), "docs", "03_Architecture");
+const ARCH_DOCS = join(process.cwd(), "docs", "03_Architecture");
+const CERT_DOCS = join(process.cwd(), "docs", "11_Governance", "Certification");
 
 describe("P-008.3 Proposal, Contract & Agreements Certification", () => {
   it("ships commercial agreements API routes", () => {
@@ -53,8 +54,8 @@ describe("P-008.3 Proposal, Contract & Agreements Certification", () => {
   });
 
   it("ships architecture documentation", () => {
-    expect(existsSync(join(DOCS_ROOT, "P-008.3-Commercial-Agreements-Platform.md"))).toBe(true);
-    expect(existsSync(join(DOCS_ROOT, "P-008.3-Commercial-Agreements-Certification.md"))).toBe(true);
+    expect(existsSync(join(ARCH_DOCS, "P-008.3-Commercial-Agreements-Platform.md"))).toBe(true);
+    expect(existsSync(join(CERT_DOCS, "P-008.3-Commercial-Agreements-Certification.md"))).toBe(true);
   });
 
   it("meets P-008.3 acceptance criteria", () => {

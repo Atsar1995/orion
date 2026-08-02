@@ -1,4 +1,6 @@
-import { defaultHcmStore, seedDefaultDocumentRequirements } from "@/lib/hcm/data/InMemoryHcmStore";
+import { seedDefaultDocumentRequirements } from "@/lib/hcm/data/InMemoryHcmStore";
+import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
+import { getDefaultPlatformStore } from "@/lib/platform/store/PlatformStoreFactory";
 import { createFoundationRepositories } from "@/lib/hcm/data/createFoundationRepositories";
 import { seedHcmPayrollData } from "@/lib/hcm/data/seed-hcm-payroll";
 import { HCM_SEED_ORG_ID, seedHcmTimeData } from "@/lib/hcm/data/seed-hcm-time";
@@ -42,33 +44,35 @@ import { LearningService } from "@/lib/hcm/talent/services/LearningService";
 import { PerformanceService } from "@/lib/hcm/talent/services/PerformanceService";
 import { TalentService } from "@/lib/hcm/talent/services/TalentService";
 
-function bootstrapStore() {
-  seedHcmTimeData(defaultHcmStore);
-  seedHcmPayrollData(defaultHcmStore);
-  seedHcmTalentData(defaultHcmStore);
-  seedDefaultDocumentRequirements(defaultHcmStore, HCM_SEED_ORG_ID);
+function bootstrapStore(platformStore: PlatformStore) {
+  const hcmStore = platformStore.getHcmBacking();
+  seedHcmTimeData(hcmStore);
+  seedHcmPayrollData(hcmStore);
+  seedHcmTalentData(hcmStore);
+  seedDefaultDocumentRequirements(hcmStore, HCM_SEED_ORG_ID);
 }
 
 /** Centralized HCM dependency wiring — internal to the domain module. */
-export function createHcmWiring() {
-  bootstrapStore();
+export function createHcmWiring(platformStore: PlatformStore = getDefaultPlatformStore()) {
+  bootstrapStore(platformStore);
 
-  const foundationRepositories = createFoundationRepositories(defaultHcmStore);
+  const hcmStore = platformStore.getHcmBacking();
+  const foundationRepositories = createFoundationRepositories(hcmStore);
   const employeeRepository = foundationRepositories.employee;
 
-  const attendanceRepository = new InMemoryAttendanceRepository(defaultHcmStore);
-  const leaveRepository = new InMemoryLeaveRepository(defaultHcmStore);
-  const rosterRepository = new InMemoryRosterRepository(defaultHcmStore);
-  const shiftRepository = new InMemoryShiftRepository(defaultHcmStore);
-  const calendarRepository = new InMemoryCalendarRepository(defaultHcmStore);
-  const payrollRepository = new InMemoryPayrollRepository(defaultHcmStore);
-  const payrollRunRepository = new InMemoryPayrollRunRepository(defaultHcmStore);
-  const payrollComponentRepository = new InMemoryPayrollComponentRepository(defaultHcmStore);
-  const performanceRepository = new InMemoryPerformanceRepository(defaultHcmStore);
-  const learningRepository = new InMemoryLearningRepository(defaultHcmStore);
-  const certificationRepository = new InMemoryCertificationRepository(defaultHcmStore);
-  const competencyRepository = new InMemoryCompetencyRepository(defaultHcmStore);
-  const talentRepository = new InMemoryTalentRepository(defaultHcmStore);
+  const attendanceRepository = new InMemoryAttendanceRepository(hcmStore);
+  const leaveRepository = new InMemoryLeaveRepository(hcmStore);
+  const rosterRepository = new InMemoryRosterRepository(hcmStore);
+  const shiftRepository = new InMemoryShiftRepository(hcmStore);
+  const calendarRepository = new InMemoryCalendarRepository(hcmStore);
+  const payrollRepository = new InMemoryPayrollRepository(hcmStore);
+  const payrollRunRepository = new InMemoryPayrollRunRepository(hcmStore);
+  const payrollComponentRepository = new InMemoryPayrollComponentRepository(hcmStore);
+  const performanceRepository = new InMemoryPerformanceRepository(hcmStore);
+  const learningRepository = new InMemoryLearningRepository(hcmStore);
+  const certificationRepository = new InMemoryCertificationRepository(hcmStore);
+  const competencyRepository = new InMemoryCompetencyRepository(hcmStore);
+  const talentRepository = new InMemoryTalentRepository(hcmStore);
 
   const foundation = new HcmFoundationFacade(foundationRepositories);
 
@@ -110,6 +114,7 @@ export function createHcmWiring() {
   registerHcmSubscribers(intelligence);
 
   return {
+    platformStore,
     foundation,
     intelligence,
     attendance,

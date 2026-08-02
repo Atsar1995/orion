@@ -34,7 +34,7 @@ function buildOnboardingQuery(url: URL): OnboardingSearchQuery {
 }
 
 export async function GET(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
   const url = new URL(request.url);
   const query = buildOnboardingQuery(url);
   const items = hcmFacade.searchOnboarding(query, context);
@@ -44,7 +44,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
 
   try {
     const body = (await request.json()) as StartOnboardingInput;

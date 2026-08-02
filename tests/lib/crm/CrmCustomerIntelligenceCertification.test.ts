@@ -13,7 +13,8 @@ const CONTEXT: ServiceContext = {
 
 const API_ROOT = join(process.cwd(), "app", "api", "crm", "customer-intelligence");
 const UI_ROOT = join(process.cwd(), "app", "(platform)", "crm");
-const DOCS_ROOT = join(process.cwd(), "docs", "03_Architecture");
+const ARCH_DOCS = join(process.cwd(), "docs", "03_Architecture");
+const CERT_DOCS = join(process.cwd(), "docs", "11_Governance", "Certification");
 
 describe("P-008.6 Customer Analytics Certification", () => {
   it("ships customer intelligence API routes", () => {
@@ -42,8 +43,8 @@ describe("P-008.6 Customer Analytics Certification", () => {
   });
 
   it("ships architecture documentation", () => {
-    expect(existsSync(join(DOCS_ROOT, "P-008.6-Customer-Analytics-Platform.md"))).toBe(true);
-    expect(existsSync(join(DOCS_ROOT, "P-008.6-Customer-Analytics-Certification.md"))).toBe(true);
+    expect(existsSync(join(ARCH_DOCS, "P-008.6-Customer-Analytics-Platform.md"))).toBe(true);
+    expect(existsSync(join(CERT_DOCS, "P-008.6-Customer-Analytics-Certification.md"))).toBe(true);
   });
 
   it("meets P-008.6 acceptance criteria", () => {

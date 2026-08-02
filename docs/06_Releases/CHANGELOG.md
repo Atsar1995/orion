@@ -6,13 +6,79 @@ During pre-release development, ORION follows milestone-based semantic versionin
 
 The format is based on "Keep a Changelog" principles.
 
+**Canonical release framework:** [Release-Policy.md](./Release-Policy.md) · [RELEASE_HISTORY.md](./RELEASE_HISTORY.md) · [ORION-Architecture-Baselines.md](./ORION-Architecture-Baselines.md)
+
+---
+
+## v1.0.1-rc1 — Enterprise HCM · Governance Framework
+
+**Release Status:** Release Candidate · Internal / Design Partner  
+**Release Date:** August 2026  
+**Git Tag:** `v1.0.1-rc1`  
+**Release Branch:** `release/v1.0.1`  
+**Baseline Commit:** `03ec4b2`  
+**Release Notes:** [v1.0.1-rc1-Release-Notes.md](./v1.0.1-rc1-Release-Notes.md)  
+**Certification:** [v1.0.1-rc1-Certification.md](./v1.0.1-rc1-Certification.md) · **CONDITIONAL GO**  
+**Planning:** [v1.0.1-Planning.md](./v1.0.1-Planning.md)  
+**Architecture Baseline:** v1.0 Candidate
+
+### Summary
+
+First enterprise release candidate combining **Enterprise HCM v1.0** (P-012 / S-002.3–S-002.8) and the **P-013 Enterprise Governance Framework**. Consolidated release management documentation (P-013.11).
+
+### Added — Enterprise HCM
+
+- Complete workforce domain — organization, employee, employment, recruitment, onboarding, time, payroll, talent
+- `hcmFacade` — single public entry at `@/lib/hcm`
+- 48 REST routes with standardized API envelopes (`lib/hcm/api/`)
+- 67+ IIL outbound events · 13 workflow template triggers
+- HCM engineering documentation suite (ES-HCM-001, catalogues, guides)
+- 79 HCM tests across 9 suites
+
+### Added — Enterprise Governance Framework (P-013)
+
+- [Enterprise Architecture Handbook v1.0](../00_Governance/ORION_Enterprise_Architecture_Handbook_v1.0.md) (P-013.1)
+- [ES-090 Next.js Enterprise Standards](../00_Governance/ES-090-ORION-NextJS-Enterprise-Standards.md) (P-013.2)
+- [ES-091 Enterprise Development Standards](../00_Governance/ES-091-ORION-Enterprise-Development-Standards.md) (P-013.3)
+- [ES-096 Testing & Certification Standards](../00_Governance/ES-096-ORION-Enterprise-Testing-Certification-Standards.md) (P-013.8)
+- [ES-097 Architecture Governance & ADR Policy](../00_Governance/ES-097-ORION-Architecture-Governance-ADR-Policy.md) (P-013.9)
+
+### Added — Release Management (P-013.11)
+
+- [RELEASE_HISTORY.md](./RELEASE_HISTORY.md) · [ORION-Architecture-Baselines.md](./ORION-Architecture-Baselines.md) · [Release-Policy.md](./Release-Policy.md)
+- Consolidated v0.4.1-alpha and v1.0.1-rc1 release artifacts in `docs/06_Releases/`
+
+### Known Limitations (GA Blockers)
+
+- TD-HCM-001 — in-memory HCM store
+- TD-HCM-005 — no HCM-specific permission matrix
+- See [HCM Technical Debt Register](../HCM/Engineering/HCM-Technical-Debt-Register.md)
+
+| Check | Status |
+|-------|--------|
+| TypeScript | PASS |
+| Lint | PASS · 0 errors |
+| HCM tests | PASS · 79/79 |
+| Full suite | PARTIAL · 794/800 · 6 pre-existing CRM/Finance doc failures |
+| Build | PASS |
+| Certification | **CONDITIONAL GO** |
+
+---
+
+## v1.0.0-rc1 — Enterprise HCM Release Candidate (superseded)
+
+**Release Status:** Superseded by v1.0.1-rc1 (same commit)  
+**Git Tag:** `v1.0.0-rc1`  
+**Note:** Tag retained for history; release line continues as v1.0.1-rc1.
+
 ---
 
 ## v0.4.1-alpha — Enterprise Data Platform (P-011 Phase I)
 
 **Release Status:** Alpha · Internal  
 **Release Date:** 31 July 2026  
-**Release Notes:** [docs/releases/v0.4.1-alpha-Release-Notes.md](../releases/v0.4.1-alpha-Release-Notes.md)  
+**Release Notes:** [v0.4.1-alpha-Release-Notes.md](./v0.4.1-alpha-Release-Notes.md)  
+**Release Checklist:** [v0.4.1-alpha-Release-Checklist.md](./v0.4.1-alpha-Release-Checklist.md)  
 **Certification:** [ENTERPRISE DATA PLATFORM CERTIFICATE](../Data/Engineering/ENTERPRISE_DATA_PLATFORM_CERTIFICATE.md) · CONDITIONAL GO
 
 ### Summary

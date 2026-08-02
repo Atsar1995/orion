@@ -1,4 +1,4 @@
-import type { InMemoryHcmStore } from "@/lib/hcm/data/InMemoryHcmStore";
+import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import { InMemoryEmployeeRepository } from "@/lib/hcm/data/InMemoryEmployeeRepository";
 import { InMemoryEmployeeProfileRepository } from "@/lib/hcm/employees/repositories/InMemoryEmployeeProfileRepository";
 import {
@@ -26,7 +26,7 @@ import {
 } from "@/lib/hcm/recruitment/repositories/InMemoryRecruitmentRepository";
 
 /** Wires all P-012.1–P-012.5 in-memory repositories against a shared store. */
-export function createFoundationRepositories(store: InMemoryHcmStore) {
+export function createFoundationRepositories(store: HcmStoreBacking) {
   return {
     organization: new InMemoryOrganizationRepository(store),
     position: new InMemoryPositionRepository(store),

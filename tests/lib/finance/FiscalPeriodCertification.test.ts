@@ -5,7 +5,7 @@ import {
   financeFiscalPeriodService,
   financeService,
   FINANCE_FOUNDATION_CAPABILITIES,
-  FINANCE_MISSION_FISCAL_PERIOD,
+  FINANCE_MISSION_EXECUTIVE_INTELLIGENCE,
 } from "@/lib/finance";
 import type { ServiceContext } from "@/types/services";
 
@@ -57,7 +57,7 @@ describe("P-009.5 Enterprise Fiscal Period Management Certification", () => {
 
     expect(status.fiscalPeriodImplemented).toBe(true);
     expect(status.readyForEventPipeline).toBe(true);
-    expect(bootstrap.mission).toBe(FINANCE_MISSION_FISCAL_PERIOD);
+    expect(bootstrap.mission).toBe(FINANCE_MISSION_EXECUTIVE_INTELLIGENCE);
   });
 
   it("supports period inquiry with fiscal year filter", () => {

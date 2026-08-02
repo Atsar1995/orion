@@ -13,7 +13,7 @@ import type { AttendanceStatus, RecordAttendanceInput } from "@/types/hcm-time";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
   const url = new URL(request.url);
   const pagination = parsePagination(url);
 
@@ -43,7 +43,7 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
 
   try {
     const body = (await request.json()) as RecordAttendanceInput;

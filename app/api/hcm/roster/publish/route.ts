@@ -4,7 +4,7 @@ import { getHcmApiContext, hcmFromError, hcmOk } from "@/lib/hcm/api";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
   const body = (await request.json()) as { rosterId: string };
 
   try {

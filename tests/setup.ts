@@ -3,6 +3,8 @@ import { cleanup } from "@testing-library/react";
 import React from "react";
 import { afterEach, vi } from "vitest";
 
+vi.mock("server-only", () => ({}));
+
 vi.mock("next/link", () => ({
   default: ({
     children,

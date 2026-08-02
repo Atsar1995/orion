@@ -5,7 +5,7 @@ import type { UploadDocumentInput } from "@/types/hcm-onboarding";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
 
   try {
     const body = (await request.json()) as UploadDocumentInput;

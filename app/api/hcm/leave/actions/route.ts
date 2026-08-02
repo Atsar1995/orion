@@ -10,7 +10,7 @@ type ActionBody = {
 };
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
   const body = (await request.json()) as ActionBody;
 
   try {

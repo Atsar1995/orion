@@ -4,7 +4,7 @@ import { getHcmApiContext, hcmOk, parseOptionalString } from "@/lib/hcm/api";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
   const url = new URL(request.url);
   const date = parseOptionalString(url, "date");
 

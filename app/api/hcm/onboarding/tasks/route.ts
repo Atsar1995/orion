@@ -9,7 +9,7 @@ type CompleteTaskBody = {
 };
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
 
   try {
     const body = (await request.json()) as CompleteTaskBody;

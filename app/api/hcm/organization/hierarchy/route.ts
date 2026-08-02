@@ -4,14 +4,14 @@ import type { CreateReportingRelationshipInput } from "@/types/hcm-organization"
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const { context } = await getHcmApiContext();
+export async function GET(request: Request) {
+  const { context } = await getHcmApiContext(request);
   const relationships = hcmFacade.validateHierarchy(context);
   return hcmOk({ relationships });
 }
 
 export async function POST(request: Request) {
-  const { context } = await getHcmApiContext();
+  const { context } = await getHcmApiContext(request);
 
   try {
     const body = (await request.json()) as CreateReportingRelationshipInput;
