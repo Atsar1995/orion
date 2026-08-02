@@ -31,7 +31,7 @@ export class PlatformStoreFactory {
   private static createRelationalStore(configuration: StoreConfiguration): PlatformStore {
     // Lazy require keeps PostgreSQL modules out of client bundles that only need in-memory health.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { PostgresPlatformStore } = require("@/lib/platform/store/PostgresPlatformStore") as typeof import("@/lib/platform/store/PostgresPlatformStore");
+    const { PostgresPlatformStore } = require("./PostgresPlatformStore") as typeof import("@/lib/platform/store/PostgresPlatformStore");
     return new PostgresPlatformStore({ configuration });
   }
 
