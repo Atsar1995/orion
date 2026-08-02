@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "audit:production": "node scripts/audit-production.mjs"
+    "audit:production": "node scripts/audit-production.mjs",
+    "ga:sprint": "node scripts/ga-readiness-sprint.mjs"
   },
   "dependencies": {
     "next": "16.2.11",

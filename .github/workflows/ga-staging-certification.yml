@@ -1,0 +1,69 @@
+name: GA Staging Certification
+
+on:
+  push:
+    branches:
+      - release/v1.0.1
+  workflow_dispatch:
+
+concurrency:
+  group: ga-staging-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ga-staging-certification:
+    name: GA-001 Staging PostgreSQL Certification
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: orion
+          POSTGRES_PASSWORD: orion_staging_secret
+          POSTGRES_DB: orion_staging
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U orion -d orion_staging"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      CI: true
+      GA001_LIVE_POSTGRES: "1"
+      NODE_ENV: test
+      ORION_STORE_ADAPTER: postgres
+      ORION_DATABASE_URL: postgresql://orion:orion_staging_secret@localhost:5432/orion_staging
+      ORION_AUTH_FAIL_CLOSED: "true"
+      ORION_SESSION_SECRET: ga001-ci-staging-secret-minimum-32-characters
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v7.0.0
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: GA-001 operational certification
+        run: npm run test -- tests/ga/GA001OperationalCertification.test.ts
+
+      - name: Full test suite
+        run: npm run test
+
+      - name: Production build
+        run: npm run build

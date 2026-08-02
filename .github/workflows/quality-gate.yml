@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - release/v1.0.1
   pull_request:
     branches:
       - main
+      - release/v1.0.1
 
 concurrency:
   group: quality-gate-${{ github.workflow }}-${{ github.ref }}
