@@ -33,12 +33,7 @@ jobs:
 
     env:
       CI: true
-      GA001_LIVE_POSTGRES: "1"
       NODE_ENV: test
-      ORION_STORE_ADAPTER: postgres
-      ORION_DATABASE_URL: postgresql://orion:orion_staging_secret@localhost:5432/orion_staging
-      ORION_AUTH_FAIL_CLOSED: "true"
-      ORION_SESSION_SECRET: ga001-ci-staging-secret-minimum-32-characters
 
     steps:
       - name: Checkout
@@ -61,6 +56,12 @@ jobs:
 
       - name: GA-001 operational certification
         run: npm run test -- tests/ga/GA001OperationalCertification.test.ts
+        env:
+          GA001_LIVE_POSTGRES: "1"
+          ORION_STORE_ADAPTER: postgres
+          ORION_DATABASE_URL: postgresql://orion:orion_staging_secret@localhost:5432/orion_staging
+          ORION_AUTH_FAIL_CLOSED: "true"
+          ORION_SESSION_SECRET: ga001-ci-staging-secret-minimum-32-characters
 
       - name: Full test suite
         run: npm run test
