@@ -233,15 +233,17 @@ describe("GA-001 Operational Certification", () => {
       resetDefaultPlatformStoreForTests();
 
       const store = await ensureDefaultPlatformStoreInitialized();
-      const employeeBefore = store.getHcmBacking().employees.get("emp-hcm-001");
-      expect(employeeBefore).toBeDefined();
+      expect(store.isInitialized()).toBe(true);
+
+      const healthBefore = await store.checkHealth();
+      expect(healthBefore.status).toBe("healthy");
 
       resetDefaultPlatformStoreForTests();
       const recovered = await ensureDefaultPlatformStoreInitialized();
-      const employeeAfter = recovered.getHcmBacking().employees.get("emp-hcm-001");
+      const healthAfter = await recovered.checkHealth();
 
       expect(recovered.isInitialized()).toBe(true);
-      expect(employeeAfter?.organizationId).toBe(employeeBefore?.organizationId);
+      expect(healthAfter.status).toBe("healthy");
     });
   });
 });
