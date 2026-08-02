@@ -3,6 +3,7 @@
  */
 
 import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
+import { PostgresPlatformStore } from "@/lib/platform/store/PostgresPlatformStore";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 import {
   DEFAULT_STORE_CONFIGURATION,
@@ -29,9 +30,6 @@ export class PlatformStoreFactory {
   }
 
   private static createRelationalStore(configuration: StoreConfiguration): PlatformStore {
-    // Lazy require keeps PostgreSQL modules out of client bundles that only need in-memory health.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { PostgresPlatformStore } = require("./PostgresPlatformStore") as typeof import("@/lib/platform/store/PostgresPlatformStore");
     return new PostgresPlatformStore({ configuration });
   }
 
