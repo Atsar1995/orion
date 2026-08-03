@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { HcmRole, OrganizationRole, PlatformRole } from "@/lib/platform/security/Role";
+import { FinanceRole, HcmRole, OrganizationRole, PlatformRole } from "@/lib/platform/security/Role";
 import { HCM_PERMISSIONS, defaultRoleRegistry } from "@/lib/platform/security/RoleRegistry";
 import { SystemRole } from "@/lib/auth/roles";
 
@@ -22,6 +22,7 @@ describe("RoleRegistry", () => {
       platformRole: PlatformRole.PlatformAdministrator,
       organizationRole: OrganizationRole.OrganizationAdministrator,
       hcmRoles: [HcmRole.HrAdministrator, HcmRole.PayrollManager],
+      financeRoles: [FinanceRole.FinanceAdministrator],
     });
 
     expect(effective.has(HCM_PERMISSIONS.recruitmentWrite)).toBe(true);
@@ -34,6 +35,7 @@ describe("RoleRegistry", () => {
       platformRole: PlatformRole.SystemAdministrator,
       organizationRole: OrganizationRole.OrganizationOwner,
       hcmRoles: [],
+      financeRoles: [FinanceRole.FinanceAdministrator],
     });
 
     expect(effective.has(HCM_PERMISSIONS.orgWrite)).toBe(true);

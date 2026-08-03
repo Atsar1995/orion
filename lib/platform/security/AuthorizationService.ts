@@ -80,8 +80,12 @@ export class AuthorizationService {
 
     const moduleAllowed = this.evaluateModuleAccess(identity, permission);
     const domainAllowed = this.permissionEvaluator.evaluate({ identity, permission });
+    const [domain] = permission.split(":");
 
-    if (moduleAllowed && domainAllowed) {
+    const authorized =
+      domain === "finance" ? domainAllowed : moduleAllowed && domainAllowed;
+
+    if (authorized) {
       const result = allowResult(
         permission,
         boundary.crossOrganization

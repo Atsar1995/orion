@@ -244,7 +244,7 @@ export class FiscalPeriodService {
   }
 
   reopenPeriod(input: PeriodReopenInput, context: ServiceContext): PeriodTransitionResult {
-    const issues = this.rules.validateReopen(input, context.organizationId, context.role);
+    const issues = this.rules.validateReopen(input, context);
     if (issues.length > 0) {
       throw new Error(issues[0]?.code ?? "REOPEN_FAILED");
     }

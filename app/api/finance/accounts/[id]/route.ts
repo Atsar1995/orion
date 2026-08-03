@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getFinanceApiContextForRequest } from "@/lib/finance/security/FinancePermissionGuards";
 import { financeChartOfAccountsService } from "@/lib/finance";
 import type { ModifyChartOfAccountInput } from "@/types/finance-chart-of-accounts";
 
@@ -8,7 +8,9 @@ export const dynamic = "force-dynamic";
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function GET(_request: Request, { params }: RouteParams) {
-  const { context } = await getDecisionServiceContext();
+  const financeAuth = await getFinanceApiContextForRequest(_request);
+  if (financeAuth.errorResponse) return financeAuth.errorResponse;
+  const { context } = financeAuth;
   const { id } = await params;
   const account = financeChartOfAccountsService.accounts.getDetail(id, context);
 
@@ -20,7 +22,9 @@ export async function GET(_request: Request, { params }: RouteParams) {
 }
 
 export async function PATCH(request: Request, { params }: RouteParams) {
-  const { context } = await getDecisionServiceContext();
+  const financeAuth = await getFinanceApiContextForRequest(request);
+  if (financeAuth.errorResponse) return financeAuth.errorResponse;
+  const { context } = financeAuth;
   const { id } = await params;
   const body = (await request.json()) as ModifyChartOfAccountInput;
 

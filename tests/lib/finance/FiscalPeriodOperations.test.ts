@@ -2,6 +2,13 @@ import { describe, expect, it } from "vitest";
 import { financeFiscalPeriodService, financeService } from "@/lib/finance";
 import type { ServiceContext } from "@/types/services";
 
+const ADMIN_CONTEXT: ServiceContext = {
+  organizationId: "org-orania",
+  workspaceId: "workspace-orania",
+  userId: "user-finance-admin",
+  role: "organization_admin",
+};
+
 const CONTEXT: ServiceContext = {
   organizationId: "org-orania",
   workspaceId: "workspace-orania",
@@ -67,15 +74,15 @@ describe("Fiscal Period operations (P-009.5)", () => {
         reason: "Audit adjustment required",
         authorizationReference: "AUTH-2026-001",
       },
-      CONTEXT,
+      ADMIN_CONTEXT,
     );
 
     expect(result.newState).toBe("open");
-    expect(result.period.reopenedBy).toBe("user-executive");
+    expect(result.period.reopenedBy).toBe("user-finance-admin");
   });
 
-  it("rejects reopen without executive authorization", () => {
-    const staffContext: ServiceContext = { ...CONTEXT, role: "staff", userId: "user-staff" };
+  it("rejects reopen without finance period reopen permission", () => {
+    const staffContext: ServiceContext = { ...CONTEXT, role: "read_only", userId: "user-readonly" };
 
     expect(() =>
       financeFiscalPeriodService.reopenPeriod(

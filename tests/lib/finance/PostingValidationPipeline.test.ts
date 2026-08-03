@@ -25,7 +25,7 @@ const readOnlyActor: ServiceContext = {
   organizationId: ORG,
   userId: "user-readonly-001",
   workspaceId: "finance",
-  role: "executive",
+  role: "read_only",
 };
 
 function createValidationPipeline(backing: ReturnType<typeof createIsolatedFinanceBacking>) {

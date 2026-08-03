@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getFinanceApiContextForRequest } from "@/lib/finance/security/FinancePermissionGuards";
 import { financeGeneralLedgerService } from "@/lib/finance";
 import type { LedgerInquiryQuery } from "@/types/finance-general-ledger";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const { context } = await getDecisionServiceContext();
+  const financeAuth = await getFinanceApiContextForRequest(request);
+  if (financeAuth.errorResponse) return financeAuth.errorResponse;
+  const { context } = financeAuth;
   const url = new URL(request.url);
 
   const query: LedgerInquiryQuery = {

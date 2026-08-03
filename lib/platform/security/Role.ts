@@ -34,10 +34,23 @@ export enum HcmRole {
   LearningManager = "learning_manager",
 }
 
+/** Finance domain role profiles (permission bundles — not separate auth identities). */
+export enum FinanceRole {
+  FinanceAdministrator = "finance_administrator",
+  Controller = "finance_controller",
+  Accountant = "finance_accountant",
+  AccountsPayable = "finance_accounts_payable",
+  AccountsReceivable = "finance_accounts_receivable",
+  Auditor = "finance_auditor",
+  Executive = "finance_executive",
+  ReadOnly = "finance_read_only",
+}
+
 export type EnterpriseRole =
   | PlatformRole
   | OrganizationRole
   | HcmRole
+  | FinanceRole
   | RoleSlug;
 
 /** Maps session {@link RoleSlug} to enterprise organization role profile. */
@@ -106,5 +119,30 @@ export function resolveHcmRolesForPlatformRole(role: RoleSlug): readonly HcmRole
       return [HcmRole.Recruiter];
     default:
       return [];
+  }
+}
+
+/** Finance domain profiles granted by platform role (P-009.14 baseline). */
+export function resolveFinanceRolesForPlatformRole(role: RoleSlug): readonly FinanceRole[] {
+  switch (role) {
+    case SystemRole.SuperAdmin:
+    case SystemRole.OrganizationAdmin:
+    case SystemRole.Administrator:
+      return [FinanceRole.FinanceAdministrator];
+    case SystemRole.ServiceAccount:
+      return [FinanceRole.FinanceAdministrator, FinanceRole.Accountant];
+    case SystemRole.Executive:
+    case SystemRole.Founder:
+      return [FinanceRole.Executive];
+    case SystemRole.Manager:
+      return [FinanceRole.Controller];
+    case SystemRole.Analyst:
+    case SystemRole.Staff:
+      return [FinanceRole.Accountant];
+    case SystemRole.ReadOnly:
+    case SystemRole.Guest:
+      return [FinanceRole.ReadOnly];
+    default:
+      return [FinanceRole.ReadOnly];
   }
 }

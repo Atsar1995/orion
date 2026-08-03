@@ -5,17 +5,19 @@
 import { buildPermissionCode, type PermissionCode } from "@/lib/platform/security/Permission";
 import {
   HcmRole,
+  FinanceRole,
   OrganizationRole,
   PlatformRole,
   resolveHcmRolesForPlatformRole,
 } from "@/lib/platform/security/Role";
+import { FINANCE_PERMISSIONS } from "@/lib/finance/security/finance-permission-catalog";
 import type { RoleSlug } from "@/types/auth";
 import { SystemRole } from "@/lib/auth/roles";
 
 export type RoleAssignment = {
-  readonly role: PlatformRole | OrganizationRole | HcmRole | RoleSlug;
+  readonly role: PlatformRole | OrganizationRole | HcmRole | FinanceRole | RoleSlug;
   readonly permissions: readonly PermissionCode[];
-  readonly inherits?: readonly (PlatformRole | OrganizationRole | HcmRole | RoleSlug)[];
+  readonly inherits?: readonly (PlatformRole | OrganizationRole | HcmRole | FinanceRole | RoleSlug)[];
 };
 
 const HCM_PERMISSIONS = {
@@ -39,6 +41,7 @@ const HCM_PERMISSIONS = {
 } as const;
 
 export { HCM_PERMISSIONS };
+export { FINANCE_PERMISSIONS };
 
 const ROLE_ASSIGNMENTS: readonly RoleAssignment[] = [
   {
@@ -62,7 +65,7 @@ const ROLE_ASSIGNMENTS: readonly RoleAssignment[] = [
   },
   {
     role: OrganizationRole.OrganizationAdministrator,
-    permissions: Object.values(HCM_PERMISSIONS),
+    permissions: [...Object.values(HCM_PERMISSIONS), ...Object.values(FINANCE_PERMISSIONS)],
   },
   {
     role: OrganizationRole.DepartmentManager,
@@ -134,6 +137,84 @@ const ROLE_ASSIGNMENTS: readonly RoleAssignment[] = [
     role: HcmRole.LearningManager,
     permissions: [HCM_PERMISSIONS.talentRead, HCM_PERMISSIONS.talentWrite],
   },
+  {
+    role: FinanceRole.FinanceAdministrator,
+    permissions: Object.values(FINANCE_PERMISSIONS),
+  },
+  {
+    role: FinanceRole.Controller,
+    permissions: [
+      FINANCE_PERMISSIONS.journalRead,
+      FINANCE_PERMISSIONS.journalPost,
+      FINANCE_PERMISSIONS.journalReverse,
+      FINANCE_PERMISSIONS.periodRead,
+      FINANCE_PERMISSIONS.periodClose,
+      FINANCE_PERMISSIONS.coaRead,
+      FINANCE_PERMISSIONS.auditRead,
+      FINANCE_PERMISSIONS.intelligenceRead,
+      FINANCE_PERMISSIONS.paymentRead,
+    ],
+  },
+  {
+    role: FinanceRole.Accountant,
+    permissions: [
+      FINANCE_PERMISSIONS.journalRead,
+      FINANCE_PERMISSIONS.journalCreate,
+      FINANCE_PERMISSIONS.journalPost,
+      FINANCE_PERMISSIONS.coaRead,
+      FINANCE_PERMISSIONS.periodRead,
+      FINANCE_PERMISSIONS.paymentRead,
+    ],
+  },
+  {
+    role: FinanceRole.AccountsPayable,
+    permissions: [
+      FINANCE_PERMISSIONS.journalRead,
+      FINANCE_PERMISSIONS.paymentRead,
+      FINANCE_PERMISSIONS.paymentWrite,
+      FINANCE_PERMISSIONS.coaRead,
+      FINANCE_PERMISSIONS.periodRead,
+    ],
+  },
+  {
+    role: FinanceRole.AccountsReceivable,
+    permissions: [
+      FINANCE_PERMISSIONS.journalRead,
+      FINANCE_PERMISSIONS.paymentRead,
+      FINANCE_PERMISSIONS.coaRead,
+      FINANCE_PERMISSIONS.periodRead,
+    ],
+  },
+  {
+    role: FinanceRole.Auditor,
+    permissions: [
+      FINANCE_PERMISSIONS.journalRead,
+      FINANCE_PERMISSIONS.coaRead,
+      FINANCE_PERMISSIONS.periodRead,
+      FINANCE_PERMISSIONS.auditRead,
+      FINANCE_PERMISSIONS.intelligenceRead,
+      FINANCE_PERMISSIONS.paymentRead,
+    ],
+  },
+  {
+    role: FinanceRole.Executive,
+    permissions: [
+      FINANCE_PERMISSIONS.intelligenceRead,
+      FINANCE_PERMISSIONS.journalRead,
+      FINANCE_PERMISSIONS.periodRead,
+      FINANCE_PERMISSIONS.coaRead,
+    ],
+  },
+  {
+    role: FinanceRole.ReadOnly,
+    permissions: [
+      FINANCE_PERMISSIONS.journalRead,
+      FINANCE_PERMISSIONS.coaRead,
+      FINANCE_PERMISSIONS.periodRead,
+      FINANCE_PERMISSIONS.intelligenceRead,
+      FINANCE_PERMISSIONS.paymentRead,
+    ],
+  },
 ];
 
 /** Role registry with inheritance resolution for platform and domain roles. */
@@ -146,7 +227,7 @@ export class RoleRegistry {
     }
   }
 
-  getPermissionsForRole(role: PlatformRole | OrganizationRole | HcmRole | RoleSlug): Set<PermissionCode> {
+  getPermissionsForRole(role: PlatformRole | OrganizationRole | HcmRole | FinanceRole | RoleSlug): Set<PermissionCode> {
     return new Set(this.assignments.get(String(role)) ?? []);
   }
 
@@ -155,6 +236,7 @@ export class RoleRegistry {
     organizationRole: OrganizationRole;
     platformRole: PlatformRole;
     hcmRoles: readonly HcmRole[];
+    financeRoles: readonly FinanceRole[];
   }): Set<PermissionCode> {
     const effective = new Set<PermissionCode>();
 
@@ -172,9 +254,17 @@ export class RoleRegistry {
         effective.add(code);
       }
     }
+    for (const financeRole of identity.financeRoles) {
+      for (const code of this.getPermissionsForRole(financeRole)) {
+        effective.add(code);
+      }
+    }
 
     if (identity.role === SystemRole.SuperAdmin) {
       for (const code of Object.values(HCM_PERMISSIONS)) {
+        effective.add(code);
+      }
+      for (const code of Object.values(FINANCE_PERMISSIONS)) {
         effective.add(code);
       }
       effective.add(buildPermissionCode("platform", "system", "admin"));

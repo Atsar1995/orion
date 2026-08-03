@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getFinanceApiContextForRequest } from "@/lib/finance/security/FinancePermissionGuards";
 import { financeFiscalPeriodService } from "@/lib/finance";
 import type { PeriodReopenInput } from "@/types/finance-period";
 
@@ -8,7 +8,9 @@ export const dynamic = "force-dynamic";
 type RouteParams = { params: Promise<{ id: string }> };
 
 export async function POST(request: Request, { params }: RouteParams) {
-  const { context } = await getDecisionServiceContext();
+  const financeAuth = await getFinanceApiContextForRequest(request);
+  if (financeAuth.errorResponse) return financeAuth.errorResponse;
+  const { context } = financeAuth;
   const { id } = await params;
   const body = (await request.json()) as Omit<PeriodReopenInput, "periodId">;
 

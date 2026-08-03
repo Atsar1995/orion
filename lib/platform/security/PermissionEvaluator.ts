@@ -31,7 +31,7 @@ export class PermissionEvaluator {
     }
 
     const [domain] = permission.split(":");
-    if (domain === "platform") {
+    if (domain === "platform" || domain === "finance") {
       return false;
     }
 

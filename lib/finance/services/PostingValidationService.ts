@@ -1,3 +1,4 @@
+import { defaultFinanceAuthorizationService } from "@/lib/finance/security/FinanceAuthorizationService";
 import { PeriodRulesEngine } from "@/lib/finance/fiscal-period/PeriodRulesEngine";
 import type { ChartOfAccountsRepository } from "@/lib/finance/repositories/ChartOfAccountsRepository";
 import type { EventLineageRepository } from "@/lib/finance/repositories/EventLineageRepository";
@@ -11,7 +12,6 @@ import type {
   PostingValidationStageResult,
 } from "@/lib/finance/services/PostingValidationStage";
 import type { JournalEntryRecord, JournalLineRecord } from "@/types/finance-ledger";
-import type { RoleSlug } from "@/types/auth";
 import type { ServiceContext } from "@/types/services";
 
 /** Input bundle for a single posting validation run. */
@@ -23,16 +23,6 @@ export type PostingValidationInput = {
 };
 
 const ISO_CURRENCY = /^[A-Z]{3}$/;
-
-const POSTING_ALLOWED_ROLES = new Set<RoleSlug>([
-  "super_admin",
-  "organization_admin",
-  "administrator",
-  "manager",
-  "staff",
-  "founder",
-  "service_account",
-]);
 
 /** Independent posting validators — one method per stage (P-009.8). */
 export class PostingValidationService {
@@ -362,7 +352,7 @@ export class PostingValidationService {
 
   private validateAuthorization(input: PostingValidationInput): PostingValidationStageResult {
     const stage: PostingValidationStageName = "authorization";
-    const { role, userId } = input.serviceContext;
+    const { userId } = input.serviceContext;
 
     if (!userId.trim()) {
       return this.stageResult(
@@ -374,7 +364,7 @@ export class PostingValidationService {
       );
     }
 
-    if (!POSTING_ALLOWED_ROLES.has(role)) {
+    if (!defaultFinanceAuthorizationService.canPostJournal(input.serviceContext)) {
       return this.stageResult(
         stage,
         "stop",

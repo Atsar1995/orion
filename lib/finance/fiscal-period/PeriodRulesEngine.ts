@@ -1,6 +1,8 @@
 import type { FiscalPeriodState, PeriodReopenInput } from "@/types/finance-period";
 import { isPeriodAdjustmentAllowed, isPeriodPostingAllowed, isPeriodReversalAllowed } from "@/types/finance-period";
+import { defaultFinanceAuthorizationService } from "@/lib/finance/security/FinanceAuthorizationService";
 import type { PeriodRepository } from "@/lib/finance/repositories/PeriodRepository";
+import type { ServiceContext } from "@/types/services";
 
 export type PeriodValidationIssue = {
   readonly code: string;
@@ -78,9 +80,9 @@ export class PeriodRulesEngine {
     return [];
   }
 
-  validateReopen(input: PeriodReopenInput, organizationId: string, role: string): PeriodValidationIssue[] {
+  validateReopen(input: PeriodReopenInput, context: ServiceContext): PeriodValidationIssue[] {
     const issues: PeriodValidationIssue[] = [];
-    const period = this.periodRepository.findById(organizationId, input.periodId);
+    const period = this.periodRepository.findById(context.organizationId, input.periodId);
 
     if (!period) {
       return [{ code: "PERIOD_NOT_FOUND", message: "Accounting period not found", field: "periodId" }];
@@ -94,10 +96,10 @@ export class PeriodRulesEngine {
       });
     }
 
-    if (role !== "executive" && role !== "admin") {
+    if (!defaultFinanceAuthorizationService.canReopenPeriod(context)) {
       issues.push({
         code: "UNAUTHORIZED_REOPEN",
-        message: "Period reopen requires executive or admin authorization",
+        message: "Period reopen requires finance:period:reopen permission",
         field: "role",
       });
     }

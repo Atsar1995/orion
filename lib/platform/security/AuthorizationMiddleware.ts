@@ -22,6 +22,7 @@ import {
   defaultAuthorizationService,
 } from "@/lib/platform/security/AuthorizationService";
 import {
+  resolveFinanceRolesForPlatformRole,
   resolveHcmRolesForPlatformRole,
   resolveOrganizationRole,
   resolvePlatformRole,
@@ -61,6 +62,7 @@ function createDevelopmentFallbackContext(): AuthorizedRequestContext {
       platformRole: resolvePlatformRole(fallbackContext.role),
       organizationRole: resolveOrganizationRole(fallbackContext.role),
       hcmRoles: resolveHcmRolesForPlatformRole(fallbackContext.role),
+      financeRoles: resolveFinanceRolesForPlatformRole(fallbackContext.role),
       modulePermissions: getPermissionsForRole(fallbackContext.role),
       authenticated: true,
     },

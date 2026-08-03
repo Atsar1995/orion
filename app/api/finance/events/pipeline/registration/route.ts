@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getFinanceApiContextForRequest } from "@/lib/finance/security/FinancePermissionGuards";
 import { financeEventPipelineService } from "@/lib/finance";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const financeAuth = await getFinanceApiContextForRequest(request);
+  if (financeAuth.errorResponse) return financeAuth.errorResponse;
   const registration = financeEventPipelineService.getRegistration();
   return NextResponse.json({ success: true, data: registration });
 }
