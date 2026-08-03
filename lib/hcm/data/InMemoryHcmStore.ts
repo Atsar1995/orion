@@ -34,6 +34,7 @@ import type {
   PayrollResultRecord,
   PayrollRunRecord,
 } from "@/types/hcm-payroll";
+import type { ExpenseRecord } from "@/types/hcm-expense";
 import type {
   CareerPathRecord,
   CertificationRecord,
@@ -86,6 +87,7 @@ export type InMemoryHcmStoreOptions = {
   readonly payrollComponents?: Map<string, PayrollComponentRecord>;
   readonly payrollAdjustments?: Map<string, PayrollAdjustmentRecord>;
   readonly payrollResults?: Map<string, PayrollResultRecord>;
+  readonly expenses?: Map<string, ExpenseRecord>;
   readonly goals?: Map<string, GoalRecord>;
   readonly objectives?: Map<string, ObjectiveRecord>;
   readonly performanceReviews?: Map<string, PerformanceReviewRecord>;
@@ -137,6 +139,7 @@ export class InMemoryHcmStore {
   readonly payrollComponents: Map<string, PayrollComponentRecord>;
   readonly payrollAdjustments: Map<string, PayrollAdjustmentRecord>;
   readonly payrollResults: Map<string, PayrollResultRecord>;
+  readonly expenses: Map<string, ExpenseRecord>;
   readonly goals: Map<string, GoalRecord>;
   readonly objectives: Map<string, ObjectiveRecord>;
   readonly performanceReviews: Map<string, PerformanceReviewRecord>;
@@ -186,6 +189,7 @@ export class InMemoryHcmStore {
     this.payrollComponents = options.payrollComponents ?? new Map();
     this.payrollAdjustments = options.payrollAdjustments ?? new Map();
     this.payrollResults = options.payrollResults ?? new Map();
+    this.expenses = options.expenses ?? new Map();
     this.goals = options.goals ?? new Map();
     this.objectives = options.objectives ?? new Map();
     this.performanceReviews = options.performanceReviews ?? new Map();

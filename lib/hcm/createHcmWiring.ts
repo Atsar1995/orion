@@ -16,6 +16,8 @@ import {
 import { PayrollAdjustmentService } from "@/lib/hcm/payroll/services/PayrollAdjustmentService";
 import { PayrollCalculationService } from "@/lib/hcm/payroll/services/PayrollCalculationService";
 import { PayrollPeriodService } from "@/lib/hcm/payroll/services/PayrollPeriodService";
+import { InMemoryExpenseRepository } from "@/lib/hcm/expense/repositories/InMemoryExpenseRepository";
+import { ExpenseApprovalService } from "@/lib/hcm/expense/services/ExpenseApprovalService";
 import { PayrollService } from "@/lib/hcm/payroll/services/PayrollService";
 import { PayrollValidationService } from "@/lib/hcm/payroll/services/PayrollValidationService";
 import {
@@ -83,7 +85,9 @@ export function createHcmWiring(platformStore: PlatformStore = getDefaultPlatfor
   const shifts = new ShiftService(shiftRepository);
   const overtime = new OvertimeService(calendarRepository, employeeRepository);
 
+  const expenseRepository = new InMemoryExpenseRepository(hcmStore);
   const payroll = new PayrollService(payrollRepository, payrollRunRepository);
+  const expenseApproval = new ExpenseApprovalService(expenseRepository);
   const payrollPeriods = new PayrollPeriodService(payrollRepository);
   const payrollCalculation = new PayrollCalculationService(
     payrollRepository,
@@ -124,6 +128,7 @@ export function createHcmWiring(platformStore: PlatformStore = getDefaultPlatfor
     shifts,
     overtime,
     payroll,
+    expenseApproval,
     payrollPeriods,
     payrollCalculation,
     payrollAdjustments,

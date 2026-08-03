@@ -224,10 +224,19 @@ export {
   HCM_RECRUITMENT_OUTBOUND_EVENTS,
   HCM_ONBOARDING_OUTBOUND_EVENTS,
   HCM_TIME_OUTBOUND_EVENTS,
+  HCM_CANONICAL_FINANCE_OUTBOUND_EVENTS,
   HCM_PAYROLL_OUTBOUND_EVENTS,
   HCM_TALENT_OUTBOUND_EVENTS,
 } from "@/lib/hcm/hcm-events";
 
+export {
+  HCM_CANONICAL_FINANCE_EVENT_TYPES,
+  HCM_CANONICAL_EVENT_VERSION,
+  HCM_CANONICAL_LEGACY_EVENT_TYPES,
+  buildHcmCanonicalIdempotencyKey,
+  publishWorkforceCostRecorded,
+  publishExpenseApproved,
+} from "@/lib/hcm/events/HcmCanonicalFinancePublisher";
 export { HCM_ALL_OUTBOUND_EVENTS, assertUniqueHcmEventCatalog } from "@/lib/hcm/events/hcm-event-catalog";
 export { registerHcmSubscribers, getHcmSubscriberRegistrationCount } from "@/lib/hcm/events/register-hcm-subscribers";
 export {

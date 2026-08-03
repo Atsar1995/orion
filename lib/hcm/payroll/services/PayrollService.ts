@@ -10,6 +10,7 @@ import type {
 } from "@/types/hcm-payroll";
 import { createPayrollRunId } from "@/lib/hcm/common/ids";
 import { nowIso } from "@/lib/hcm/common/time";
+import { publishWorkforceCostRecorded } from "@/lib/hcm/events/HcmCanonicalFinancePublisher";
 import { publishHcmPayrollEvent } from "@/lib/hcm/hcm-events";
 import type { PayrollRepository, PayrollRunRepository } from "@/lib/hcm/payroll/repositories/PayrollRepository";
 
@@ -111,6 +112,8 @@ export class PayrollService {
       context,
     );
 
+    this.publishWorkforceCostEvents(saved, period, context);
+
     return saved;
   }
 
@@ -151,6 +154,31 @@ export class PayrollService {
 
   getResult(runId: string, context: ServiceContext): PayrollResultRecord | null {
     return this.payrollRepository.findResult(context.organizationId, runId);
+  }
+
+  private publishWorkforceCostEvents(
+    run: PayrollRunRecord,
+    period: { readonly id: string; readonly payDate: string } | null | undefined,
+    context: ServiceContext,
+  ): void {
+    const costPeriodId = period?.id ?? run.periodId;
+    const transactionDate = period?.payDate;
+    const entries = this.runRepository.listEntries(context.organizationId, run.id);
+
+    for (const entry of entries) {
+      publishWorkforceCostRecorded(
+        {
+          employeeId: entry.employeeId,
+          costPeriodId,
+          amount: entry.grossPay,
+          costCentreId: entry.departmentId,
+          correlationId: run.id,
+          transactionDate,
+          includeLegacyShim: true,
+        },
+        context,
+      );
+    }
   }
 
   private requireRun(

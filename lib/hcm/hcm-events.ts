@@ -206,6 +206,11 @@ export const HCM_ONBOARDING_OUTBOUND_EVENTS = [
   "OnboardingCompleted",
 ] as const;
 
+export const HCM_CANONICAL_FINANCE_OUTBOUND_EVENTS = [
+  "hcm.workforce.cost.recorded",
+  "hcm.expense.approved",
+] as const;
+
 export const HCM_PAYROLL_OUTBOUND_EVENTS = [
   "PayrollPeriodOpened",
   "PayrollRunStarted",
