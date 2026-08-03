@@ -39,6 +39,7 @@ export class DefaultPostingService implements PostingService {
       idempotencyKey: options.idempotencyKey ?? `${journalId}:${options.correlationId ?? journalId}`,
       eventId: options.eventId,
       requestMetadata: options.requestMetadata,
+      serviceContext: context,
     });
 
     return this.journalPostingService.post(postingContext);

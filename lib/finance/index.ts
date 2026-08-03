@@ -127,6 +127,19 @@ export type { PostingContext } from "@/lib/finance/services/PostingContext";
 export { createPostingContext, createPostingCorrelationId, resolvePostingLineageId } from "@/lib/finance/services/PostingContext";
 export type { PostingResult } from "@/lib/finance/services/PostingResult";
 export type { PostingTransaction } from "@/lib/finance/services/PostingTransaction";
+export { PostingValidationPipeline } from "@/lib/finance/services/PostingValidationPipeline";
+export { PostingValidationService } from "@/lib/finance/services/PostingValidationService";
+export type { PostingValidationInput } from "@/lib/finance/services/PostingValidationService";
+export type { PostingValidationResult } from "@/lib/finance/services/PostingValidationResult";
+export {
+  POSTING_VALIDATION_STAGE_ORDER,
+  isPostingValidationBlocking,
+} from "@/lib/finance/services/PostingValidationStage";
+export type {
+  PostingValidationStageName,
+  PostingValidationOutcome,
+  PostingValidationStageResult,
+} from "@/lib/finance/services/PostingValidationStage";
 export type { BudgetService } from "@/lib/finance/services/BudgetService";
 export type { ForecastService } from "@/lib/finance/services/ForecastService";
 export type { TaxService } from "@/lib/finance/services/TaxService";

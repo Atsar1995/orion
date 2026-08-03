@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import type { ServiceContext } from "@/types/services";
 
 /** Posting orchestration input — infrastructure metadata only (P-009.7C). */
 export type PostingContext = {
@@ -8,6 +9,7 @@ export type PostingContext = {
   readonly idempotencyKey: string;
   readonly eventId?: string;
   readonly requestMetadata?: Readonly<Record<string, string>>;
+  readonly serviceContext?: ServiceContext;
 };
 
 /** Creates a posting context with required correlation and idempotency fields. */
@@ -21,6 +23,7 @@ export function createPostingContext(
     idempotencyKey: input.idempotencyKey.trim(),
     eventId: input.eventId,
     requestMetadata: input.requestMetadata,
+    serviceContext: input.serviceContext,
   };
 }
 

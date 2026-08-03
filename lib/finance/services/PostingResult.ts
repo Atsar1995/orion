@@ -1,4 +1,5 @@
 import type { LedgerPostingResult } from "@/lib/finance/services/LedgerPostingResult";
+import type { PostingValidationResult } from "@/lib/finance/services/PostingValidationResult";
 
 /** Outcome of a journal posting unit-of-work (P-009.7C · P-009.7D). */
 export type PostingResult = {
@@ -11,4 +12,5 @@ export type PostingResult = {
   readonly status: "posted" | "duplicate";
   readonly processingStatus: "completed";
   readonly ledgerPosting?: LedgerPostingResult;
+  readonly validation?: PostingValidationResult;
 };

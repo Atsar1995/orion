@@ -1,25 +1,35 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { createFinanceWiring } from "@/lib/finance/createFinanceWiring";
+import { createFinanceRepositories } from "@/lib/finance/persistence/createFinanceRepositories";
 import { FINANCE_SEED_ORG_ID } from "@/lib/finance/persistence/createFinanceStore";
 import { createIsolatedFinanceBacking } from "@/lib/finance/persistence/FinancePlatformBacking";
 import { InMemoryGeneralLedgerRepository } from "@/lib/finance/repositories/InMemoryGeneralLedgerRepository";
 import { InMemoryJournalRepository } from "@/lib/finance/persistence/InMemoryJournalRepository";
 import { GeneralLedgerPostingService } from "@/lib/finance/services/GeneralLedgerPostingService";
-import { createFinanceWiring } from "@/lib/finance/createFinanceWiring";
 import { createPostingContext } from "@/lib/finance/services/PostingContext";
 import { JournalPostingService } from "@/lib/finance/services/JournalPostingService";
 import { InMemoryEventLineageRepository } from "@/lib/finance/persistence/InMemoryEventLineageRepository";
+import { PostingValidationPipeline } from "@/lib/finance/services/PostingValidationPipeline";
+import { PostingValidationService } from "@/lib/finance/services/PostingValidationService";
 import { MigrationRegistry } from "@/lib/platform/persistence/MigrationRegistry";
 import { MigrationRunner } from "@/lib/platform/persistence/MigrationRunner";
 import { bootstrapMigration } from "@/lib/platform/persistence/migrations/bootstrapMigration";
 import { NoOpTransactionManager } from "@/lib/persistence/services/shared";
-import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
 import { PostgresPlatformStore } from "@/lib/platform/store/PostgresPlatformStore";
 import { StoreProvider } from "@/lib/platform/store/StoreConfiguration";
 import { resetDefaultPlatformStoreForTests } from "@/lib/platform/store/PlatformStoreFactory";
+import type { ServiceContext } from "@/types/services";
 import { MockDatabaseConnection } from "@/tests/lib/platform/persistence/MockDatabaseConnection";
 
 const ORG = FINANCE_SEED_ORG_ID;
 const PERIOD = "period-2026-07";
+
+const serviceContext: ServiceContext = {
+  organizationId: ORG,
+  userId: "user-finance-001",
+  workspaceId: "finance",
+  role: "organization_admin",
+};
 
 function buildDraft(journalId = "journal-gl-001") {
   return {
@@ -34,7 +44,7 @@ function buildDraft(journalId = "journal-gl-001") {
       {
         id: "line-gl-debit",
         journalId,
-        accountId: "acct-1000",
+        accountId: "coa-1110",
         debitAmount: 250,
         creditAmount: 0,
         currency: "ZAR",
@@ -42,7 +52,7 @@ function buildDraft(journalId = "journal-gl-001") {
       {
         id: "line-gl-credit",
         journalId,
-        accountId: "acct-2000",
+        accountId: "coa-4200",
         debitAmount: 0,
         creditAmount: 250,
         currency: "ZAR",
@@ -51,8 +61,22 @@ function buildDraft(journalId = "journal-gl-001") {
   };
 }
 
+function createPostingValidationPipeline(backing: ReturnType<typeof createIsolatedFinanceBacking>) {
+  const repositories = createFinanceRepositories(backing);
+  const eventLineageRepository = new InMemoryEventLineageRepository(backing);
+  const validationService = new PostingValidationService(
+    repositories.chartOfAccounts,
+    repositories.idempotency,
+    eventLineageRepository,
+    repositories.generalLedger,
+    repositories.financialIntelligence,
+    repositories.period,
+  );
+  return new PostingValidationPipeline(validationService);
+}
+
 function createPostingStack() {
-  const backing = createIsolatedFinanceBacking(false);
+  const backing = createIsolatedFinanceBacking();
   const journalRepository = new InMemoryJournalRepository(backing);
   const generalLedgerRepository = new InMemoryGeneralLedgerRepository(backing);
   const eventLineageRepository = new InMemoryEventLineageRepository(backing);
@@ -64,6 +88,7 @@ function createPostingStack() {
     journalRepository,
     eventLineageRepository,
     generalLedgerPostingService,
+    createPostingValidationPipeline(backing),
     new NoOpTransactionManager(),
   );
 
@@ -73,6 +98,17 @@ function createPostingStack() {
     generalLedgerRepository,
     journalPostingService,
   };
+}
+
+function postingContextFor(journalId: string, correlationId: string, idempotencyKey: string) {
+  return createPostingContext({
+    organizationId: ORG,
+    journalId,
+    correlationId,
+    idempotencyKey,
+    serviceContext,
+    requestMetadata: { journalDate: "2026-07-15" },
+  });
 }
 
 describe("GeneralLedgerPostingService (P-009.7D)", () => {
@@ -87,12 +123,7 @@ describe("GeneralLedgerPostingService (P-009.7D)", () => {
     journalRepository.createDraft(draft);
 
     const result = await journalPostingService.post(
-      createPostingContext({
-        organizationId: ORG,
-        journalId: draft.entry.id,
-        correlationId: "corr-gl-001",
-        idempotencyKey: "idem-gl-001",
-      }),
+      postingContextFor(draft.entry.id, "corr-gl-001", "idem-gl-001"),
     );
 
     expect(result.success).toBe(true);
@@ -103,10 +134,10 @@ describe("GeneralLedgerPostingService (P-009.7D)", () => {
     expect(
       generalLedgerRepository.getEntries(ORG, { journalId: draft.entry.id }),
     ).toHaveLength(2);
-    expect(generalLedgerRepository.getAccountBalance(ORG, "acct-1000", PERIOD)?.periodDebit).toBe(
+    expect(generalLedgerRepository.getAccountBalance(ORG, "coa-1110", PERIOD)?.periodDebit).toBe(
       250,
     );
-    expect(generalLedgerRepository.getAccountBalance(ORG, "acct-2000", PERIOD)?.periodCredit).toBe(
+    expect(generalLedgerRepository.getAccountBalance(ORG, "coa-4200", PERIOD)?.periodCredit).toBe(
       250,
     );
   });
@@ -118,18 +149,13 @@ describe("GeneralLedgerPostingService (P-009.7D)", () => {
     journalRepository.createDraft(draft);
 
     await journalPostingService.post(
-      createPostingContext({
-        organizationId: ORG,
-        journalId: draft.entry.id,
-        correlationId: "corr-gl-org",
-        idempotencyKey: "idem-gl-org",
-      }),
+      postingContextFor(draft.entry.id, "corr-gl-org", "idem-gl-org"),
     );
 
     expect(generalLedgerRepository.getEntries("org-other", { journalId: draft.entry.id })).toHaveLength(
       0,
     );
-    expect(generalLedgerRepository.getAccountBalance("org-other", "acct-1000", PERIOD)).toBeNull();
+    expect(generalLedgerRepository.getAccountBalance("org-other", "coa-1110", PERIOD)).toBeNull();
   });
 
   it("returns duplicate ledger state without double mutation", async () => {
@@ -138,12 +164,7 @@ describe("GeneralLedgerPostingService (P-009.7D)", () => {
     const draft = buildDraft("journal-gl-dup");
     journalRepository.createDraft(draft);
 
-    const context = createPostingContext({
-      organizationId: ORG,
-      journalId: draft.entry.id,
-      correlationId: "corr-gl-dup",
-      idempotencyKey: "idem-gl-dup",
-    });
+    const context = postingContextFor(draft.entry.id, "corr-gl-dup", "idem-gl-dup");
 
     await journalPostingService.post(context);
     const second = await journalPostingService.post(context);
@@ -155,7 +176,7 @@ describe("GeneralLedgerPostingService (P-009.7D)", () => {
   });
 
   it("rolls back when journal lines are missing", async () => {
-    const backing = createIsolatedFinanceBacking(false);
+    const backing = createIsolatedFinanceBacking();
     const journalRepository = new InMemoryJournalRepository(backing);
     const generalLedgerRepository = new InMemoryGeneralLedgerRepository(backing);
     const eventLineageRepository = new InMemoryEventLineageRepository(backing);
@@ -167,6 +188,7 @@ describe("GeneralLedgerPostingService (P-009.7D)", () => {
       journalRepository,
       eventLineageRepository,
       generalLedgerPostingService,
+      createPostingValidationPipeline(backing),
       new NoOpTransactionManager(),
     );
 
@@ -181,17 +203,12 @@ describe("GeneralLedgerPostingService (P-009.7D)", () => {
     });
 
     const result = await journalPostingService.post(
-      createPostingContext({
-        organizationId: ORG,
-        journalId: "journal-no-lines",
-        correlationId: "corr-gl-fail",
-        idempotencyKey: "idem-gl-fail",
-      }),
+      postingContextFor("journal-no-lines", "corr-gl-fail", "idem-gl-fail"),
     );
 
     expect(result.success).toBe(false);
     if (result.success) return;
-    expect(result.error.message).toBe("JOURNAL_LINES_NOT_FOUND");
+    expect(result.error.message).toBe("NO_LINES");
     expect(journalRepository.getById(ORG, "journal-no-lines")?.status).toBe("draft");
     expect(generalLedgerRepository.getEntries(ORG)).toHaveLength(0);
   });
@@ -221,12 +238,7 @@ describe("GeneralLedgerPostingService PostgreSQL persistence (P-009.7D)", () => 
     wiring.journalRepository.createDraft(draft);
 
     const result = await wiring.journalPosting.post(
-      createPostingContext({
-        organizationId: ORG,
-        journalId: draft.entry.id,
-        correlationId: "corr-pg-gl",
-        idempotencyKey: "idem-pg-gl",
-      }),
+      postingContextFor(draft.entry.id, "corr-pg-gl", "idem-pg-gl"),
     );
 
     expect(result.success).toBe(true);

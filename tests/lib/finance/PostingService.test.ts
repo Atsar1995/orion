@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createFinanceWiring } from "@/lib/finance/createFinanceWiring";
+import { createFinanceRepositories } from "@/lib/finance/persistence/createFinanceRepositories";
 import { FINANCE_SEED_ORG_ID } from "@/lib/finance/persistence/createFinanceStore";
 import { createIsolatedFinanceBacking } from "@/lib/finance/persistence/FinancePlatformBacking";
 import { InMemoryEventLineageRepository } from "@/lib/finance/persistence/InMemoryEventLineageRepository";
@@ -8,6 +9,8 @@ import { InMemoryJournalRepository } from "@/lib/finance/persistence/InMemoryJou
 import { GeneralLedgerPostingService } from "@/lib/finance/services/GeneralLedgerPostingService";
 import { JournalPostingService } from "@/lib/finance/services/JournalPostingService";
 import { createPostingContext } from "@/lib/finance/services/PostingContext";
+import { PostingValidationPipeline } from "@/lib/finance/services/PostingValidationPipeline";
+import { PostingValidationService } from "@/lib/finance/services/PostingValidationService";
 import { MigrationRegistry } from "@/lib/platform/persistence/MigrationRegistry";
 import { MigrationRunner } from "@/lib/platform/persistence/MigrationRunner";
 import { bootstrapMigration } from "@/lib/platform/persistence/migrations/bootstrapMigration";
@@ -25,7 +28,7 @@ const serviceContext: ServiceContext = {
   organizationId: ORG,
   userId: "user-finance-001",
   workspaceId: "finance",
-  role: "executive",
+  role: "organization_admin",
 };
 
 function buildDraft(journalId = "journal-post-001") {
@@ -39,15 +42,37 @@ function buildDraft(journalId = "journal-post-001") {
     },
     lines: [
       {
-        id: "line-post-001",
+        id: "line-post-debit",
         journalId,
-        accountId: "acct-1000",
+        accountId: "coa-1110",
         debitAmount: 50,
         creditAmount: 0,
         currency: "ZAR",
       },
+      {
+        id: "line-post-credit",
+        journalId,
+        accountId: "coa-4200",
+        debitAmount: 0,
+        creditAmount: 50,
+        currency: "ZAR",
+      },
     ],
   };
+}
+
+function createPostingValidationPipeline(backing: ReturnType<typeof createIsolatedFinanceBacking>) {
+  const repositories = createFinanceRepositories(backing);
+  const eventLineageRepository = new InMemoryEventLineageRepository(backing);
+  const validationService = new PostingValidationService(
+    repositories.chartOfAccounts,
+    repositories.idempotency,
+    eventLineageRepository,
+    repositories.generalLedger,
+    repositories.financialIntelligence,
+    repositories.period,
+  );
+  return new PostingValidationPipeline(validationService);
 }
 
 function createJournalPostingService(backing: ReturnType<typeof createIsolatedFinanceBacking>) {
@@ -58,6 +83,7 @@ function createJournalPostingService(backing: ReturnType<typeof createIsolatedFi
     journalRepository,
     eventLineageRepository,
     new GeneralLedgerPostingService(journalRepository, generalLedgerRepository),
+    createPostingValidationPipeline(backing),
     new NoOpTransactionManager(),
   );
 }
@@ -68,7 +94,7 @@ describe("JournalPostingService (P-009.7C)", () => {
   });
 
   it("posts a draft journal within a transaction and records lineage metadata", async () => {
-    const backing = createIsolatedFinanceBacking(false);
+    const backing = createIsolatedFinanceBacking();
     const journalRepository = new InMemoryJournalRepository(backing);
     const eventLineageRepository = new InMemoryEventLineageRepository(backing);
     const postingService = createJournalPostingService(backing);
@@ -83,6 +109,8 @@ describe("JournalPostingService (P-009.7C)", () => {
         correlationId: "corr-post-001",
         idempotencyKey: "idem-post-001",
         eventId: "event-post-001",
+        serviceContext,
+        requestMetadata: { journalDate: "2026-07-15" },
       }),
     );
 
@@ -98,7 +126,7 @@ describe("JournalPostingService (P-009.7C)", () => {
   });
 
   it("returns duplicate result for repeated idempotency keys without re-posting", async () => {
-    const backing = createIsolatedFinanceBacking(false);
+    const backing = createIsolatedFinanceBacking();
     const journalRepository = new InMemoryJournalRepository(backing);
     const postingService = createJournalPostingService(backing);
 
@@ -110,6 +138,8 @@ describe("JournalPostingService (P-009.7C)", () => {
       journalId: draft.entry.id,
       correlationId: "corr-post-dup",
       idempotencyKey: "idem-post-dup",
+      serviceContext,
+      requestMetadata: { journalDate: "2026-07-15" },
     });
 
     const first = await postingService.post(context);
@@ -125,7 +155,7 @@ describe("JournalPostingService (P-009.7C)", () => {
   });
 
   it("rolls back transaction metadata on missing journal failure", async () => {
-    const backing = createIsolatedFinanceBacking(false);
+    const backing = createIsolatedFinanceBacking();
     const postingService = createJournalPostingService(backing);
     const eventLineageRepository = new InMemoryEventLineageRepository(backing);
 
@@ -135,6 +165,7 @@ describe("JournalPostingService (P-009.7C)", () => {
         journalId: "journal-missing",
         correlationId: "corr-post-fail",
         idempotencyKey: "idem-post-fail",
+        serviceContext,
       }),
     );
 
@@ -155,6 +186,7 @@ describe("JournalPostingService (P-009.7C)", () => {
     const result = await wiring.posting.postJournal(serviceContext, draft.entry.id, {
       correlationId: "corr-wiring-post",
       idempotencyKey: "idem-wiring-post",
+      requestMetadata: { journalDate: "2026-07-15" },
     });
 
     expect(result.success).toBe(true);
@@ -193,6 +225,8 @@ describe("JournalPostingService PostgreSQL persistence (P-009.7C)", () => {
         journalId: draft.entry.id,
         correlationId: "corr-pg-post",
         idempotencyKey: "idem-pg-post",
+        serviceContext,
+        requestMetadata: { journalDate: "2026-07-15" },
       }),
     );
 
@@ -219,6 +253,7 @@ describe("JournalPostingService PostgreSQL persistence (P-009.7C)", () => {
         journalId: draft.entry.id,
         correlationId: "corr-pg-post",
         idempotencyKey: "idem-pg-post",
+        serviceContext,
       }),
     );
 

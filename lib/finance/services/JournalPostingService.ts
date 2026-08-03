@@ -8,16 +8,19 @@ import {
 } from "@/lib/finance/services/PostingContext";
 import type { PostingResult } from "@/lib/finance/services/PostingResult";
 import type { PostingTransaction } from "@/lib/finance/services/PostingTransaction";
+import { PostingValidationPipeline } from "@/lib/finance/services/PostingValidationPipeline";
 import type { TransactionManager } from "@/lib/persistence/services/shared";
+import type { ServiceContext } from "@/types/services";
 import type { ServiceResult } from "@/types/services";
 import { ServiceErrorCode } from "@/types/services";
 
-/** Finance journal posting orchestration — repository UoW (P-009.7C · P-009.7D). */
+/** Finance journal posting orchestration — repository UoW (P-009.7C · P-009.7D · P-009.8). */
 export class JournalPostingService {
   constructor(
     private readonly journalRepository: JournalRepository,
     private readonly eventLineageRepository: EventLineageRepository,
     private readonly generalLedgerPostingService: GeneralLedgerPostingService,
+    private readonly postingValidationPipeline: PostingValidationPipeline,
     private readonly transactionManager: TransactionManager,
   ) {}
 
@@ -167,6 +170,31 @@ export class JournalPostingService {
       };
     }
 
+    const lines = this.journalRepository.listLines(context.organizationId, context.journalId);
+    const serviceContext = this.resolveServiceContext(context);
+    const validationResult = this.postingValidationPipeline.validate({
+      serviceContext,
+      postingContext: context,
+      journal,
+      lines,
+    });
+
+    if (!validationResult.passed) {
+      const blocking = validationResult.blockingResult;
+      return {
+        success: false,
+        error: {
+          code: ServiceErrorCode.Validation,
+          message: blocking?.code ?? "POSTING_VALIDATION_FAILED",
+          details: {
+            stage: validationResult.stoppedAt ?? "unknown",
+            ...(blocking?.field ? { field: blocking.field } : {}),
+            ...(blocking?.message ? { validationMessage: blocking.message } : {}),
+          },
+        },
+      };
+    }
+
     const now = new Date().toISOString();
     this.eventLineageRepository.record({
       id: lineageId,
@@ -229,7 +257,21 @@ export class JournalPostingService {
         status: "posted",
         processingStatus: "completed",
         ledgerPosting: ledgerResult.data,
+        validation: validationResult,
       },
+    };
+  }
+
+  private resolveServiceContext(context: PostingContext): ServiceContext {
+    if (context.serviceContext) {
+      return context.serviceContext;
+    }
+
+    return {
+      organizationId: context.organizationId,
+      userId: context.requestMetadata?.postedBy ?? "system-posting",
+      workspaceId: "finance",
+      role: "service_account",
     };
   }
 }

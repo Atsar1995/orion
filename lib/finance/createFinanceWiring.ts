@@ -23,6 +23,8 @@ import { stubForecastService } from "@/lib/finance/services/ForecastService";
 import { GeneralLedgerPostingService } from "@/lib/finance/services/GeneralLedgerPostingService";
 import { JournalPostingService } from "@/lib/finance/services/JournalPostingService";
 import { DefaultPostingService } from "@/lib/finance/services/PostingService";
+import { PostingValidationPipeline } from "@/lib/finance/services/PostingValidationPipeline";
+import { PostingValidationService } from "@/lib/finance/services/PostingValidationService";
 import { stubJournalService } from "@/lib/finance/services/JournalService";
 import { stubReconciliationService } from "@/lib/finance/services/ReconciliationService";
 import { stubTaxService } from "@/lib/finance/services/TaxService";
@@ -45,6 +47,7 @@ export type FinanceWiring = FinanceRepositories &
   readonly journal: typeof stubJournalService;
   readonly journalPosting: JournalPostingService;
   readonly generalLedgerPosting: GeneralLedgerPostingService;
+  readonly postingValidation: PostingValidationPipeline;
   readonly posting: DefaultPostingService;
   readonly budget: typeof stubBudgetService;
   readonly forecast: typeof stubForecastService;
@@ -93,10 +96,20 @@ export function createFinanceWiring(platformStore: PlatformStore): FinanceWiring
     persistenceRepositories.journalRepository,
     repositories.generalLedger,
   );
+  const postingValidationService = new PostingValidationService(
+    repositories.chartOfAccounts,
+    repositories.idempotency,
+    persistenceRepositories.eventLineageRepository,
+    repositories.generalLedger,
+    repositories.financialIntelligence,
+    repositories.period,
+  );
+  const postingValidationPipeline = new PostingValidationPipeline(postingValidationService);
   const journalPostingService = new JournalPostingService(
     persistenceRepositories.journalRepository,
     persistenceRepositories.eventLineageRepository,
     generalLedgerPostingService,
+    postingValidationPipeline,
     platformStore.getTransactionManager(),
   );
   const postingService = new DefaultPostingService(journalPostingService);
@@ -118,6 +131,7 @@ export function createFinanceWiring(platformStore: PlatformStore): FinanceWiring
     journal: stubJournalService,
     journalPosting: journalPostingService,
     generalLedgerPosting: generalLedgerPostingService,
+    postingValidation: postingValidationPipeline,
     posting: postingService,
     budget: stubBudgetService,
     forecast: stubForecastService,

@@ -111,8 +111,8 @@ PostingContext
 
 | Extension | Mission |
 |-----------|---------|
-| GeneralLedgerRepository.updateOnPost | P-009.7D+ |
-| ValidationService pre-post stages | P-009.3 governance |
+| ~~ValidationService pre-post stages~~ | **P-009.8 ✅** — see [Posting Validation Pipeline](./Posting-Validation-Pipeline.md) |
+| GeneralLedgerRepository.updateOnPost | P-009.7D ✅ |
 | IdempotencyRepository.markProcessed | Optional parallel to lineage |
 | IIL `finance.journal.posted` egress | ADR-013 · ADR-014 |
 | Workflow approval gate | ADR-016 roadmap |
