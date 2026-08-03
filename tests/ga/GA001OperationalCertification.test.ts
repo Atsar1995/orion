@@ -15,6 +15,8 @@ import { AuthorizationError } from "@/lib/platform/security/AuthorizationResult"
 import { HCM_PERMISSIONS } from "@/lib/platform/security/RoleRegistry";
 import { evaluateOrganizationBoundary } from "@/lib/platform/security/AuthorizationPolicy";
 import { createIdentityContextFromServiceContext } from "@/lib/platform/security/IdentityContext";
+import { createHcmWiring } from "@/lib/hcm/createHcmWiring";
+import { HCM_SEED_ORG_ID } from "@/lib/hcm/data/seed-hcm-time";
 import {
   ensureDefaultPlatformStoreInitialized,
   resetDefaultPlatformStoreForTests,
@@ -22,6 +24,8 @@ import {
 import { SystemRole } from "@/lib/auth/roles";
 import type { RoleSlug, Session } from "@/types/auth";
 import { UserStatus } from "@/types/auth";
+
+const GA_RESTART_EMPLOYEE_ID = "emp-hcm-001";
 
 const LIVE_POSTGRES = process.env.GA001_LIVE_POSTGRES === "1";
 
@@ -230,20 +234,30 @@ describe("GA-001 Operational Certification", () => {
 
     it.skipIf(!LIVE_POSTGRES)("survives platform restart with PostgreSQL persistence", async () => {
       process.env.ORION_STORE_ADAPTER = "postgres";
+      process.env.ORION_DATABASE_URL =
+        process.env.ORION_DATABASE_URL ??
+        "postgresql://orion:orion_staging_secret@localhost:5432/orion_staging";
+
       resetDefaultPlatformStoreForTests();
 
       const store = await ensureDefaultPlatformStoreInitialized();
       expect(store.isInitialized()).toBe(true);
 
-      const healthBefore = await store.checkHealth();
-      expect(healthBefore.status).toBe("healthy");
+      createHcmWiring(store);
+
+      const employeeBefore = store.getHcmBacking().employees.get(GA_RESTART_EMPLOYEE_ID);
+      expect(employeeBefore).toBeDefined();
+      expect(employeeBefore?.organizationId).toBe(HCM_SEED_ORG_ID);
+
+      await store.shutdown();
 
       resetDefaultPlatformStoreForTests();
       const recovered = await ensureDefaultPlatformStoreInitialized();
-      const healthAfter = await recovered.checkHealth();
+      const employeeAfter = recovered.getHcmBacking().employees.get(GA_RESTART_EMPLOYEE_ID);
 
       expect(recovered.isInitialized()).toBe(true);
-      expect(healthAfter.status).toBe("healthy");
+      expect(employeeAfter).toBeDefined();
+      expect(employeeAfter?.organizationId).toBe(employeeBefore?.organizationId);
     });
   });
 });
