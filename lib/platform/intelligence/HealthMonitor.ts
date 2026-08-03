@@ -1,5 +1,3 @@
-import type { DeadLetterQueue } from "@/lib/platform/intelligence/DeadLetterQueue";
-import type { MessageQueue } from "@/lib/platform/intelligence/MessageQueue";
 import type { SubscriptionManager } from "@/lib/platform/intelligence/SubscriptionManager";
 import type { IntelligenceHealthSnapshot } from "@/types/intelligence-integration";
 
@@ -10,7 +8,7 @@ type HealthCounters = {
   lastEventAt?: string;
 };
 
-/** Monitors intelligence integration layer health (Mission P-006). */
+/** Monitors intelligence integration layer health (Mission P-006 · ADR-013). */
 export class HealthMonitor {
   private counters: HealthCounters = {
     publishedTotal: 0,
@@ -34,22 +32,24 @@ export class HealthMonitor {
   snapshot(input: {
     registeredServices: number;
     subscriptionManager: SubscriptionManager;
-    messageQueue: MessageQueue;
-    deadLetterQueue: DeadLetterQueue;
+    queuedMessages: number;
+    deadLetterCount: number;
     organizationId?: string;
+    transportStatus?: IntelligenceHealthSnapshot["status"];
   }): IntelligenceHealthSnapshot {
     const subscriptions = input.subscriptionManager.list();
-    const deadLetterCount = input.deadLetterQueue.list(input.organizationId).length;
-    const queuedMessages = input.messageQueue.getDepth();
+    const deadLetterCount = input.deadLetterCount;
+    const queuedMessages = input.queuedMessages;
 
-    let status: IntelligenceHealthSnapshot["status"] = "healthy";
+    let status: IntelligenceHealthSnapshot["status"] = input.transportStatus ?? "healthy";
 
-    if (deadLetterCount > 0 || queuedMessages > 25) {
-      status = "degraded";
-    }
-
-    if (deadLetterCount > 10 || this.counters.failedTotal > this.counters.deliveredTotal) {
-      status = "unhealthy";
+    if (!input.transportStatus) {
+      if (deadLetterCount > 0 || queuedMessages > 25) {
+        status = "degraded";
+      }
+      if (deadLetterCount > 10 || this.counters.failedTotal > this.counters.deliveredTotal) {
+        status = "unhealthy";
+      }
     }
 
     const summary =

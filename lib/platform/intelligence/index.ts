@@ -1,4 +1,8 @@
-export { IntelligenceIntegrationService, defaultIntelligenceIntegrationService } from "@/lib/platform/intelligence/IntelligenceIntegrationService";
+export {
+  IntelligenceIntegrationService,
+  getDefaultIntelligenceIntegrationService,
+  resetDefaultIntelligenceIntegrationServiceForTests,
+} from "@/lib/platform/intelligence/IntelligenceIntegrationService";
 export { SubscriptionManager } from "@/lib/platform/intelligence/SubscriptionManager";
 export { EventRouter } from "@/lib/platform/intelligence/EventRouter";
 export { MessageQueue } from "@/lib/platform/intelligence/MessageQueue";
@@ -14,20 +18,32 @@ export {
 } from "@/lib/platform/intelligence/IntelligenceEventFactory";
 export { registerIntelligenceHandlers } from "@/lib/platform/intelligence/register-intelligence-handlers";
 
-import {
-  defaultIntelligenceIntegrationService,
-  IntelligenceIntegrationService,
-} from "@/lib/platform/intelligence/IntelligenceIntegrationService";
+export {
+  getDefaultIILTransport,
+  resetDefaultIILTransportForTests,
+} from "@/lib/platform/iil/defaultTransport";
+
+import { getDefaultIntelligenceIntegrationService } from "@/lib/platform/intelligence/IntelligenceIntegrationService";
 import { registerIntelligenceHandlers } from "@/lib/platform/intelligence/register-intelligence-handlers";
+import { resetDefaultIILTransportForTests } from "@/lib/platform/iil/defaultTransport";
+import { resetDefaultIntelligenceIntegrationServiceForTests } from "@/lib/platform/intelligence/IntelligenceIntegrationService";
 
 let handlersRegistered = false;
 
 /** Returns the default IIL service with handlers registered once. */
-export function getIntelligenceIntegrationService(): IntelligenceIntegrationService {
+export function getIntelligenceIntegrationService() {
+  const service = getDefaultIntelligenceIntegrationService();
   if (!handlersRegistered) {
-    registerIntelligenceHandlers(defaultIntelligenceIntegrationService);
+    registerIntelligenceHandlers(service);
     handlersRegistered = true;
   }
 
-  return defaultIntelligenceIntegrationService;
+  return service;
+}
+
+/** Resets default IIL singleton state — test isolation only. */
+export function resetIntelligenceIntegrationForTests(): void {
+  resetDefaultIntelligenceIntegrationServiceForTests();
+  resetDefaultIILTransportForTests();
+  handlersRegistered = false;
 }

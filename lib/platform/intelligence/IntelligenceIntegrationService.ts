@@ -1,15 +1,15 @@
 import { randomUUID } from "crypto";
 import { EventBus } from "@/lib/platform/events/EventBus";
-import { DeadLetterQueue } from "@/lib/platform/intelligence/DeadLetterQueue";
-import { EventReplayStore } from "@/lib/platform/intelligence/EventReplayStore";
 import { EventRouter } from "@/lib/platform/intelligence/EventRouter";
 import { createIntelligenceEvent } from "@/lib/platform/intelligence/IntelligenceEventFactory";
 import { HealthMonitor } from "@/lib/platform/intelligence/HealthMonitor";
-import { MessageQueue, type QueuedIntelligenceMessage } from "@/lib/platform/intelligence/MessageQueue";
-import { RetryManager } from "@/lib/platform/intelligence/RetryManager";
 import { ServiceRegistry } from "@/lib/platform/intelligence/ServiceRegistry";
 import { SubscriptionManager } from "@/lib/platform/intelligence/SubscriptionManager";
 import { WebhookGateway } from "@/lib/platform/intelligence/WebhookGateway";
+import type { DurableTransportAdapter } from "@/lib/platform/iil/DurableTransportAdapter";
+import { enrichDurableEnvelope } from "@/lib/platform/iil/envelope";
+import { getDefaultIILTransport } from "@/lib/platform/iil/defaultTransport";
+import { InMemoryDurableTransport } from "@/lib/platform/iil/InMemoryDurableTransport";
 import type {
   CreateIntelligenceSubscriptionInput,
   CreateWebhookSubscriptionInput,
@@ -21,27 +21,26 @@ import type {
 } from "@/types/intelligence-integration";
 import type { ServiceContext } from "@/types/services";
 
-/** Central intelligence integration orchestrator (Mission P-006). */
+/** Central intelligence integration orchestrator (Mission P-006 · ADR-013). */
 export class IntelligenceIntegrationService {
   readonly subscriptionManager = new SubscriptionManager();
-  readonly replayStore = new EventReplayStore();
-  readonly deadLetterQueue = new DeadLetterQueue();
-  readonly retryManager = new RetryManager();
+  readonly transport: DurableTransportAdapter;
   readonly serviceRegistry: ServiceRegistry;
   readonly webhookGateway: WebhookGateway;
   readonly healthMonitor: HealthMonitor;
   readonly platformEventBus: EventBus;
 
-  private readonly messageQueue: MessageQueue;
   private readonly eventRouter: EventRouter;
   private readonly briefFeed = new Map<string, IntelligenceFeedItem[]>();
 
   constructor(options?: {
+    transport?: DurableTransportAdapter;
     serviceRegistry?: ServiceRegistry;
     webhookGateway?: WebhookGateway;
     healthMonitor?: HealthMonitor;
     platformEventBus?: EventBus;
   }) {
+    this.transport = options?.transport ?? getDefaultIILTransport();
     this.serviceRegistry = options?.serviceRegistry ?? new ServiceRegistry();
     this.webhookGateway = options?.webhookGateway ?? new WebhookGateway();
     this.healthMonitor = options?.healthMonitor ?? new HealthMonitor();
@@ -53,8 +52,8 @@ export class IntelligenceIntegrationService {
       this.platformEventBus,
     );
 
-    this.messageQueue = new MessageQueue(async (message) => {
-      await this.processMessage(message);
+    this.transport.startDeliveryLoop(async (delivery) => {
+      await this.processDelivery(delivery);
     });
   }
 
@@ -70,22 +69,18 @@ export class IntelligenceIntegrationService {
       throw new Error("INVALID_PAYLOAD");
     }
 
-    const event = createIntelligenceEvent(input, context);
+    const event = enrichDurableEnvelope(createIntelligenceEvent(input, context), input, context);
 
-    if (!this.replayStore.append(event)) {
-      throw new Error("DUPLICATE_EVENT");
+    if (this.transport.persistAndEnqueueSync) {
+      this.transport.persistAndEnqueueSync(event, context);
+    } else {
+      void this.transport.persistAndEnqueue(event, context).catch(() => {
+        /* async transport errors surfaced via health metrics */
+      });
     }
 
     this.healthMonitor.recordPublished();
     this.appendBriefFeed(event);
-
-    this.messageQueue.enqueue({
-      id: randomUUID(),
-      event,
-      context,
-      attempts: 0,
-      enqueuedAt: new Date().toISOString(),
-    });
 
     return event;
   }
@@ -99,7 +94,18 @@ export class IntelligenceIntegrationService {
   }
 
   listEvents(context: ServiceContext, limit = 50): readonly IntelligenceEvent[] {
-    return this.replayStore.list(context.organizationId, limit);
+    if (this.transport.mode === "memory" && this.transport instanceof InMemoryDurableTransport) {
+      return [...this.transport.getBacking().events.values()]
+        .filter((event) => event.organizationId === context.organizationId)
+        .sort((a, b) => b.timestamp.localeCompare(a.timestamp))
+        .slice(0, limit);
+    }
+
+    return [];
+  }
+
+  async listPersistedEvents(context: ServiceContext, limit = 50): Promise<readonly IntelligenceEvent[]> {
+    return this.transport.listEvents(context.organizationId, limit);
   }
 
   getBriefFeed(context: ServiceContext, limit = 8): readonly IntelligenceFeedItem[] {
@@ -107,90 +113,63 @@ export class IntelligenceIntegrationService {
   }
 
   getHealth(context: ServiceContext): IntelligenceHealthSnapshot {
+    const transportHealth = this.transport.health();
+    const transportMetrics = this.transport.getMetrics();
+
     return this.healthMonitor.snapshot({
       registeredServices: this.serviceRegistry.list().length,
       subscriptionManager: this.subscriptionManager,
-      messageQueue: this.messageQueue,
-      deadLetterQueue: this.deadLetterQueue,
+      queuedMessages: transportMetrics.pendingDeliveries,
+      deadLetterCount: transportMetrics.deadLetterCount,
       organizationId: context.organizationId,
+      transportStatus: transportHealth.status,
     });
   }
 
-  listDeadLetter(context: ServiceContext): ReturnType<DeadLetterQueue["list"]> {
-    return this.deadLetterQueue.list(context.organizationId);
+  listDeadLetter(context: ServiceContext) {
+    if (this.transport.mode === "memory" && this.transport instanceof InMemoryDurableTransport) {
+      return this.transport.getBacking().deadLetterQueue.list(context.organizationId);
+    }
+
+    return [];
+  }
+
+  async listPersistedDeadLetter(context: ServiceContext) {
+    return this.transport.getDeadLetter(context.organizationId);
   }
 
   async retryDeadLetter(id: string, context: ServiceContext): Promise<IntelligenceEvent | null> {
-    const record = this.deadLetterQueue.remove(id);
-
-    if (!record || record.event.organizationId !== context.organizationId) {
-      return null;
-    }
-
-    this.messageQueue.enqueue({
-      id: randomUUID(),
-      event: record.event,
-      context,
-      attempts: 0,
-      enqueuedAt: new Date().toISOString(),
-    });
-
-    return record.event;
+    const event = await this.transport.requeueFromDeadLetter(id, context);
+    return event;
   }
 
   async replay(context: ServiceContext, fromEventId?: string): Promise<ReplayResult> {
-    const events = fromEventId
-      ? this.replayStore.getFrom(fromEventId, context.organizationId)
-      : this.replayStore.list(context.organizationId);
-
-    let replayed = 0;
-    let skipped = 0;
-    let failed = 0;
-
-    for (const event of events) {
-      const result = await this.eventRouter.route(event, context);
-
-      if (result.failures.length === 0) {
-        replayed += 1;
-        this.healthMonitor.recordDelivered(result.delivered);
-      } else if (result.delivered > 0) {
-        replayed += 1;
-        failed += 1;
-        this.healthMonitor.recordFailure();
-      } else {
-        skipped += 1;
-        failed += 1;
-        this.healthMonitor.recordFailure();
-      }
-    }
-
-    return { replayed, skipped, failed };
+    return this.transport.replay(
+      {
+        organizationId: context.organizationId,
+        eventId: fromEventId,
+      },
+      async (delivery) => {
+        await this.processDelivery(delivery);
+      },
+    );
   }
 
-  private async processMessage(message: QueuedIntelligenceMessage): Promise<void> {
-    const result = await this.eventRouter.route(message.event, message.context);
+  async recoverAfterRestart(): Promise<number> {
+    return this.transport.recoverPendingDeliveries();
+  }
 
-    if (result.failures.length === 0) {
-      this.healthMonitor.recordDelivered(result.delivered);
-      return;
+  private async processDelivery(delivery: {
+    readonly event: IntelligenceEvent;
+    readonly context: ServiceContext;
+  }): Promise<void> {
+    const result = await this.eventRouter.route(delivery.event, delivery.context);
+
+    if (result.failures.length > 0) {
+      throw new Error(result.failures.join(" | "));
     }
 
-    const nextAttempts = message.attempts + 1;
-
-    if (this.retryManager.shouldRetry(message.attempts)) {
-      const delay = this.retryManager.getDelayMs(message.attempts);
-      await sleep(delay);
-      this.messageQueue.enqueue({ ...message, attempts: nextAttempts });
-      return;
-    }
-
-    this.healthMonitor.recordFailure();
-    this.deadLetterQueue.enqueue(
-      message.event,
-      "Delivery failed after retries",
-      nextAttempts,
-      result.failures.join(" | "),
-    );
+    this.healthMonitor.recordDelivered(result.delivered);
   }
 
   private appendBriefFeed(event: IntelligenceEvent): void {
@@ -209,8 +188,22 @@ export class IntelligenceIntegrationService {
   }
 }
 
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+let defaultIntelligenceIntegrationService: IntelligenceIntegrationService | null = null;
+
+/** Returns the process-wide default intelligence integration service. */
+export function getDefaultIntelligenceIntegrationService(): IntelligenceIntegrationService {
+  if (!defaultIntelligenceIntegrationService) {
+    defaultIntelligenceIntegrationService = new IntelligenceIntegrationService({
+      transport: getDefaultIILTransport(),
+    });
+  }
+  return defaultIntelligenceIntegrationService;
 }
 
-export const defaultIntelligenceIntegrationService = new IntelligenceIntegrationService();
+/** Resets the default service singleton — test isolation only. */
+export function resetDefaultIntelligenceIntegrationServiceForTests(): void {
+  if (defaultIntelligenceIntegrationService) {
+    defaultIntelligenceIntegrationService.transport.stopDeliveryLoop();
+  }
+  defaultIntelligenceIntegrationService = null;
+}

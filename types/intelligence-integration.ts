@@ -41,6 +41,16 @@ export type IntelligenceEvent = {
   readonly version: string;
   readonly securityClassification: SecurityClassification;
   readonly auditMetadata: Readonly<Record<string, string>>;
+  /** ADR-013 — bounded context identifier. */
+  readonly sourceDomain?: string;
+  /** ADR-013 — consumer dedupe key. */
+  readonly idempotencyKey?: string;
+  /** ADR-013 — ordering partition. */
+  readonly partitionKey?: string;
+  /** ADR-013 — parent event when chained. */
+  readonly causationId?: string;
+  /** ADR-013 — transport delivery metadata. */
+  readonly deliveryMetadata?: Readonly<Record<string, string>>;
 };
 
 export type PublishIntelligenceEventInput = {

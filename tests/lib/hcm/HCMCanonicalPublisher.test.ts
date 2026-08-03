@@ -29,7 +29,7 @@ import {
 import { PayrollService } from "@/lib/hcm/payroll/services/PayrollService";
 import { createPayrollEntryId, createPayrollRunId } from "@/lib/hcm/common/ids";
 import { nowIso } from "@/lib/hcm/common/time";
-import { getIntelligenceIntegrationService } from "@/lib/platform/intelligence";
+import { getIntelligenceIntegrationService, resetIntelligenceIntegrationForTests } from "@/lib/platform/intelligence";
 import { IntelligenceIntegrationService } from "@/lib/platform/intelligence/IntelligenceIntegrationService";
 import { ServiceRegistry } from "@/lib/platform/intelligence/ServiceRegistry";
 import { WebhookGateway } from "@/lib/platform/intelligence/WebhookGateway";
@@ -140,6 +140,7 @@ describe("HCMCanonicalPublisher (P-009.15)", () => {
     resetDefaultPlatformStoreForTests();
     resetFinanceIntegrationForTests();
     resetFinanceEventConsumerForTests();
+    resetIntelligenceIntegrationForTests();
   });
 
   it("publishes native hcm.workforce.cost.recorded with ADR-014 envelope fields", () => {
@@ -324,15 +325,16 @@ describe("HCMCanonicalPublisher (P-009.15)", () => {
         entityId: "emp-iil-native",
         actorId: "user-hcm-publisher",
         correlationId: "corr-iil-native",
-        payload: publishWorkforceCostRecorded(
-          {
-            employeeId: "emp-iil-native",
-            costPeriodId: "period-2026-07",
-            amount: { value: 4500, currency: "ZAR" },
-            correlationId: "corr-iil-native",
-          },
-          serviceContext,
-        ).payload,
+        payload: {
+          canonicalEventType: "hcm.workforce.cost.recorded",
+          eventVersion: "1",
+          sourceDomain: "hcm",
+          employeeId: "emp-iil-native",
+          costPeriodId: "period-2026-07",
+          amount: "4500",
+          currencyCode: "ZAR",
+          idempotencyKey: `${ORG}:${HCM_IIL_SERVICE_ID}:hcm.workforce.cost.recorded:emp-iil-native:period-2026-07`,
+        },
         auditMetadata: { sourceDomain: "hcm" },
       },
       serviceContext,
