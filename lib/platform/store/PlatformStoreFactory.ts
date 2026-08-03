@@ -2,6 +2,8 @@
  * PlatformStore factory and default singleton (Mission P-015.4 · ADR-007).
  */
 
+import { resetDefaultFinanceBackingForTests } from "@/lib/finance/persistence/createFinanceStore";
+import { resetFinanceEventPipelineServiceForTests } from "@/lib/finance/services/financeEventPipelineRegistry";
 import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
 import { PostgresPlatformStore } from "@/lib/platform/store/PostgresPlatformStore";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
@@ -77,4 +79,6 @@ export async function ensureDefaultPlatformStoreInitialized(): Promise<PlatformS
 export function resetDefaultPlatformStoreForTests(): void {
   defaultPlatformStore = null;
   defaultPlatformStoreInit = null;
+  resetDefaultFinanceBackingForTests();
+  resetFinanceEventPipelineServiceForTests();
 }

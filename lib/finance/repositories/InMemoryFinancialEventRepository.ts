@@ -10,44 +10,35 @@ import type {
   FinancialEventRepository,
   PipelineAuditRepository,
 } from "@/lib/finance/repositories/FinancialEventRepository";
-
-type IntakeRecord = {
-  readonly id: string;
-  readonly organizationId: string;
-  readonly businessEventType: string;
-  readonly sourceService: string;
-  readonly sourceEntityType: string;
-  readonly sourceEntityId: string;
-  readonly correlationId: string;
-  readonly idempotencyKey: string;
-  readonly receivedAt: string;
-  readonly status: "received" | "processing" | "completed" | "failed";
-};
+import type { FinanceBusinessEventIntakeRecord } from "@/lib/finance/persistence/FinanceStoreBacking";
+import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
+import { getDefaultFinanceBacking } from "@/lib/finance/persistence/createFinanceStore";
 
 /** In-memory financial event repository (Mission P-009.6). */
 export class InMemoryFinancialEventRepository implements FinancialEventRepository {
   readonly domain = "finance" as const;
-  private readonly events = new Map<string, FinancialEventRecord>();
+
+  constructor(private readonly backing: FinanceStoreBacking) {}
 
   create(event: FinancialEventRecord): FinancialEventRecord {
-    this.events.set(event.id, event);
+    this.backing.financialEvents.set(event.id, event);
     return event;
   }
 
   update(event: FinancialEventRecord): FinancialEventRecord {
-    this.events.set(event.id, event);
+    this.backing.financialEvents.set(event.id, event);
     return event;
   }
 
   findById(organizationId: string, eventId: string): FinancialEventRecord | null {
-    const record = this.events.get(eventId);
+    const record = this.backing.financialEvents.get(eventId);
     if (!record || record.organizationId !== organizationId) return null;
     return record;
   }
 
   findByIdempotencyKey(organizationId: string, idempotencyKey: string): FinancialEventRecord | null {
     return (
-      [...this.events.values()].find(
+      [...this.backing.financialEvents.values()].find(
         (event) => event.organizationId === organizationId && event.idempotencyKey === idempotencyKey,
       ) ?? null
     );
@@ -55,14 +46,16 @@ export class InMemoryFinancialEventRepository implements FinancialEventRepositor
 
   findByBusinessEventId(organizationId: string, businessEventId: string): FinancialEventRecord | null {
     return (
-      [...this.events.values()].find(
+      [...this.backing.financialEvents.values()].find(
         (event) => event.organizationId === organizationId && event.businessEventId === businessEventId,
       ) ?? null
     );
   }
 
   list(organizationId: string, query?: PipelineInquiryQuery): readonly FinancialEventRecord[] {
-    let results = [...this.events.values()].filter((event) => event.organizationId === organizationId);
+    let results = [...this.backing.financialEvents.values()].filter(
+      (event) => event.organizationId === organizationId,
+    );
 
     if (query?.status) {
       results = results.filter((event) => event.status === query.status);
@@ -80,22 +73,23 @@ export class InMemoryFinancialEventRepository implements FinancialEventRepositor
 
 export class InMemoryDeadLetterRepository implements DeadLetterRepository {
   readonly domain = "finance" as const;
-  private readonly records = new Map<string, DeadLetterRecord>();
+
+  constructor(private readonly backing: FinanceStoreBacking) {}
 
   create(record: DeadLetterRecord): DeadLetterRecord {
-    this.records.set(record.id, record);
+    this.backing.deadLetters.set(record.id, record);
     return record;
   }
 
   list(organizationId: string): readonly DeadLetterRecord[] {
-    return [...this.records.values()]
+    return [...this.backing.deadLetters.values()]
       .filter((record) => record.organizationId === organizationId)
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
 
   findByBusinessEventId(organizationId: string, businessEventId: string): DeadLetterRecord | null {
     return (
-      [...this.records.values()].find(
+      [...this.backing.deadLetters.values()].find(
         (record) => record.organizationId === organizationId && record.businessEventId === businessEventId,
       ) ?? null
     );
@@ -104,54 +98,60 @@ export class InMemoryDeadLetterRepository implements DeadLetterRepository {
 
 export class InMemoryPipelineAuditRepository implements PipelineAuditRepository {
   readonly domain = "finance" as const;
-  private readonly entries: PipelineAuditRecord[] = [];
+
+  constructor(private readonly backing: FinanceStoreBacking) {}
 
   record(entry: PipelineAuditRecord): PipelineAuditRecord {
-    this.entries.push(entry);
+    this.backing.pipelineAudit.push(entry);
     return entry;
   }
 
   listByEvent(organizationId: string, eventId: string): readonly PipelineAuditRecord[] {
-    return this.entries.filter(
+    return this.backing.pipelineAudit.filter(
       (entry) => entry.organizationId === organizationId && entry.eventId === eventId,
     );
   }
 
   listByBusinessEvent(organizationId: string, businessEventId: string): readonly PipelineAuditRecord[] {
-    return this.entries.filter(
+    return this.backing.pipelineAudit.filter(
       (entry) => entry.organizationId === organizationId && entry.businessEventId === businessEventId,
     );
   }
 
   list(organizationId: string): readonly PipelineAuditRecord[] {
-    return this.entries.filter((entry) => entry.organizationId === organizationId);
+    return this.backing.pipelineAudit.filter((entry) => entry.organizationId === organizationId);
   }
 }
 
 export class InMemoryBusinessEventIntakeRepository implements BusinessEventIntakeRepository {
   readonly domain = "finance" as const;
-  private readonly intakes = new Map<string, IntakeRecord>();
 
-  create(record: IntakeRecord): { readonly id: string } {
-    this.intakes.set(record.id, record);
+  constructor(private readonly backing: FinanceStoreBacking) {}
+
+  create(record: FinanceBusinessEventIntakeRecord): { readonly id: string } {
+    this.backing.businessEventIntakes.set(record.id, record);
     return { id: record.id };
   }
 
   findById(organizationId: string, id: string): { readonly id: string; readonly status: string } | null {
-    const record = this.intakes.get(id);
+    const record = this.backing.businessEventIntakes.get(id);
     if (!record || record.organizationId !== organizationId) return null;
     return { id: record.id, status: record.status };
   }
 
   findByIdempotencyKey(organizationId: string, idempotencyKey: string): { readonly id: string } | null {
-    const record = [...this.intakes.values()].find(
+    const record = [...this.backing.businessEventIntakes.values()].find(
       (intake) => intake.organizationId === organizationId && intake.idempotencyKey === idempotencyKey,
     );
     return record ? { id: record.id } : null;
   }
 }
 
-export const defaultFinancialEventRepository = new InMemoryFinancialEventRepository();
-export const defaultDeadLetterRepository = new InMemoryDeadLetterRepository();
-export const defaultPipelineAuditRepository = new InMemoryPipelineAuditRepository();
-export const defaultBusinessEventIntakeRepository = new InMemoryBusinessEventIntakeRepository();
+const defaultFinanceBacking = getDefaultFinanceBacking();
+
+export const defaultFinancialEventRepository = new InMemoryFinancialEventRepository(defaultFinanceBacking);
+export const defaultDeadLetterRepository = new InMemoryDeadLetterRepository(defaultFinanceBacking);
+export const defaultPipelineAuditRepository = new InMemoryPipelineAuditRepository(defaultFinanceBacking);
+export const defaultBusinessEventIntakeRepository = new InMemoryBusinessEventIntakeRepository(
+  defaultFinanceBacking,
+);

@@ -1,7 +1,7 @@
 import { FINANCE_IIL_SERVICE_ID } from "@/lib/finance/constants";
-import { financeEventPipelineService } from "@/lib/finance/FinanceFacade";
-import { defaultEventService } from "@/lib/finance/services/DefaultEventService";
 import { FINANCE_BUSINESS_EVENT_SUBSCRIPTIONS } from "@/lib/finance/events/subscriptions";
+import { defaultEventService } from "@/lib/finance/services/DefaultEventService";
+import { getFinanceEventPipelineService } from "@/lib/finance/services/financeEventPipelineRegistry";
 import type { IntelligenceIntegrationService } from "@/lib/platform/intelligence/IntelligenceIntegrationService";
 import type { FinanceBusinessEventType } from "@/types/finance-events";
 import type { IntelligenceEvent } from "@/types/intelligence-integration";
@@ -55,7 +55,7 @@ export function registerFinanceEventSubscriptions(service: IntelligenceIntegrati
       const recorded = defaultEventService.recordInboundBusinessEvent(event, businessEventType, context);
 
       if (recorded.success) {
-        financeEventPipelineService.processIntake(
+        getFinanceEventPipelineService().processIntake(
           {
             businessEventType,
             sourceService: event.sourceService,

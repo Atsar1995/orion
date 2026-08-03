@@ -4,22 +4,14 @@ import type {
   LedgerPostingRecord,
 } from "@/types/finance-general-ledger";
 import type { GeneralLedgerRepository } from "@/lib/finance/repositories/GeneralLedgerRepository";
-import { seedLedgerBalances } from "@/lib/finance/data/seed-ledger-balances";
+import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
+import { getDefaultFinanceBacking } from "@/lib/finance/persistence/createFinanceStore";
 
 /** In-memory General Ledger repository (Mission P-009.3). */
 export class InMemoryGeneralLedgerRepository implements GeneralLedgerRepository {
   readonly domain = "finance" as const;
 
-  private readonly balances = new Map<string, LedgerBalanceRecord>();
-  private readonly postings = new Map<string, LedgerPostingRecord[]>();
-  private readonly consumedEvents = new Map<string, ConsumedFinancialEventRecord[]>();
-  private readonly reconciledPeriods = new Set<string>();
-
-  constructor(seedOrganizationId = "org-orania") {
-    for (const balance of seedLedgerBalances(seedOrganizationId)) {
-      this.balances.set(this.balanceKey(balance.organizationId, balance.periodId, balance.accountId), balance);
-    }
-  }
+  constructor(private readonly backing: FinanceStoreBacking) {}
 
   private balanceKey(organizationId: string, periodId: string, accountId: string): string {
     return `${organizationId}::${periodId}::${accountId}`;
@@ -34,24 +26,29 @@ export class InMemoryGeneralLedgerRepository implements GeneralLedgerRepository 
     accountId: string,
     periodId: string,
   ): LedgerBalanceRecord | null {
-    return this.balances.get(this.balanceKey(organizationId, periodId, accountId)) ?? null;
+    return (
+      this.backing.ledgerBalances.get(this.balanceKey(organizationId, periodId, accountId)) ?? null
+    );
   }
 
   listBalances(organizationId: string, periodId: string): readonly LedgerBalanceRecord[] {
-    return [...this.balances.values()]
+    return [...this.backing.ledgerBalances.values()]
       .filter((balance) => balance.organizationId === organizationId && balance.periodId === periodId)
       .sort((a, b) => a.accountId.localeCompare(b.accountId));
   }
 
   upsertBalance(balance: LedgerBalanceRecord): LedgerBalanceRecord {
-    this.balances.set(this.balanceKey(balance.organizationId, balance.periodId, balance.accountId), balance);
+    this.backing.ledgerBalances.set(
+      this.balanceKey(balance.organizationId, balance.periodId, balance.accountId),
+      balance,
+    );
     return balance;
   }
 
   createPosting(posting: LedgerPostingRecord): LedgerPostingRecord {
-    const bucket = this.postings.get(posting.organizationId) ?? [];
+    const bucket = this.backing.ledgerPostings.get(posting.organizationId) ?? [];
     bucket.push(posting);
-    this.postings.set(posting.organizationId, bucket);
+    this.backing.ledgerPostings.set(posting.organizationId, bucket);
     return posting;
   }
 
@@ -59,34 +56,36 @@ export class InMemoryGeneralLedgerRepository implements GeneralLedgerRepository 
     organizationId: string,
     idempotencyKey: string,
   ): LedgerPostingRecord | null {
-    const bucket = this.postings.get(organizationId) ?? [];
+    const bucket = this.backing.ledgerPostings.get(organizationId) ?? [];
     return bucket.find((posting) => posting.idempotencyKey === idempotencyKey) ?? null;
   }
 
   listPostings(organizationId: string, periodId?: string): readonly LedgerPostingRecord[] {
-    const bucket = this.postings.get(organizationId) ?? [];
+    const bucket = this.backing.ledgerPostings.get(organizationId) ?? [];
     if (!periodId) return [...bucket];
     return bucket.filter((posting) => posting.periodId === periodId);
   }
 
   recordConsumedEvent(event: ConsumedFinancialEventRecord): ConsumedFinancialEventRecord {
-    const bucket = this.consumedEvents.get(event.organizationId) ?? [];
+    const bucket = this.backing.consumedEvents.get(event.organizationId) ?? [];
     bucket.push(event);
-    this.consumedEvents.set(event.organizationId, bucket);
+    this.backing.consumedEvents.set(event.organizationId, bucket);
     return event;
   }
 
   listConsumedEvents(organizationId: string): readonly ConsumedFinancialEventRecord[] {
-    return this.consumedEvents.get(organizationId) ?? [];
+    return this.backing.consumedEvents.get(organizationId) ?? [];
   }
 
   isPeriodReconciled(organizationId: string, periodId: string): boolean {
-    return this.reconciledPeriods.has(this.reconciledKey(organizationId, periodId));
+    return this.backing.reconciledPeriods.has(this.reconciledKey(organizationId, periodId));
   }
 
   markPeriodReconciled(organizationId: string, periodId: string): void {
-    this.reconciledPeriods.add(this.reconciledKey(organizationId, periodId));
+    this.backing.reconciledPeriods.add(this.reconciledKey(organizationId, periodId));
   }
 }
 
-export const defaultGeneralLedgerRepository = new InMemoryGeneralLedgerRepository();
+export const defaultGeneralLedgerRepository = new InMemoryGeneralLedgerRepository(
+  getDefaultFinanceBacking(),
+);

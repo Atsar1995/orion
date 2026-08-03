@@ -6,43 +6,31 @@ import {
   FINANCE_WORKSPACE_ID,
   FINANCE_WORKSPACE_LABEL,
 } from "@/lib/finance/constants";
-import { FinanceChartOfAccountsFacade } from "@/lib/finance/chart-of-accounts";
-import { FinanceEventPipelineFacade } from "@/lib/finance/event-pipeline";
-import { FinanceExecutiveIntelligenceFacade } from "@/lib/finance/executive-intelligence";
-import { FinanceFiscalPeriodFacade } from "@/lib/finance/fiscal-period";
-import { FinanceGeneralLedgerFacade } from "@/lib/finance/general-ledger";
-import { defaultEventService } from "@/lib/finance/services/DefaultEventService";
-import { defaultValidationService } from "@/lib/finance/services/DefaultValidationService";
-import { DefaultTransformationService } from "@/lib/finance/services/TransformationService";
-import { DefaultExecutiveIntelligenceService } from "@/lib/finance/services/ExecutiveIntelligenceService";
-import { stubBudgetService } from "@/lib/finance/services/BudgetService";
-import { stubForecastService } from "@/lib/finance/services/ForecastService";
-import { stubJournalService } from "@/lib/finance/services/JournalService";
-import { stubPostingService } from "@/lib/finance/services/PostingService";
-import { stubReconciliationService } from "@/lib/finance/services/ReconciliationService";
-import { stubTaxService } from "@/lib/finance/services/TaxService";
+import { createFinanceWiring, type FinanceWiring } from "@/lib/finance/createFinanceWiring";
+import { getDefaultFinanceBacking } from "@/lib/finance/persistence/createFinanceStore";
 import { FINANCE_FOUNDATION_CAPABILITIES } from "@/lib/finance/models/workspace";
-import { defaultChartOfAccountsRepository } from "@/lib/finance/repositories/InMemoryChartOfAccountsRepository";
-import { defaultGeneralLedgerRepository } from "@/lib/finance/repositories/InMemoryGeneralLedgerRepository";
-import {
-  defaultBusinessEventIntakeRepository,
-  defaultDeadLetterRepository,
-  defaultFinancialEventRepository,
-  defaultPipelineAuditRepository,
-} from "@/lib/finance/repositories/InMemoryFinancialEventRepository";
-import { defaultFinancialIntelligenceRepository } from "@/lib/finance/repositories/InMemoryFinancialIntelligenceRepository";
-import { defaultIdempotencyRepository } from "@/lib/finance/repositories/InMemoryIdempotencyRepository";
-import { defaultPeriodRepository } from "@/lib/finance/repositories/InMemoryPeriodRepository";
+import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
 import type { FinanceWorkspaceView } from "@/lib/finance/models/domain";
 import type { TransformationService } from "@/lib/finance/services/TransformationService";
 import type { ExecutiveIntelligenceService } from "@/lib/finance/services/ExecutiveIntelligenceService";
 import type { FinanceDomainStatus, FinanceWorkspaceBootstrap } from "@/types/finance-core";
 import type { ServiceContext } from "@/types/services";
+import type { FinanceChartOfAccountsFacade } from "@/lib/finance/chart-of-accounts";
+import type { FinanceEventPipelineFacade } from "@/lib/finance/event-pipeline";
+import type { FinanceExecutiveIntelligenceFacade } from "@/lib/finance/executive-intelligence";
+import type { FinanceFiscalPeriodFacade } from "@/lib/finance/fiscal-period";
+import type { FinanceGeneralLedgerFacade } from "@/lib/finance/general-ledger";
 
-/** Public Finance Domain facade (Mission P-009.1 · P-009.7). */
+function createDefaultFinanceWiring(): FinanceWiring {
+  return createFinanceWiring(
+    new InMemoryPlatformStore({ financeStore: getDefaultFinanceBacking() }),
+  );
+}
+
+/** Public Finance Domain facade (Mission P-009.1 · P-009.7 · P-009.5 Wave A). */
 export class FinanceFacade {
-  readonly validation = defaultValidationService;
-  readonly events = defaultEventService;
+  readonly validation;
+  readonly events;
   readonly chartOfAccounts: FinanceChartOfAccountsFacade;
   readonly generalLedger: FinanceGeneralLedgerFacade;
   readonly fiscalPeriod: FinanceFiscalPeriodFacade;
@@ -50,36 +38,29 @@ export class FinanceFacade {
   readonly executiveIntelligence: FinanceExecutiveIntelligenceFacade;
   readonly transformation: TransformationService;
   readonly intelligence: ExecutiveIntelligenceService;
-  readonly journal = stubJournalService;
-  readonly posting = stubPostingService;
-  readonly budget = stubBudgetService;
-  readonly forecast = stubForecastService;
-  readonly tax = stubTaxService;
-  readonly reconciliation = stubReconciliationService;
+  readonly journal;
+  readonly posting;
+  readonly budget;
+  readonly forecast;
+  readonly tax;
+  readonly reconciliation;
 
-  constructor() {
-    this.chartOfAccounts = new FinanceChartOfAccountsFacade(defaultChartOfAccountsRepository);
-    this.generalLedger = new FinanceGeneralLedgerFacade(
-      defaultGeneralLedgerRepository,
-      defaultPeriodRepository,
-      defaultChartOfAccountsRepository,
-    );
-    this.fiscalPeriod = new FinanceFiscalPeriodFacade(defaultPeriodRepository);
-    this.eventPipeline = new FinanceEventPipelineFacade(
-      defaultFinancialEventRepository,
-      defaultBusinessEventIntakeRepository,
-      defaultDeadLetterRepository,
-      defaultPipelineAuditRepository,
-      defaultIdempotencyRepository,
-      this.fiscalPeriod,
-    );
-    this.executiveIntelligence = new FinanceExecutiveIntelligenceFacade(
-      defaultFinancialIntelligenceRepository,
-      this.generalLedger,
-      this.fiscalPeriod,
-    );
-    this.transformation = new DefaultTransformationService(this.eventPipeline, defaultEventService);
-    this.intelligence = new DefaultExecutiveIntelligenceService(this.executiveIntelligence, this.eventPipeline);
+  constructor(wiring: FinanceWiring = createDefaultFinanceWiring()) {
+    this.validation = wiring.validation;
+    this.events = wiring.events;
+    this.chartOfAccounts = wiring.chartOfAccountsFacade;
+    this.generalLedger = wiring.generalLedgerFacade;
+    this.fiscalPeriod = wiring.fiscalPeriodFacade;
+    this.eventPipeline = wiring.eventPipelineFacade;
+    this.executiveIntelligence = wiring.executiveIntelligenceFacade;
+    this.transformation = wiring.transformation;
+    this.intelligence = wiring.intelligence;
+    this.journal = wiring.journal;
+    this.posting = wiring.posting;
+    this.budget = wiring.budget;
+    this.forecast = wiring.forecast;
+    this.tax = wiring.tax;
+    this.reconciliation = wiring.reconciliation;
   }
 
   getDomainStatus(): FinanceDomainStatus {
@@ -136,3 +117,5 @@ export const financeExecutiveIntelligenceService = financeService.executiveIntel
 export function getFinanceWorkspaceBootstrap(context: ServiceContext): FinanceWorkspaceBootstrap {
   return financeService.getWorkspaceBootstrap(context);
 }
+
+export { createFinanceWiring, type FinanceWiring } from "@/lib/finance/createFinanceWiring";

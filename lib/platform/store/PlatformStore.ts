@@ -8,6 +8,7 @@ import type {
 } from "@/lib/platform/store/PlatformStoreHealth";
 import type { StoreConfiguration, StoreProvider } from "@/lib/platform/store/StoreConfiguration";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
+import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 import type {
   PersistenceTransaction,
   TransactionManager,
@@ -24,6 +25,8 @@ export type PlatformStoreMigrationReadiness = {
 export interface PlatformDomainStores {
   /** HCM persistence backing (InMemory today · PostgreSQL in P-015.5). */
   getHcmBacking(): HcmStoreBacking;
+  /** Finance persistence backing (Mission P-009.5 Wave A). */
+  getFinanceBacking(): FinanceStoreBacking;
 }
 
 /**

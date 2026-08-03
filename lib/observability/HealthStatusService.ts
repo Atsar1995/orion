@@ -74,6 +74,18 @@ export class HealthStatusService {
       message: storeHealth.message,
     });
 
+    const financeStoreHealth =
+      storeConfig.provider === StoreProvider.InMemory
+        ? new InMemoryPlatformStore({ configuration: storeConfig }).getFinanceBacking()
+        : null;
+    checks.push({
+      name: "finance_platform",
+      status: financeStoreHealth ? "healthy" : "degraded",
+      message: financeStoreHealth
+        ? "Finance store backing available via PlatformStore."
+        : "Finance backing resolves after relational platform store initialization.",
+    });
+
     const securityHealth = securityHealthService.getReport();
     checks.push({
       name: "platform_security",

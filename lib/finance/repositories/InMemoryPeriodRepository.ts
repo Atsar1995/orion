@@ -1,44 +1,30 @@
-import type { FiscalCalendarRecord, FiscalPeriodRecord, FiscalPeriodState, FiscalYearRecord } from "@/types/finance-period";
+import type { FiscalPeriodRecord, FiscalPeriodState, FiscalYearRecord } from "@/types/finance-period";
 import type { PeriodRepository } from "@/lib/finance/repositories/PeriodRepository";
-import {
-  seedFiscalCalendar,
-  seedFiscalPeriods,
-  seedFiscalYear,
-} from "@/lib/finance/data/seed-fiscal-calendar";
+import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
+import { getDefaultFinanceBacking } from "@/lib/finance/persistence/createFinanceStore";
 
 /** In-memory fiscal period repository (Mission P-009.5). */
 export class InMemoryPeriodRepository implements PeriodRepository {
   readonly domain = "finance" as const;
 
-  private readonly calendar: FiscalCalendarRecord;
-  private readonly fiscalYears = new Map<string, FiscalYearRecord>();
-  private readonly periods = new Map<string, FiscalPeriodRecord>();
+  constructor(private readonly backing: FinanceStoreBacking) {}
 
-  constructor(seedOrganizationId = "org-orania") {
-    this.calendar = seedFiscalCalendar(seedOrganizationId);
-    const year = seedFiscalYear(seedOrganizationId);
-    this.fiscalYears.set(year.id, year);
-
-    for (const period of seedFiscalPeriods(seedOrganizationId)) {
-      this.periods.set(period.id, period);
-    }
-  }
-
-  getCalendar(organizationId: string): FiscalCalendarRecord | null {
-    if (this.calendar.organizationId !== organizationId) return null;
-    return this.calendar;
+  getCalendar(organizationId: string) {
+    const calendar = this.backing.fiscalCalendar.value;
+    if (!calendar || calendar.organizationId !== organizationId) return null;
+    return calendar;
   }
 
   getFiscalYear(organizationId: string, fiscalYear: number): FiscalYearRecord | null {
     return (
-      [...this.fiscalYears.values()].find(
+      [...this.backing.fiscalYears.values()].find(
         (year) => year.organizationId === organizationId && year.fiscalYear === fiscalYear,
       ) ?? null
     );
   }
 
   listFiscalYears(organizationId: string): readonly FiscalYearRecord[] {
-    return [...this.fiscalYears.values()]
+    return [...this.backing.fiscalYears.values()]
       .filter((year) => year.organizationId === organizationId)
       .sort((a, b) => a.fiscalYear - b.fiscalYear);
   }
@@ -52,19 +38,19 @@ export class InMemoryPeriodRepository implements PeriodRepository {
     if (!existing) throw new Error("FISCAL_YEAR_NOT_FOUND");
 
     const updated: FiscalYearRecord = { ...existing, state };
-    this.fiscalYears.set(existing.id, updated);
+    this.backing.fiscalYears.set(existing.id, updated);
     return updated;
   }
 
   findById(organizationId: string, periodId: string): FiscalPeriodRecord | null {
-    const record = this.periods.get(periodId);
+    const record = this.backing.fiscalPeriods.get(periodId);
     if (!record || record.organizationId !== organizationId) return null;
     return record;
   }
 
   findByDate(organizationId: string, date: string): FiscalPeriodRecord | null {
     return (
-      [...this.periods.values()].find(
+      [...this.backing.fiscalPeriods.values()].find(
         (period) =>
           period.organizationId === organizationId &&
           date >= period.startDate &&
@@ -79,7 +65,7 @@ export class InMemoryPeriodRepository implements PeriodRepository {
     periodNumber: number,
   ): FiscalPeriodRecord | null {
     return (
-      [...this.periods.values()].find(
+      [...this.backing.fiscalPeriods.values()].find(
         (period) =>
           period.organizationId === organizationId &&
           period.fiscalYear === fiscalYear &&
@@ -89,26 +75,26 @@ export class InMemoryPeriodRepository implements PeriodRepository {
   }
 
   getCurrentPeriod(organizationId: string): FiscalPeriodRecord | null {
-    const open = [...this.periods.values()]
+    const open = [...this.backing.fiscalPeriods.values()]
       .filter((period) => period.organizationId === organizationId && period.state === "open")
       .sort((a, b) => b.periodNumber - a.periodNumber);
     return open[0] ?? null;
   }
 
   listByYear(organizationId: string, fiscalYear: number): readonly FiscalPeriodRecord[] {
-    return [...this.periods.values()]
+    return [...this.backing.fiscalPeriods.values()]
       .filter((period) => period.organizationId === organizationId && period.fiscalYear === fiscalYear)
       .sort((a, b) => a.periodNumber - b.periodNumber);
   }
 
   list(organizationId: string): readonly FiscalPeriodRecord[] {
-    return [...this.periods.values()]
+    return [...this.backing.fiscalPeriods.values()]
       .filter((period) => period.organizationId === organizationId)
       .sort((a, b) => a.fiscalYear - b.fiscalYear || a.periodNumber - b.periodNumber);
   }
 
   create(period: FiscalPeriodRecord): FiscalPeriodRecord {
-    this.periods.set(period.id, period);
+    this.backing.fiscalPeriods.set(period.id, period);
     return period;
   }
 
@@ -121,15 +107,15 @@ export class InMemoryPeriodRepository implements PeriodRepository {
     if (!existing) throw new Error("PERIOD_NOT_FOUND");
 
     const updated: FiscalPeriodRecord = { ...existing, state };
-    this.periods.set(periodId, updated);
+    this.backing.fiscalPeriods.set(periodId, updated);
     return updated;
   }
 
   updatePeriod(organizationId: string, period: FiscalPeriodRecord): FiscalPeriodRecord {
     if (period.organizationId !== organizationId) throw new Error("ORGANIZATION_MISMATCH");
-    this.periods.set(period.id, period);
+    this.backing.fiscalPeriods.set(period.id, period);
     return period;
   }
 }
 
-export const defaultPeriodRepository = new InMemoryPeriodRepository();
+export const defaultPeriodRepository = new InMemoryPeriodRepository(getDefaultFinanceBacking());

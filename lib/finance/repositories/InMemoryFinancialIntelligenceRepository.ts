@@ -3,29 +3,21 @@ import type {
   FinancialTrendRecord,
 } from "@/types/finance-executive-intelligence";
 import type { FinancialIntelligenceRepository } from "@/lib/finance/repositories/FinancialIntelligenceRepository";
-import {
-  seedBudgetActuals,
-  seedFinancialTrends,
-} from "@/lib/finance/data/seed-financial-intelligence";
+import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
+import { getDefaultFinanceBacking } from "@/lib/finance/persistence/createFinanceStore";
 
 /** In-memory financial intelligence repository (Mission P-009.7). */
 export class InMemoryFinancialIntelligenceRepository implements FinancialIntelligenceRepository {
   readonly domain = "finance" as const;
 
-  private readonly trends: FinancialTrendRecord[];
-  private readonly budgetActuals: BudgetActualRecord[];
-
-  constructor(seedOrganizationId = "org-orania") {
-    this.trends = seedFinancialTrends(seedOrganizationId);
-    this.budgetActuals = seedBudgetActuals(seedOrganizationId);
-  }
+  constructor(private readonly backing: FinanceStoreBacking) {}
 
   listTrends(organizationId: string): readonly FinancialTrendRecord[] {
-    return this.trends.filter((trend) => trend.organizationId === organizationId);
+    return this.backing.financialTrends.filter((trend) => trend.organizationId === organizationId);
   }
 
   listBudgetActuals(organizationId: string, periodId?: string): readonly BudgetActualRecord[] {
-    return this.budgetActuals.filter(
+    return this.backing.budgetActuals.filter(
       (line) => line.organizationId === organizationId && (!periodId || line.periodId === periodId),
     );
   }
@@ -36,4 +28,6 @@ export class InMemoryFinancialIntelligenceRepository implements FinancialIntelli
   }
 }
 
-export const defaultFinancialIntelligenceRepository = new InMemoryFinancialIntelligenceRepository();
+export const defaultFinancialIntelligenceRepository = new InMemoryFinancialIntelligenceRepository(
+  getDefaultFinanceBacking(),
+);

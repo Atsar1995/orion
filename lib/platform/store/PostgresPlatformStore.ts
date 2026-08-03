@@ -5,6 +5,8 @@ import "server-only";
  */
 
 import type { InMemoryHcmStore } from "@/lib/hcm/data/InMemoryHcmStore";
+import { createFinanceStore } from "@/lib/finance/persistence/createFinanceStore";
+import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import type {
   PlatformStore,
@@ -75,6 +77,7 @@ export class PostgresPlatformStore implements PlatformStore {
   private migrationRunner: MigrationRunner | null = null;
   private transactionManager: TransactionManager | null = null;
   private hcmStore: InMemoryHcmStore | null = null;
+  private financeStore: FinanceStoreBacking | null = null;
   private hcmPersister: HcmEntityPersister | null = null;
   private initialized = false;
   private lastHealthReport: PlatformStoreHealthReport | null = null;
@@ -129,6 +132,7 @@ export class PostgresPlatformStore implements PlatformStore {
       const { store, persister } = await createPostgresHcmStore(runtime.connection);
       this.hcmStore = store;
       this.hcmPersister = persister;
+      this.financeStore = createFinanceStore();
       this.transactionManager = runtime.createTransactionManager(persister);
       this.initialized = true;
       this.lastHealthReport = await this.buildHealthReport("PostgreSQL platform store initialized.");
@@ -151,6 +155,7 @@ export class PostgresPlatformStore implements PlatformStore {
 
     this.initialized = false;
     this.hcmStore = null;
+    this.financeStore = null;
     this.hcmPersister = null;
     this.transactionManager = null;
     this.connection = null;
@@ -167,6 +172,14 @@ export class PostgresPlatformStore implements PlatformStore {
     }
 
     return this.transactionManager;
+  }
+
+  getFinanceBacking(): FinanceStoreBacking {
+    if (!this.financeStore) {
+      throw new PostgresPlatformStoreError("Platform store is not initialized.");
+    }
+
+    return this.financeStore;
   }
 
   getHcmBacking(): HcmStoreBacking {

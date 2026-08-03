@@ -6,6 +6,8 @@ import {
   defaultHcmStore,
   type InMemoryHcmStore,
 } from "@/lib/hcm/data/InMemoryHcmStore";
+import { createFinanceStore } from "@/lib/finance/persistence/createFinanceStore";
+import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import type {
   PlatformStore,
@@ -27,6 +29,7 @@ import {
 export type InMemoryPlatformStoreOptions = {
   readonly configuration?: StoreConfiguration;
   readonly hcmStore?: InMemoryHcmStore;
+  readonly financeStore?: FinanceStoreBacking;
   readonly transactionManager?: TransactionManager;
 };
 
@@ -36,12 +39,14 @@ export class InMemoryPlatformStore implements PlatformStore {
   readonly configuration: StoreConfiguration;
 
   private readonly hcmStore: InMemoryHcmStore;
+  private readonly financeStore: FinanceStoreBacking;
   private readonly transactionManager: TransactionManager;
   private lifecycle: PlatformStoreLifecycleState = "created";
 
   constructor(options: InMemoryPlatformStoreOptions = {}) {
     this.configuration = options.configuration ?? DEFAULT_STORE_CONFIGURATION;
     this.hcmStore = options.hcmStore ?? defaultHcmStore;
+    this.financeStore = options.financeStore ?? createFinanceStore();
     this.transactionManager = options.transactionManager ?? new NoOpTransactionManager();
     this.lifecycle = "initialized";
   }
@@ -69,6 +74,10 @@ export class InMemoryPlatformStore implements PlatformStore {
 
   getHcmBacking(): HcmStoreBacking {
     return this.hcmStore;
+  }
+
+  getFinanceBacking(): FinanceStoreBacking {
+    return this.financeStore;
   }
 
   getHealth(): PlatformStoreHealthReport {
@@ -100,6 +109,7 @@ export class InMemoryPlatformStore implements PlatformStore {
       migrationReady: true,
       details: {
         hcmBacking: "InMemoryHcmStore",
+        financeBacking: "FinanceStoreBacking",
       },
     });
   }

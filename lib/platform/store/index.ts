@@ -19,6 +19,7 @@ export {
 export type { StoreConfiguration } from "@/lib/platform/store/StoreConfiguration";
 
 export type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
+export type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 
 export { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
 export type { InMemoryPlatformStoreOptions } from "@/lib/platform/store/InMemoryPlatformStore";

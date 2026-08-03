@@ -68,6 +68,16 @@ describe("PlatformStoreContract", () => {
         expect(backing.orgUnits).toBeInstanceOf(Map);
       });
 
+      it("exposes Finance backing after initialization", async () => {
+        const store = testCase.create();
+        await store.initialize();
+
+        const backing = store.getFinanceBacking();
+        expect(backing.accounts).toBeInstanceOf(Map);
+        expect(backing.fiscalPeriods).toBeInstanceOf(Map);
+        expect(backing.idempotencyKeys).toBeInstanceOf(Map);
+      });
+
       it("shuts down gracefully", async () => {
         const store = testCase.create();
         await store.initialize();

@@ -3,7 +3,8 @@ import type {
   ChartOfAccountRecord,
 } from "@/types/finance-chart-of-accounts";
 import type { ChartOfAccountsRepository } from "@/lib/finance/repositories/ChartOfAccountsRepository";
-import { seedChartOfAccounts } from "@/lib/finance/data/seed-chart-of-accounts";
+import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
+import { getDefaultFinanceBacking } from "@/lib/finance/persistence/createFinanceStore";
 
 function matchesQuery(record: ChartOfAccountRecord, query: ChartOfAccountListQuery): boolean {
   if (query.accountType && record.accountType !== query.accountType) return false;
@@ -27,22 +28,16 @@ function matchesQuery(record: ChartOfAccountRecord, query: ChartOfAccountListQue
 export class InMemoryChartOfAccountsRepository implements ChartOfAccountsRepository {
   readonly domain = "finance" as const;
 
-  private readonly accounts = new Map<string, ChartOfAccountRecord>();
-
-  constructor(seedOrganizationId = "org-orania") {
-    for (const account of seedChartOfAccounts(seedOrganizationId)) {
-      this.accounts.set(account.id, account);
-    }
-  }
+  constructor(private readonly backing: FinanceStoreBacking) {}
 
   findById(organizationId: string, accountId: string): ChartOfAccountRecord | null {
-    const record = this.accounts.get(accountId);
+    const record = this.backing.accounts.get(accountId);
     if (!record || record.organizationId !== organizationId) return null;
     return record;
   }
 
   findByCode(organizationId: string, code: string): ChartOfAccountRecord | null {
-    for (const record of this.accounts.values()) {
+    for (const record of this.backing.accounts.values()) {
       if (record.organizationId === organizationId && record.code === code.trim()) {
         return record;
       }
@@ -51,19 +46,19 @@ export class InMemoryChartOfAccountsRepository implements ChartOfAccountsReposit
   }
 
   list(organizationId: string, query: ChartOfAccountListQuery = {}): readonly ChartOfAccountRecord[] {
-    return [...this.accounts.values()]
+    return [...this.backing.accounts.values()]
       .filter((record) => record.organizationId === organizationId)
       .filter((record) => matchesQuery(record, query))
       .sort((a, b) => a.code.localeCompare(b.code));
   }
 
   create(record: ChartOfAccountRecord): ChartOfAccountRecord {
-    this.accounts.set(record.id, record);
+    this.backing.accounts.set(record.id, record);
     return record;
   }
 
   update(record: ChartOfAccountRecord): ChartOfAccountRecord {
-    this.accounts.set(record.id, record);
+    this.backing.accounts.set(record.id, record);
     return record;
   }
 
@@ -82,4 +77,6 @@ export class InMemoryChartOfAccountsRepository implements ChartOfAccountsReposit
   }
 }
 
-export const defaultChartOfAccountsRepository = new InMemoryChartOfAccountsRepository();
+export const defaultChartOfAccountsRepository = new InMemoryChartOfAccountsRepository(
+  getDefaultFinanceBacking(),
+);
