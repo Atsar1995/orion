@@ -135,38 +135,11 @@ export class MockDatabaseConnection implements DatabaseConnection {
     }
 
     if (normalized.startsWith("insert into hcm_entities")) {
-      const rows = this.getTable("hcm_entities");
-      const collection = String(params?.[0]);
-      const entityId = String(params?.[1]);
-      const payload = JSON.parse(String(params?.[3]));
-      const existing = rows.find(
-        (row) => row.collection_name === collection && row.entity_id === entityId,
-      );
-      if (existing) {
-        existing.payload = payload;
-        existing.organization_id = params?.[2];
-      } else {
-        rows.push({
-          collection_name: collection,
-          entity_id: entityId,
-          organization_id: params?.[2],
-          payload,
-        });
-      }
-      return mockResult([]);
+      return this.handleEntityUpsert("hcm_entities", params) as DatabaseQueryResult<T>;
     }
 
     if (normalized.startsWith("delete from hcm_entities")) {
-      const collection = String(params?.[0]);
-      const entityId = String(params?.[1]);
-      const rows = this.getTable("hcm_entities");
-      this.tables.set(
-        "hcm_entities",
-        rows.filter(
-          (row) => !(row.collection_name === collection && row.entity_id === entityId),
-        ),
-      );
-      return mockResult([]);
+      return this.handleEntityDelete("hcm_entities", params) as DatabaseQueryResult<T>;
     }
 
     if (normalized.includes("from hcm_entities") && normalized.includes("entity_id <> '__array__'")) {
@@ -180,12 +153,89 @@ export class MockDatabaseConnection implements DatabaseConnection {
       return mockResult(rows);
     }
 
-    if (normalized.includes("entity_id = '__array__'")) {
+    if (normalized.includes("from hcm_entities") && normalized.includes("entity_id = '__array__'")) {
       const collection = String(params?.[0]);
       const row = this.getTable("hcm_entities").find(
         (entry) => entry.collection_name === collection && entry.entity_id === "__array__",
       );
       return mockResult(row ? [{ payload: row.payload }] : []);
+    }
+
+    if (normalized.startsWith("insert into finance_entities")) {
+      return this.handleEntityUpsert("finance_entities", params) as DatabaseQueryResult<T>;
+    }
+
+    if (normalized.startsWith("delete from finance_entities")) {
+      return this.handleEntityDelete("finance_entities", params) as DatabaseQueryResult<T>;
+    }
+
+    if (normalized.includes("from finance_entities")) {
+      const collection = String(params?.[0]);
+      let rows = this.getTable("finance_entities").filter(
+        (row) => row.collection_name === collection,
+      );
+
+      if (params?.[1] !== undefined && normalized.includes("organization_id = $1")) {
+        const organizationId = String(params[0]);
+        rows = rows.filter((row) => row.organization_id === organizationId);
+
+        if (normalized.includes("entity_id = $2") && !normalized.includes("payload->>")) {
+          const entityId = String(params[1]);
+          rows = rows.filter((row) => row.entity_id === entityId);
+        }
+
+        if (normalized.includes("payload->>'correlationid' = $2")) {
+          const correlationId = String(params[1]);
+          rows = rows.filter(
+            (row) =>
+              row.payload &&
+              typeof row.payload === "object" &&
+              (row.payload as { correlationId?: string }).correlationId === correlationId,
+          );
+        }
+
+        if (normalized.includes("payload->>'periodid' = $2")) {
+          const periodId = String(params[1]);
+          rows = rows.filter(
+            (row) =>
+              row.payload &&
+              typeof row.payload === "object" &&
+              (row.payload as { periodId?: string }).periodId === periodId,
+          );
+        }
+
+        if (normalized.includes("payload->>'journalid' = $2")) {
+          const journalId = String(params[1]);
+          rows = rows.filter(
+            (row) =>
+              row.payload &&
+              typeof row.payload === "object" &&
+              (row.payload as { journalId?: string }).journalId === journalId,
+          );
+        }
+
+        if (
+          normalized.includes("payload->>'businesseventid' = $2") ||
+          normalized.includes("payload->>'financialeventid' = $2")
+        ) {
+          const eventId = String(params[1]);
+          rows = rows.filter(
+            (row) =>
+              row.entity_id === eventId ||
+              (row.payload &&
+                typeof row.payload === "object" &&
+                ((row.payload as { businessEventId?: string }).businessEventId === eventId ||
+                  (row.payload as { financialEventId?: string }).financialEventId === eventId)),
+          );
+        }
+      }
+
+      return mockResult(
+        rows.map((row) => ({
+          entity_id: row.entity_id,
+          payload: row.payload,
+        })),
+      );
     }
 
     if (normalized.startsWith("begin")) {
@@ -236,5 +286,44 @@ export class MockDatabaseConnection implements DatabaseConnection {
       this.tables.set(name, []);
     }
     return this.tables.get(name)!;
+  }
+
+  private handleEntityUpsert(
+    tableName: string,
+    params: unknown[] | undefined,
+  ): DatabaseQueryResult<Row> {
+    const rows = this.getTable(tableName);
+    const collection = String(params?.[0]);
+    const entityId = String(params?.[1]);
+    const payload = JSON.parse(String(params?.[3]));
+    const existing = rows.find(
+      (row) => row.collection_name === collection && row.entity_id === entityId,
+    );
+    if (existing) {
+      existing.payload = payload;
+      existing.organization_id = params?.[2];
+    } else {
+      rows.push({
+        collection_name: collection,
+        entity_id: entityId,
+        organization_id: params?.[2],
+        payload,
+      });
+    }
+    return mockResult([]);
+  }
+
+  private handleEntityDelete(
+    tableName: string,
+    params: unknown[] | undefined,
+  ): DatabaseQueryResult<Row> {
+    const collection = String(params?.[0]);
+    const entityId = String(params?.[1]);
+    const rows = this.getTable(tableName);
+    this.tables.set(
+      tableName,
+      rows.filter((row) => !(row.collection_name === collection && row.entity_id === entityId)),
+    );
+    return mockResult([]);
   }
 }

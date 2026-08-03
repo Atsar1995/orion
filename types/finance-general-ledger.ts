@@ -96,3 +96,25 @@ export type PublishLedgerEventInput = {
   readonly correlationId?: string;
   readonly payload?: Readonly<Record<string, string>>;
 };
+
+/** Immutable ledger entry created from a posted journal line (P-009.7D). */
+export type LedgerEntryRecord = {
+  readonly id: string;
+  readonly organizationId: string;
+  readonly accountId: string;
+  readonly periodId: string;
+  readonly journalId: string;
+  readonly journalLineId: string;
+  readonly debitAmount: number;
+  readonly creditAmount: number;
+  readonly currency: string;
+  readonly postedAt: string;
+  readonly correlationId: string;
+  readonly metadata?: Readonly<Record<string, string>>;
+};
+
+export type LedgerEntryQuery = {
+  readonly periodId?: string;
+  readonly accountId?: string;
+  readonly journalId?: string;
+};

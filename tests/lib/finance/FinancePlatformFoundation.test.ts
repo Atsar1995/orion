@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createFinanceWiring } from "@/lib/finance/createFinanceWiring";
 import { FINANCE_SEED_ORG_ID } from "@/lib/finance/persistence/createFinanceStore";
+import { createFinancePersistenceRepositories } from "@/lib/finance/persistence/createFinancePersistenceRepositories";
 import { createFinanceRepositories } from "@/lib/finance/persistence/createFinanceRepositories";
 import { createIsolatedFinanceBacking } from "@/lib/finance/persistence/FinancePlatformBacking";
 import { healthStatusService } from "@/lib/observability/HealthStatusService";
@@ -23,6 +24,8 @@ describe("Finance Platform Foundation (P-009.5 Wave A)", () => {
     expect(wiring.backing).toBe(platformStore.getFinanceBacking());
     expect(wiring.chartOfAccounts.findByCode(FINANCE_SEED_ORG_ID, "1000")).not.toBeNull();
     expect(wiring.period.getCurrentPeriod(FINANCE_SEED_ORG_ID)).not.toBeNull();
+    expect(wiring.journalRepository.domain).toBe("finance");
+    expect(wiring.eventLineageRepository.getByCorrelationId(FINANCE_SEED_ORG_ID, "missing")).toEqual([]);
   });
 
   it("creates repository bundle from isolated backing", () => {
@@ -50,6 +53,29 @@ describe("Finance Platform Foundation (P-009.5 Wave A)", () => {
 
     expect(financeCheck).toBeDefined();
     expect(financeCheck?.status).toBe("healthy");
+  });
+
+  it("wires P-009.7 persistence repositories with organization isolation", async () => {
+    const platformStore = new InMemoryPlatformStore();
+    await platformStore.initialize();
+
+    const { journalRepository, eventLineageRepository } = createFinancePersistenceRepositories({
+      platformStore,
+    });
+    const correlationId = "corr-p009-7a";
+
+    eventLineageRepository.record({
+      id: "lineage-001",
+      organizationId: FINANCE_SEED_ORG_ID,
+      correlationId,
+      createdAt: "2026-08-03T00:00:00.000Z",
+    });
+
+    expect(journalRepository.findById(FINANCE_SEED_ORG_ID, "journal-missing")).toBeNull();
+    expect(eventLineageRepository.getByCorrelationId(FINANCE_SEED_ORG_ID, correlationId)).toHaveLength(
+      1,
+    );
+    expect(eventLineageRepository.getByCorrelationId("org-other", correlationId)).toHaveLength(0);
   });
 
   it("supports composition root lifecycle without mutating platform singleton state", async () => {

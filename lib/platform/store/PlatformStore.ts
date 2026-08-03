@@ -9,6 +9,7 @@ import type {
 import type { StoreConfiguration, StoreProvider } from "@/lib/platform/store/StoreConfiguration";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
+import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConnection";
 import type {
   PersistenceTransaction,
   TransactionManager,
@@ -48,6 +49,9 @@ export interface PlatformStore extends PlatformDomainStores {
 
   /** Transaction boundary for unit-of-work operations. */
   getTransactionManager(): TransactionManager;
+
+  /** Database connection when store uses relational persistence (P-009.7B). */
+  getDatabaseConnection?(): DatabaseConnection | null;
 
   /** Current health snapshot. */
   getHealth(): PlatformStoreHealthReport;

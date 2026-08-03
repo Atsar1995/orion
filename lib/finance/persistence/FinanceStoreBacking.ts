@@ -1,7 +1,13 @@
 import type { ChartOfAccountRecord } from "@/types/finance-chart-of-accounts";
 import type {
+  EventLineageRecord,
+  JournalEntryRecord,
+  JournalLineRecord,
+} from "@/types/finance-ledger";
+import type {
   ConsumedFinancialEventRecord,
   LedgerBalanceRecord,
+  LedgerEntryRecord,
   LedgerPostingRecord,
 } from "@/types/finance-general-ledger";
 import type {
@@ -41,6 +47,7 @@ export type FinanceStoreBacking = {
   readonly accounts: Map<string, ChartOfAccountRecord>;
   readonly ledgerBalances: Map<string, LedgerBalanceRecord>;
   readonly ledgerPostings: Map<string, LedgerPostingRecord[]>;
+  readonly ledgerEntries: Map<string, LedgerEntryRecord[]>;
   readonly consumedEvents: Map<string, ConsumedFinancialEventRecord[]>;
   readonly reconciledPeriods: Set<string>;
   readonly fiscalCalendar: { value: FiscalCalendarRecord | null };
@@ -53,4 +60,7 @@ export type FinanceStoreBacking = {
   readonly businessEventIntakes: Map<string, FinanceBusinessEventIntakeRecord>;
   readonly financialTrends: FinancialTrendRecord[];
   readonly budgetActuals: BudgetActualRecord[];
+  readonly journals: Map<string, JournalEntryRecord>;
+  readonly journalLines: Map<string, JournalLineRecord[]>;
+  readonly eventLineage: Map<string, EventLineageRecord>;
 };

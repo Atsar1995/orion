@@ -102,11 +102,31 @@ export {
   defaultIdempotencyRepository,
 } from "@/lib/finance/repositories/InMemoryIdempotencyRepository";
 
+export {
+  createFinancePersistenceRepositories,
+  InMemoryJournalRepository,
+  InMemoryEventLineageRepository,
+} from "@/lib/finance/persistence";
+export type {
+  FinancePersistenceRepositories,
+  CreateFinancePersistenceRepositoriesOptions,
+} from "@/lib/finance/persistence";
+
 export type { ValidationService } from "@/lib/finance/services/ValidationService";
 export type { EventService } from "@/lib/finance/services/EventService";
 export type { LedgerService } from "@/lib/finance/services/LedgerService";
 export type { JournalService } from "@/lib/finance/services/JournalService";
-export type { PostingService } from "@/lib/finance/services/PostingService";
+export type { PostingService, PostingRequestOptions } from "@/lib/finance/services/PostingService";
+export { DefaultPostingService, StubPostingService, stubPostingService } from "@/lib/finance/services/PostingService";
+export { JournalPostingService } from "@/lib/finance/services/JournalPostingService";
+export { GeneralLedgerPostingService } from "@/lib/finance/services/GeneralLedgerPostingService";
+export type { GeneralLedgerMutation } from "@/lib/finance/services/GeneralLedgerMutation";
+export type { LedgerPostingContext } from "@/lib/finance/services/LedgerPostingContext";
+export type { LedgerPostingResult } from "@/lib/finance/services/LedgerPostingResult";
+export type { PostingContext } from "@/lib/finance/services/PostingContext";
+export { createPostingContext, createPostingCorrelationId, resolvePostingLineageId } from "@/lib/finance/services/PostingContext";
+export type { PostingResult } from "@/lib/finance/services/PostingResult";
+export type { PostingTransaction } from "@/lib/finance/services/PostingTransaction";
 export type { BudgetService } from "@/lib/finance/services/BudgetService";
 export type { ForecastService } from "@/lib/finance/services/ForecastService";
 export type { TaxService } from "@/lib/finance/services/TaxService";

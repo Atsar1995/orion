@@ -13,6 +13,7 @@ import { PersistenceErrorCode } from "@/types/persistence";
 import { failure, success } from "@/lib/persistence/result";
 import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConnection";
 import type { HcmEntityPersister } from "@/lib/platform/persistence/hcm/HcmEntityPersister";
+import type { FinanceEntityPersister } from "@/lib/platform/persistence/finance/FinanceEntityPersister";
 
 export type PostgresPersistenceTransaction = PersistenceTransaction & {
   readonly client: PoolClient;
@@ -24,6 +25,7 @@ export class PostgresTransactionManager implements TransactionManager {
   constructor(
     private readonly connection: DatabaseConnection,
     private readonly hcmPersister?: HcmEntityPersister,
+    private readonly financePersister?: FinanceEntityPersister,
   ) {}
 
   async beginTransaction(): Promise<RepositoryResult<PersistenceTransaction>> {
@@ -31,6 +33,7 @@ export class PostgresTransactionManager implements TransactionManager {
       const client = await this.connection.acquireClient();
       await client.query("BEGIN");
       this.hcmPersister?.beginTransaction();
+      this.financePersister?.beginTransaction();
 
       const transaction: PostgresPersistenceTransaction = {
         transactionId: randomUUID(),
@@ -58,6 +61,7 @@ export class PostgresTransactionManager implements TransactionManager {
 
     try {
       await this.hcmPersister?.flushPending();
+      await this.financePersister?.flushPending();
       await active.client.query("COMMIT");
       return success(undefined);
     } catch (error) {
@@ -70,6 +74,7 @@ export class PostgresTransactionManager implements TransactionManager {
       this.connection.releaseClient(active.client);
       this.activeTransactions.delete(active.transactionId);
       this.hcmPersister?.endTransaction();
+      this.financePersister?.endTransaction();
     }
   }
 
@@ -86,6 +91,7 @@ export class PostgresTransactionManager implements TransactionManager {
     try {
       await active.client.query("ROLLBACK");
       this.hcmPersister?.discardPending();
+      this.financePersister?.discardPending();
       return success(undefined);
     } catch (error) {
       return failure({
@@ -96,6 +102,7 @@ export class PostgresTransactionManager implements TransactionManager {
       this.connection.releaseClient(active.client);
       this.activeTransactions.delete(active.transactionId);
       this.hcmPersister?.endTransaction();
+      this.financePersister?.endTransaction();
     }
   }
 

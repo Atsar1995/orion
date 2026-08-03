@@ -86,6 +86,14 @@ export class HealthStatusService {
         : "Finance backing resolves after relational platform store initialization.",
     });
 
+    checks.push({
+      name: "finance_persistence_repositories",
+      status: financeStoreHealth ? "healthy" : "degraded",
+      message: financeStoreHealth
+        ? "Finance journal and lineage repository backing initialized."
+        : "Finance persistence repositories require initialized PlatformStore.",
+    });
+
     const securityHealth = securityHealthService.getReport();
     checks.push({
       name: "platform_security",

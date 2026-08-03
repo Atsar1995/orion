@@ -16,13 +16,17 @@ import {
   type PersistenceConfiguration,
 } from "@/lib/platform/persistence/PersistenceConfiguration";
 import { PostgresTransactionManager } from "@/lib/platform/persistence/PostgresTransactionManager";
+import type { FinanceEntityPersister } from "@/lib/platform/persistence/finance/FinanceEntityPersister";
 import type { HcmEntityPersister } from "@/lib/platform/persistence/hcm/HcmEntityPersister";
 
 export type PersistenceRuntime = {
   readonly configuration: PersistenceConfiguration;
   readonly connection: DatabaseConnection;
   readonly migrationRunner: MigrationRunner;
-  createTransactionManager(hcmPersister?: HcmEntityPersister): PostgresTransactionManager;
+  createTransactionManager(
+    hcmPersister?: HcmEntityPersister,
+    financePersister?: FinanceEntityPersister,
+  ): PostgresTransactionManager;
 };
 
 /** Constructs persistence runtime components from configuration. */
@@ -57,8 +61,8 @@ export class PersistenceFactory {
       configuration,
       connection,
       migrationRunner,
-      createTransactionManager: (hcmPersister) =>
-        new PostgresTransactionManager(connection, hcmPersister),
+      createTransactionManager: (hcmPersister, financePersister) =>
+        new PostgresTransactionManager(connection, hcmPersister, financePersister),
     };
   }
 

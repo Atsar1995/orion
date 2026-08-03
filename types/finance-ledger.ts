@@ -26,6 +26,8 @@ export type JournalLineRecord = {
   readonly currency: string;
 };
 
+export type EventLineageProcessingStatus = "pending" | "processing" | "completed" | "failed";
+
 /** Event lineage link — traces business event to future journal. */
 export type EventLineageRecord = {
   readonly id: string;
@@ -35,4 +37,12 @@ export type EventLineageRecord = {
   readonly financialEventId?: string;
   readonly journalId?: string;
   readonly createdAt: string;
+  readonly replayCount?: number;
+  readonly processingStatus?: EventLineageProcessingStatus;
+};
+
+/** Journal draft aggregate input — persistence layer only (P-009.7B). */
+export type JournalDraftInput = {
+  readonly entry: JournalEntryRecord;
+  readonly lines: readonly JournalLineRecord[];
 };

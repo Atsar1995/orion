@@ -19,6 +19,7 @@ export function createFinanceStore(): FinanceStoreBacking {
     accounts: new Map(),
     ledgerBalances: new Map(),
     ledgerPostings: new Map(),
+    ledgerEntries: new Map(),
     consumedEvents: new Map(),
     reconciledPeriods: new Set(),
     fiscalCalendar: { value: null },
@@ -31,6 +32,9 @@ export function createFinanceStore(): FinanceStoreBacking {
     businessEventIntakes: new Map(),
     financialTrends: [],
     budgetActuals: [],
+    journals: new Map(),
+    journalLines: new Map(),
+    eventLineage: new Map(),
   };
 }
 
