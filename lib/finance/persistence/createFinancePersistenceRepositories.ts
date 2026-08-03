@@ -1,4 +1,5 @@
 import { ensureFinancePlatformBacking } from "@/lib/finance/persistence/FinancePlatformBacking";
+import { canUsePostgresFinancePersistence } from "@/lib/finance/persistence/financePostgresPersistence";
 import { InMemoryEventLineageRepository } from "@/lib/finance/persistence/InMemoryEventLineageRepository";
 import { InMemoryJournalRepository } from "@/lib/finance/persistence/InMemoryJournalRepository";
 import { PostgresEventLineageRepository } from "@/lib/finance/persistence/PostgresEventLineageRepository";
@@ -7,12 +8,8 @@ import type { EventLineageRepository } from "@/lib/finance/repositories/EventLin
 import type { JournalRepository } from "@/lib/finance/repositories/JournalRepository";
 import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConnection";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
-import {
-  StoreProvider,
-  isStoreProviderImplemented,
-} from "@/lib/platform/store/StoreConfiguration";
 
-/** P-009.7 persistence repository bundle — journal and event lineage only. */
+/** P-009.7 persistence repository bundle — journal and event lineage. Master data uses {@link createFinanceRepositories}. */
 export type FinancePersistenceRepositories = {
   readonly journalRepository: JournalRepository;
   readonly eventLineageRepository: EventLineageRepository;
@@ -23,25 +20,11 @@ export type CreateFinancePersistenceRepositoriesOptions = {
   readonly connection?: DatabaseConnection;
 };
 
-function isRelationalFinanceProvider(provider: StoreProvider): boolean {
-  return provider === StoreProvider.PostgreSQL || provider === StoreProvider.SQLite;
-}
-
-function canUsePostgresPersistence(
-  platformStore: PlatformStore,
-  connection: DatabaseConnection | undefined,
-): connection is DatabaseConnection {
-  return (
-    Boolean(connection) &&
-    platformStore.isInitialized() &&
-    isRelationalFinanceProvider(platformStore.provider) &&
-    isStoreProviderImplemented(platformStore.provider)
-  );
-}
-
 /**
  * Builds P-009.7 Finance persistence repositories with PlatformStore integration.
- * No business services — repository wiring only.
+ * Chart of accounts, fiscal periods, and idempotency keys persist through backing maps
+ * wired in {@link createPostgresFinanceStore} and activate PostgreSQL adapters via
+ * {@link createFinanceRepositories}.
  */
 export function createFinancePersistenceRepositories(
   options: CreateFinancePersistenceRepositoriesOptions,
@@ -49,7 +32,7 @@ export function createFinancePersistenceRepositories(
   const backing = ensureFinancePlatformBacking(options.platformStore);
   const transactionManager = options.platformStore.getTransactionManager();
 
-  if (canUsePostgresPersistence(options.platformStore, options.connection)) {
+  if (canUsePostgresFinancePersistence(options.platformStore, options.connection)) {
     return {
       journalRepository: new PostgresJournalRepository(
         backing,

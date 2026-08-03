@@ -1,13 +1,20 @@
 /**
- * Finance entity persistence adapter — JSONB backing for journal and lineage stores (P-009.6 · P-009.7B).
+ * Finance entity persistence adapter — JSONB backing for Finance PlatformStore collections
+ * (P-009.6 · P-009.7B · P-009.13).
  */
 
+import type { FiscalCalendarRecord } from "@/types/finance-period";
 import type { JournalLineRecord } from "@/types/finance-ledger";
 import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConnection";
 
 export const FINANCE_COLLECTION_JOURNAL = "finance_journal";
 export const FINANCE_COLLECTION_JOURNAL_LINE = "finance_journal_line";
 export const FINANCE_COLLECTION_EVENT_LINEAGE = "finance_event_lineage";
+export const FINANCE_COLLECTION_ACCOUNT = "finance_account";
+export const FINANCE_COLLECTION_FISCAL_PERIOD = "finance_fiscal_period";
+export const FINANCE_COLLECTION_FISCAL_YEAR = "finance_fiscal_year";
+export const FINANCE_COLLECTION_FISCAL_CALENDAR = "finance_fiscal_calendar";
+export const FINANCE_COLLECTION_IDEMPOTENCY_KEY = "finance_idempotency_key";
 
 type PendingWrite = {
   readonly collection: string;
@@ -203,10 +210,75 @@ export class FinancePersistingLineageMap<K, V> extends FinancePersistingMap<K, V
   }
 }
 
+/** Idempotency index keyed by `${organizationId}::${idempotencyKey}`. */
+export class FinancePersistingIdempotencyMap extends Map<string, Record<string, string>> {
+  constructor(private readonly persister: FinanceEntityPersister) {
+    super();
+  }
+
+  set(key: string, value: Record<string, string>): this {
+    super.set(key, value);
+    const [organizationId] = key.split("::");
+    this.persister.queueUpsert(
+      FINANCE_COLLECTION_IDEMPOTENCY_KEY,
+      key,
+      value,
+      organizationId,
+    );
+    return this;
+  }
+
+  delete(key: string): boolean {
+    const deleted = super.delete(key);
+    if (deleted) {
+      this.persister.queueDelete(FINANCE_COLLECTION_IDEMPOTENCY_KEY, key);
+    }
+    return deleted;
+  }
+}
+
+function fiscalCalendarEntityId(organizationId: string): string {
+  return `${organizationId}::calendar`;
+}
+
+/** Scalar fiscal calendar holder with PostgreSQL persistence. */
+export class FinancePersistingFiscalCalendar {
+  constructor(private readonly persister: FinanceEntityPersister) {}
+
+  private _value: FiscalCalendarRecord | null = null;
+
+  get value(): FiscalCalendarRecord | null {
+    return this._value;
+  }
+
+  set value(next: FiscalCalendarRecord | null) {
+    this._value = next;
+    if (!next) {
+      return;
+    }
+
+    this.persister.queueUpsert(
+      FINANCE_COLLECTION_FISCAL_CALENDAR,
+      fiscalCalendarEntityId(next.organizationId),
+      next,
+      next.organizationId,
+    );
+  }
+
+  hydrate(calendar: FiscalCalendarRecord): void {
+    this._value = calendar;
+  }
+}
+
 export const FINANCE_PERSISTENT_COLLECTIONS = [
   FINANCE_COLLECTION_JOURNAL,
   FINANCE_COLLECTION_JOURNAL_LINE,
   FINANCE_COLLECTION_EVENT_LINEAGE,
+  FINANCE_COLLECTION_ACCOUNT,
+  FINANCE_COLLECTION_FISCAL_PERIOD,
+  FINANCE_COLLECTION_FISCAL_YEAR,
+  FINANCE_COLLECTION_FISCAL_CALENDAR,
+  FINANCE_COLLECTION_IDEMPOTENCY_KEY,
 ] as const;
 
 export type FinancePersistentCollection = (typeof FINANCE_PERSISTENT_COLLECTIONS)[number];

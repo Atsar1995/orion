@@ -66,10 +66,11 @@ export type FinanceWiring = FinanceRepositories &
 /** Centralized Finance dependency wiring — internal composition root. */
 export function createFinanceWiring(platformStore: PlatformStore): FinanceWiring {
   const backing = ensureFinancePlatformBacking(platformStore);
-  const repositories = createFinanceRepositories(backing);
+  const connection = platformStore.getDatabaseConnection?.() ?? undefined;
+  const repositories = createFinanceRepositories(backing, { platformStore, connection });
   const persistenceRepositories = createFinancePersistenceRepositories({
     platformStore,
-    connection: platformStore.getDatabaseConnection?.() ?? undefined,
+    connection,
   });
 
   const chartOfAccountsFacade = new FinanceChartOfAccountsFacade(repositories.chartOfAccounts);
