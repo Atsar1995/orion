@@ -1,7 +1,13 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import React from "react";
-import { afterEach, vi } from "vitest";
+import { afterEach, beforeEach, vi } from "vitest";
+import { resetPlatformIntegrationStateForTests } from "./helpers/resetPlatformIntegrationState";
+import {
+  restoreIntelligencePublishForTests,
+  shouldStubIntelligencePublishForTests,
+  stubIntelligencePublishForTests,
+} from "./helpers/stubIntelligencePublishForTests";
 
 vi.mock("server-only", () => ({}));
 
@@ -39,4 +45,18 @@ vi.mock("@/hooks/useDecisionActions", () => ({
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+});
+
+beforeEach((context) => {
+  resetPlatformIntegrationStateForTests();
+
+  if (shouldStubIntelligencePublishForTests(context.task.file.filepath)) {
+    stubIntelligencePublishForTests();
+  }
+});
+
+afterEach((context) => {
+  if (shouldStubIntelligencePublishForTests(context.task.file.filepath)) {
+    restoreIntelligencePublishForTests();
+  }
 });

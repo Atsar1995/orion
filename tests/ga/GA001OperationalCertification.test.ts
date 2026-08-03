@@ -2,6 +2,8 @@
  * GA-001 — ORION General Availability Readiness Sprint operational certification.
  * Executes restart-survival, backup/restore, RBAC fail-closed, and secrets checks.
  * Live PostgreSQL checks run when GA001_LIVE_POSTGRES=1 (CI staging service).
+ *
+ * Finance production path certification: tests/ga/FinanceGA001Certification.test.ts (P-009.17).
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
