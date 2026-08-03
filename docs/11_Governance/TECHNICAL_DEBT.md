@@ -1,10 +1,10 @@
 # ORION Technical Debt Register
 
-**Version:** Wave 1 v1.0  
-**Last Updated:** 23 August 2026  
+**Version:** Wave 1 v1.1 · v2.0 August Baseline  
+**Last Updated:** 3 August 2026  
 **Authority:** Chief Enterprise Architect  
-**Status:** Synchronized — P-015.7 Wave 1 Quality Gate  
-**Previous Baseline:** v0.3 (30 July 2026 — REG-001 stale state)
+**Status:** Synchronized — P-016.6 Architecture Baseline  
+**Previous Baseline:** v1.0 (23 August 2026 — P-015.7 Wave 1 Quality Gate)
 
 ---
 
@@ -17,16 +17,18 @@ This register tracks known technical debt, deferred features, and improvement ba
 
 ---
 
-## Summary (Wave 1 Exit — August 2026)
+## Summary (v2.0 August Baseline — P-016.6)
 
 | Severity | Open | Resolved | Partial | Deferred | Accepted |
 |----------|------|----------|---------|----------|----------|
 | **Critical** | 0 | 2 | 0 | 0 | 0 |
-| **High** | 3 | 2 | 0 | 0 | 0 |
-| **Medium** | 5 | 0 | 1 | 0 | 0 |
+| **High** | 2 | 4 | 0 | 0 | 0 |
+| **Medium** | 4 | 2 | 1 | 0 | 0 |
 | **Low** | 4 | 0 | 0 | 0 | 0 |
 
-**REG-001 (Critical governance debt):** **Closed** — register synchronized with domain and platform debt as of P-015.7.
+**REG-001 (Critical governance debt):** **Closed** — register synchronized through P-016.6.
+
+**P-016.6 closures:** TD-PLATFORM-003 · AG-002 (durable IIL) · FIN-R-002/003/004/005/007 promoted from Finance risk register.
 
 ---
 
@@ -112,12 +114,12 @@ This register tracks known technical debt, deferred features, and improvement ba
 | **ID** | TD-PLATFORM-003 |
 | **Domain** | Platform · IIL |
 | **Severity** | High |
-| **Source** | P-015.1 · AG-002 |
-| **Status** | **Open** — Deferred Wave 2 |
-| **Description** | Event bus is in-process; events lost on crash. |
-| **Mitigation** | Durable queue ADR · Wave 2 implementation plan |
+| **Source** | P-015.1 · AG-002 · FIN-R-002 |
+| **Status** | **Resolved** (P-009.16 / P-016.6) |
+| **Description** | Event bus was in-process; events lost on crash. |
+| **Mitigation** | ADR-013 Implemented — `DurableTransportAdapter` · in-memory + Postgres transports · persist-before-ack |
 | **Owner** | Platform Engineering |
-| **Target** | Wave 2 (P-015.8) |
+| **Evidence** | `lib/platform/iil/` · `tests/platform/iil/DurableIIL.test.ts` · commit `9cddb12` · [P-016.6 Baseline](../../00_Governance/P-016.6-Architecture-Baseline.md) |
 
 ### TD-PLATFORM-004 — ES-092–095 Not Ratified
 
@@ -181,9 +183,12 @@ This register tracks known technical debt, deferred features, and improvement ba
 | **ID** | TD-DOMAIN-PERSIST-001 |
 | **Domain** | CRM · Finance |
 | **Severity** | Medium |
-| **Status** | **Open** — Out of GA scope per P-015.1 |
-| **Description** | CRM and Finance remain in-memory; not production-authoritative. |
-| **Target** | Post-GA domain missions |
+| **Status** | **Partial** (P-016.6) |
+| **Description** | CRM in-memory; Finance journals + master data PostgreSQL-durable; **GL entries/balances still in-memory** (FIN-R-001). |
+| **Mitigation** | P-009.13 master data ✅ · P-009.12 GL persist (planned) |
+| **Owner** | Finance Domain · Platform Engineering |
+| **Target** | P-009.12 Wave A completion |
+| **Evidence** | `tests/lib/finance/FinanceMasterDataPersistence.test.ts` · commit `12c4ab5` |
 
 ### AG-002 — Durable IIL Transport Plan
 
@@ -192,8 +197,11 @@ This register tracks known technical debt, deferred features, and improvement ba
 | **ID** | AG-002 |
 | **Domain** | Architecture |
 | **Severity** | Medium |
-| **Status** | **Open** |
-| **Target** | Wave 2 ADR |
+| **Status** | **Resolved** (P-009.16) |
+| **Description** | Architecture plan for durable IIL transport. |
+| **Mitigation** | ADR-013 Implemented · [Durable-IIL-Architecture.md](../Platform/IIL/Durable-IIL-Architecture.md) |
+| **Owner** | Platform Engineering |
+| **Evidence** | Commit `9cddb12` · ADR-013 §15 |
 
 ### DEP-002 / INF-014 — CI Quality Gate Extension
 
@@ -275,7 +283,8 @@ When items are added, each entry shall include:
 |------|---------|--------|
 | 30 Jul 2026 | v0.3 | Initial baseline — no entries |
 | 23 Aug 2026 | v1.0 | P-015.7 sync — REG-001 closed · Wave 1 P0 items resolved · backlog classified |
+| 3 Aug 2026 | v1.1 | P-016.6 sync — TD-PLATFORM-003 · AG-002 closed · TD-DOMAIN-PERSIST-001 partial · Finance Gate 5 risk promotion |
 
 ---
 
-*See also: [ARCHITECTURE_BASELINE_v0.3.md](./Architecture/ARCHITECTURE_BASELINE_v0.3.md) · [P-015.7 Wave 1 Completion Report](../00_Governance/P-015.7-Wave1-Completion-Report.md) · Domain certification in [`Certification/`](./Certification/)*
+*See also: [P-016.6 Architecture Baseline](../00_Governance/P-016.6-Architecture-Baseline.md) · [ORION-v2.0-Baseline.md](../99_History/ORION-v2.0-Baseline.md) · [P-015.7 Wave 1 Completion Report](../00_Governance/P-015.7-Wave1-Completion-Report.md) · Domain certification in [`Certification/`](./Certification/)*

@@ -3,7 +3,8 @@
 **Identifier:** ADR-014  
 **Mission:** ADR-014 — Cross-Domain Event Contracts  
 **Program:** P-016 — ORION Enterprise Platform v2.0  
-**Status:** Proposed  
+**Status:** Accepted · Partially Implemented  
+**Acceptance Date:** 2026-08-03 (P-016.5)  
 **Date:** 2026-08-02  
 **Authors:** Chief Enterprise Architect · Platform Engineering Lead · Finance Domain Lead  
 **Reviewers:** Architecture Review Board · Security Architect · HCM Domain Lead  
@@ -22,7 +23,7 @@ ORION adopts **enterprise-wide cross-domain event contracts** — a governed sch
 
 Cross-domain integration shall use **versioned, validated event contracts** — not ad-hoc payloads, implicit conventions, or direct repository reads. ADR-013 defines **transport**; ADR-014 defines **contracts**.
 
-**Implementation is deferred** until this ADR reaches **Accepted** status and domain catalogues are registered. This record defines constitutional architecture only.
+**Accepted** per [P-016.5 ARB Ratification](../../00_Governance/P-016.5-Architecture-Review-Board-Ratification.md) (2026-08-03). Priority HCM → Finance contracts are **partially implemented** (P-009.15 · P-009.9). Full schema registry and certification CI remain **deferred** to Gate 6.
 
 ---
 
@@ -682,21 +683,41 @@ Per [ES-097](../../00_Governance/ES-097-ORION-Architecture-Governance-ADR-Policy
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-08-02 | Chief Enterprise Architect | Initial proposal — ADR-014 mission |
+| 1.1 | 2026-08-03 | Chief Enterprise Architect | Accepted (P-016.5) · partial implementation evidence (P-016.6) |
 
 ---
 
-## 19. Status
+## 19. Implementation Evidence (Partial)
+
+| Requirement | Status | Evidence |
+|-------------|--------|----------|
+| `hcm.workforce.cost.recorded` publisher | ✅ | `lib/hcm/events/HcmCanonicalFinancePublisher.ts` · `869ad16` |
+| `hcm.expense.approved` publisher | ✅ | Same · [HCM-Canonical-Event-Publishers.md](../../HCM/Integration/HCM-Canonical-Event-Publishers.md) |
+| Finance inbound consumer + envelope validation | ✅ | `lib/finance/integration/FinanceEventConsumer.ts` · `d9903ad` |
+| Publisher tests | ✅ | `tests/lib/hcm/HCMCanonicalPublisher.test.ts` |
+| Consumer tests | ✅ | `tests/lib/finance/FinanceEventConsumer.test.ts` |
+| GA-001 cross-domain chain | ✅ | `tests/ga/FinanceGA001Certification.test.ts` |
+| Schema registry `docs/11_Governance/EventContracts/` | ❌ | Not created |
+| JSON Schema certification CI | ❌ | Gate 6 |
+| Contract lifecycle **Registered → Active** in registry | ❌ | Code-only |
+
+**Certification:** [Finance-GA001-Certification.md](../../Finance/Certification/Finance-GA001-Certification.md) · [P-016.6 §4.2](../../00_Governance/P-016.6-Architecture-Baseline.md)
+
+---
+
+## 20. Status
 
 | Field | Value |
 |-------|-------|
-| **Current Status** | **PROPOSED** |
-| **May Implement?** | **No** — requires Accepted status |
-| **Next Step** | ARB review · consumer domain sign-off · Proposed → Accepted |
-| **Registry creation** | Deferred until Accepted |
+| **Current Status** | **ACCEPTED · PARTIALLY IMPLEMENTED** |
+| **Accepted** | 2026-08-03 — P-016.5 |
+| **May Implement?** | **Yes** — priority contracts in production path |
+| **Remaining** | Schema registry · full catalogue · certification CI |
+| **Next Step** | Populate `EventContracts/` · Gate 6 CRM/Hospitality contracts |
 
 ---
 
-## 20. Executive Recommendation
+## 21. Executive Recommendation
 
 | Assessment | Verdict |
 |------------|---------|

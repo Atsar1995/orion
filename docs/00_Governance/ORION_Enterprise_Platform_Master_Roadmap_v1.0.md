@@ -11,7 +11,21 @@
 **Architecture Baseline:** v1.0 Candidate (RC)
 
 **Supersedes:** Informal roadmap fragments — consolidates [P-014.1 Strategy](./ORION_Enterprise_Platform_Strategy_v1.0.md) into the official master plan  
-**Baseline Sources:** [Enterprise Governance (G-001)](../11_Governance/Governance/G-001-Enterprise-Architecture-Governance-Charter.md) · [Enterprise Architecture Handbook v1.0](./ORION_Enterprise_Architecture_Handbook_v1.0.md) · [Enterprise HCM RC1](../06_Releases/v1.0.1-rc1-Certification.md) · [Platform Retrospective v1.0](./ORION_Platform_Retrospective_v1.0.md) · [Platform Strategy v1.0](./ORION_Enterprise_Platform_Strategy_v1.0.md) · [Release Framework](../06_Releases/Release-Policy.md)
+**Baseline Sources:** [Enterprise Governance (G-001)](../11_Governance/Governance/G-001-Enterprise-Architecture-Governance-Charter.md) · [Enterprise Architecture Handbook v1.0](./ORION_Enterprise_Architecture_Handbook_v1.0.md) · [Enterprise HCM RC1](../06_Releases/v1.0.1-rc1-Certification.md) · [Platform Retrospective v1.0](./ORION_Platform_Retrospective_v1.0.md) · [Platform Strategy v1.0](./ORION_Enterprise_Platform_Strategy_v1.0.md) · [Release Framework](../06_Releases/Release-Policy.md) · **[P-016.6 v2.0 Baseline](./P-016.6-Architecture-Baseline.md)** *(August 2026 addendum)*
+
+---
+
+## v2.0 August 2026 Baseline Addendum (P-016.6)
+
+| Milestone | Status | Reference |
+|-----------|--------|-----------|
+| Wave 1 ADR acceptance (013·014·015·020) | ✅ Accepted | [P-016.5](./P-016.5-Architecture-Review-Board-Ratification.md) |
+| ADR-013 Durable IIL | ✅ Implemented | P-009.16 · `9cddb12` |
+| Finance Gate 5 Wave A engineering | ✅ CONDITIONAL GO | [Finance-Gate5-Closure-Program](../Finance/Certification/Finance-Gate5-Closure-Program.md) |
+| Finance GA-001 operational path | ✅ CONDITIONAL GO | P-009.17 · `65da475` |
+| v2.0 GA release | ❌ NO-GO | FIN-R-001 GL PostgreSQL |
+
+**Authoritative baseline:** [ORION-v2.0-Baseline.md](../99_History/ORION-v2.0-Baseline.md) · [ORION-v2.0-Milestone-2026-08.md](../99_History/ORION-v2.0-Milestone-2026-08.md)
 
 ---
 
@@ -229,22 +243,26 @@ flowchart TB
 | Capability | State |
 |------------|-------|
 | Finance workspace UI (Missions 15A–15C) | Delivered · placeholder data |
-| Financial event model (D-008) | Blueprint approved |
-| GL / sub-ledger design (D-007, D-009) | Blueprint approved |
+| Financial event model (D-008) | Blueprint approved · priority contracts implemented |
+| GL / sub-ledger design (D-007, D-009) | Posting stack delivered · **GL PostgreSQL pending** (FIN-R-001) |
 | ES-FIN-001 engineering spec | Draft |
-| Enterprise domain implementation | **Not started** — Gate 5 pending P-015 |
+| Enterprise domain implementation | **Wave A complete** — P-009.5–P-009.17 · **CONDITIONAL GO** |
+| HCM → Finance durable event chain | ✅ Certified — ADR-013 Implemented · P-009.15/16 |
+| Finance RBAC fail-closed | ✅ P-009.14 |
+| Master data PostgreSQL | ✅ P-009.13 |
 
-**Dependencies:** ORION Platform (persistence, RBAC) · ORION People (workforce cost events) · ORION Customer (revenue events) · ORION Hospitality (folio events, future)
+**Dependencies:** ORION Platform (persistence, RBAC, durable IIL) · ORION People (workforce cost events — **implemented**) · ORION Customer (revenue events) · ORION Hospitality (folio events, future)
 
-**Architecture readiness:** **4/5** — blueprints complete · workspace exists · engineering awaits P-015 exit
+**Architecture readiness:** **4.5/5** — Wave A engineering complete · GL durability + ADR-014 registry remain
 
 **Estimated implementation phases**
 
 | Phase | Timeline | Deliverables |
 |-------|----------|--------------|
-| **Gates 1–4 (architecture)** | 2026 H2 – 2027 Q1 | ES-FIN-001 approval · domain lead assigned |
-| **P-009 Gate 5–7** | 2027 Q2 – 2028 Q1 | Event processor · GL · AR/AP · REST API · certification |
-| **Financial intelligence** | 2028 | Executive Brief authoritative financial signals |
+| **Gates 1–4 (architecture)** | 2026 H2 | ✅ Complete |
+| **P-009 Gate 5 Wave A** | Aug 2026 | ✅ Posting · validation · consumer · cert — **CONDITIONAL GO** |
+| **P-009.12 GL PostgreSQL** | 2026 H2 | FIN-R-001 closure → Full GO path |
+| **Gate 6 cross-domain** | 2027 Q1 | CRM/Hospitality · ADR-014 registry · outbound events |
 | **GA** | 2028–2029 | Finance domain GO · ERP credibility |
 
 **Commercial opportunities:** Highest TAM — every enterprise requires financial intelligence · unlocks Procurement/Inventory · executive OS financial truth completes product story

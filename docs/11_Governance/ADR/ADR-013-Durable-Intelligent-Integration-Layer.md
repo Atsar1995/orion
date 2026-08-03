@@ -3,7 +3,8 @@
 **Identifier:** ADR-013  
 **Mission:** ADR-013 — Durable Intelligent Integration Layer (IIL)  
 **Program:** P-016 — ORION Enterprise Platform v2.0  
-**Status:** Proposed  
+**Status:** Implemented  
+**Implementation Date:** 2026-08-03 (P-009.16)  
 **Date:** 2026-08-02  
 **Authors:** Chief Enterprise Architect · Platform Engineering Lead  
 **Reviewers:** Architecture Review Board · Security Architect · Finance Domain Lead · HCM Domain Lead  
@@ -646,18 +647,37 @@ Criteria for ADR-013 progression from **Proposed** → **Accepted** → **Implem
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-08-02 | Chief Enterprise Architect | Initial proposal — ADR-013 mission |
+| 1.1 | 2026-08-03 | Chief Enterprise Architect | Accepted (P-016.5) · Implemented (P-009.16) · status sync (P-016.6) |
 
 ---
 
-## 15. Status
+## 15. Implementation Evidence
+
+| Artifact | Location |
+|----------|----------|
+| Transport adapter · DLQ · Replay · Metrics | `lib/platform/iil/` |
+| Service integration | `lib/platform/intelligence/IntelligenceIntegrationService.ts` |
+| Unit / integration tests | `tests/platform/iil/DurableIIL.test.ts` |
+| Cross-domain certification | `tests/ga/FinanceGA001Certification.test.ts` |
+| Architecture documentation | [Durable-IIL-Architecture.md](../../Platform/IIL/Durable-IIL-Architecture.md) |
+| Governance baseline | [P-016.6 Architecture Baseline](../../00_Governance/P-016.6-Architecture-Baseline.md) |
+| Commit | `9cddb12` — P-009.16 |
+| Closes | TD-PLATFORM-003 · AG-002 · FIN-R-002 |
+
+**Dependencies satisfied:** ADR-007 (PlatformStore) · ADR-011 (observability hooks) · ADR-012 (deployment guard `ORION_IIL_TRANSPORT`)
+
+---
+
+## 16. Status
 
 | Field | Value |
 |-------|-------|
-| **Current Status** | **PROPOSED** |
-| **May Implement?** | **No** — requires Accepted status |
-| **Next Step** | ARB review · Security Architect review · Proposed → Accepted |
-| **Implementation Mission** | Deferred — Gate 4 ES after Accepted |
+| **Current Status** | **IMPLEMENTED** |
+| **Accepted** | 2026-08-03 — [P-016.5 ARB Ratification](../../00_Governance/P-016.5-Architecture-Review-Board-Ratification.md) |
+| **Implemented** | 2026-08-03 — P-009.16 on `develop/v2.0` @ `9cddb12` |
+| **May Implement?** | **Complete** — staging cutover via `ORION_IIL_TRANSPORT=durable` |
+| **Next Step** | Live PostgreSQL staging GA-001 · Gate 6 multi-domain chains |
 
 ---
 
-*ORION Architecture Decision Record · ADR-013 · docs/11_Governance/ADR/ · Architecture only · No implementation*
+*ORION Architecture Decision Record · ADR-013 · docs/11_Governance/ADR/ · Implemented P-009.16*

@@ -3,7 +3,8 @@
 **Identifier:** ADR-020  
 **Mission:** ADR-020 — Versioning & Domain Compatibility  
 **Program:** P-016 — ORION Enterprise Platform v2.0  
-**Status:** Proposed  
+**Status:** Accepted · Partially Implemented  
+**Acceptance Date:** 2026-08-03 (P-016.5)  
 **Date:** 2026-08-02  
 **Authors:** Chief Enterprise Architect · Platform Engineering Lead · Finance Domain Lead  
 **Reviewers:** Architecture Review Board · Security Architect · HCM Domain Lead · CRM Domain Lead  
@@ -24,7 +25,7 @@ ORION adopts an **enterprise-wide versioning and compatibility strategy** govern
 
 [ADR-014](./ADR-014-Cross-Domain-Event-Contracts.md) defines **event contract** versioning detail. ADR-020 defines the **enterprise compatibility model** spanning all artifact types and migration governance.
 
-**Implementation is deferred** until this ADR reaches **Accepted** status. This record defines constitutional architecture only — no APIs, no production code, no implementation authorization.
+**Accepted** per [P-016.5 ARB Ratification](../../00_Governance/P-016.5-Architecture-Review-Board-Ratification.md) (2026-08-03). Priority HCM → Finance events carry `eventVersion: 1` in the production path. Full compatibility CI, dual-major migration windows, and API versioning enforcement remain **deferred** to Gate 6.
 
 ---
 
@@ -638,21 +639,37 @@ Per [ADR-013](./ADR-013-Durable-Intelligent-Integration-Layer.md) · [ADR-014 §
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-08-02 | Chief Enterprise Architect | Initial proposal — ADR-020 mission |
+| 1.1 | 2026-08-03 | Chief Enterprise Architect | Accepted (P-016.5) · partial implementation evidence (P-016.6) |
 
 ---
 
-## 18. Status
+## 18. Implementation Evidence (Partial)
+
+| Requirement | Status | Evidence |
+|-------------|--------|----------|
+| `eventVersion: 1` on priority HCM inbound events | ✅ | `HcmCanonicalFinancePublisher` · `FinanceEventConsumer` |
+| Envelope validation at Finance ingress | ✅ | `FinanceEventMapper` · consumer tests |
+| Dual-major migration windows | ❌ | Not exercised |
+| Compatibility CI · deprecated usage scans | ❌ | Gate 6 |
+| REST API major-version paths | ❌ | Deferred |
+
+**Certification:** [FinanceEventConsumer.test.ts](../../../tests/lib/finance/FinanceEventConsumer.test.ts) · [P-016.6 §4.4](../../00_Governance/P-016.6-Architecture-Baseline.md)
+
+---
+
+## 19. Status
 
 | Field | Value |
 |-------|-------|
-| **Current Status** | **PROPOSED** |
-| **May Implement?** | **No** — requires Accepted status |
-| **Next Step** | ARB review · domain lead sign-off · Wave 1 exit alignment |
-| **Compatibility CI** | Deferred until Accepted |
+| **Current Status** | **ACCEPTED · PARTIALLY IMPLEMENTED** |
+| **Accepted** | 2026-08-03 — P-016.5 |
+| **May Implement?** | **Yes** — eventVersion on priority contracts |
+| **Remaining** | Compatibility CI · API versioning · migration guides |
+| **Next Step** | Gate 6 certification pipeline · ADR-014 registry alignment |
 
 ---
 
-## 19. Executive Recommendation
+## 20. Executive Recommendation
 
 | Assessment | Verdict |
 |------------|---------|

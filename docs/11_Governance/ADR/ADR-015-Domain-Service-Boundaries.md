@@ -3,7 +3,8 @@
 **Identifier:** ADR-015  
 **Mission:** ADR-015 — Domain Service Boundaries  
 **Program:** P-016 — ORION Enterprise Platform v2.0  
-**Status:** Proposed  
+**Status:** Accepted · Partially Implemented  
+**Acceptance Date:** 2026-08-03 (P-016.5)  
 **Date:** 2026-08-02  
 **Authors:** Chief Enterprise Architect · Platform Engineering Lead · HCM Domain Lead · Finance Domain Lead  
 **Reviewers:** Architecture Review Board · Security Architect · CRM Domain Lead  
@@ -24,7 +25,7 @@ Each domain owns its aggregates, repositories, and business rules. Cross-domain 
 
 The **HCM reference domain** ([ES-HCM-001](../../HCM/Engineering/ES-HCM-001_Enterprise_HCM_Engineering_Specification.md)) is the replication template for Finance, CRM, Hospitality, and Operations.
 
-**Implementation is deferred** until this ADR reaches **Accepted** status. This record defines constitutional architecture only — no APIs, no service code, no implementation authorization.
+**Accepted** per [P-016.5 ARB Ratification](../../00_Governance/P-016.5-Architecture-Review-Board-Ratification.md) (2026-08-03). Finance boundary enforcement and HCM → Finance IIL-only path are **partially implemented**. CRM facade convergence and forbidden-import architecture CI remain **deferred** to Gate 6.
 
 ---
 
@@ -661,21 +662,39 @@ Per [ES-097](../../00_Governance/ES-097-ORION-Architecture-Governance-ADR-Policy
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-08-02 | Chief Enterprise Architect | Initial proposal — ADR-015 mission |
+| 1.1 | 2026-08-03 | Chief Enterprise Architect | Accepted (P-016.5) · partial implementation evidence (P-016.6) |
 
 ---
 
-## 18. Status
+## 18. Implementation Evidence (Partial)
+
+| Requirement | Status | Evidence |
+|-------------|--------|----------|
+| Finance ACL (`FinanceInboundProcessor`) | ✅ | `lib/finance/integration/` · P-009.9 |
+| Finance wiring / domain bootstrap | ✅ | `createFinanceWiring` · P-009.5 |
+| IIL-only HCM → Finance integration path | ✅ | Certified — no direct HCM repository reads in Finance consumer |
+| GA-001 boundary certification | ✅ | `tests/ga/FinanceGA001Certification.test.ts` |
+| CRM facade convergence | ❌ | Open — Gate 6 prerequisite |
+| Forbidden cross-domain import CI | ❌ | Planned §8.5 architecture tests |
+| Hospitality folio boundary | ❌ | Out of Wave A scope |
+
+**Certification:** [Finance-Gate5-Certification-Report.md](../../Finance/Certification/Finance-Gate5-Certification-Report.md) · [P-016.6 §4.3](../../00_Governance/P-016.6-Architecture-Baseline.md)
+
+---
+
+## 19. Status
 
 | Field | Value |
 |-------|-------|
-| **Current Status** | **PROPOSED** |
-| **May Implement?** | **No** — requires Accepted status |
-| **Next Step** | ARB review · domain lead sign-off · replication checklist ratification |
-| **Boundary tests** | Deferred until Accepted |
+| **Current Status** | **ACCEPTED · PARTIALLY IMPLEMENTED** |
+| **Accepted** | 2026-08-03 — P-016.5 |
+| **May Implement?** | **Yes** — Finance + HCM reference path |
+| **Remaining** | CRM convergence · architecture import law CI |
+| **Next Step** | Gate 6 boundary certification · CRM facade audit |
 
 ---
 
-## 19. Executive Recommendation
+## 20. Executive Recommendation
 
 | Assessment | Verdict |
 |------------|---------|

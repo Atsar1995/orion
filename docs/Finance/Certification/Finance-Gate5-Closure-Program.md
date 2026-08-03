@@ -5,7 +5,8 @@
 **Program:** P-009 — ORION Enterprise Finance  
 **Gate:** Gate 5 Exit — CONDITIONAL GO → Full GO  
 **Assessment Date:** 3 August 2026  
-**Branch Baseline:** `develop/v2.0` @ `a5b2f72`  
+**Branch Baseline:** `develop/v2.0` @ `65da475`  
+**Last Synchronized:** 3 August 2026 (P-016.6)  
 **Platform Version:** 0.2.0  
 **Classification:** Internal — Finance Domain Program  
 **Authority:** Finance Domain Lead · Chief Enterprise Architect
@@ -33,18 +34,20 @@ Every open **FIN-R** risk from P-009.10 is mapped to an engineering mission with
 | Attribute | Value |
 |-----------|-------|
 | Wave A missions (P-009.5–P-009.9) | ✅ Complete |
+| Wave A closure missions (P-009.13–P-009.17) | ✅ Complete (except P-009.12 GL) |
 | P-009.10 certification | ✅ Complete (`a5b2f72`) |
-| Overall readiness | **68/100** |
+| P-009.17 GA-001 Finance cert | ✅ Complete (`65da475`) |
+| Overall readiness | **82/100** (revised post-closure) |
 | Verdict | **CONDITIONAL GO** |
-| Production authorization | **Not granted** |
+| Production authorization | **Not granted** — FIN-R-001 open |
 
 ### 2.1 Conditions for Full GO (from P-009.10)
 
-1. Persist GL collections to PostgreSQL (FIN-R-001)
-2. Implement HCM canonical event publishers (FIN-R-003)
-3. Finance permission catalog + fail-closed API auth (FIN-R-004)
-4. Durable IIL transport or executive waiver (FIN-R-002)
-5. Extend GA-001 with Finance restart-survival scenario (FIN-R-007)
+1. ~~Persist GL collections to PostgreSQL (FIN-R-001)~~ — **Open** — P-009.12
+2. ~~Implement HCM canonical event publishers (FIN-R-003)~~ — **Closed** P-009.15
+3. ~~Finance permission catalog + fail-closed API auth (FIN-R-004)~~ — **Closed** P-009.14
+4. ~~Durable IIL transport or executive waiver (FIN-R-002)~~ — **Closed** P-009.16 / ADR-013 Implemented
+5. ~~Extend GA-001 with Finance restart-survival scenario (FIN-R-007)~~ — **Closed** P-009.17
 
 ---
 
@@ -54,19 +57,19 @@ Every open **FIN-R** risk from P-009.10 is mapped to an engineering mission with
 
 | Category | Count | Items |
 |----------|------:|-------|
-| **Completed** | 9 | Wave A missions P-009.5–P-009.9 · P-009.10 certification · journal/lineage Postgres · posting stack · validation pipeline · HCM consumer · FIN-R-011 mitigated |
+| **Completed** | 15 | P-009.5–P-009.9 · P-009.10 · P-009.13 · P-009.14 · P-009.15 · P-009.16 · P-009.17 · FIN-R-002/003/004/005/007 closed |
 | **In Progress** | 0 | — |
-| **Blocked** | 2 | P-009.15 (HCM publishers) · P-009.16 (IIL durable — platform dependency) |
+| **Blocked** | 0 | — |
+| **Remaining P0** | 1 | P-009.12 (FIN-R-001 GL PostgreSQL) |
 | **Deferred** | 4 | FIN-R-009 budget · FIN-R-010 outbound events · workflow approvals · trial balance/reporting |
 
 ### 3.2 Risk Closure Dashboard
 
 | Status | Risks | Count |
 |--------|-------|------:|
-| ✅ **Closed / Mitigated** | FIN-R-011 | 1 |
-| 🔄 **Mitigating** | FIN-R-006 (journal path closed; GL/CoA pending) | 1 |
-| ⏳ **Planned — P0** | FIN-R-001, FIN-R-003, FIN-R-004, FIN-R-005 | 4 |
-| ⏳ **Planned — P1** | FIN-R-002, FIN-R-007, FIN-R-013 | 3 |
+| ✅ **Closed** | FIN-R-002, FIN-R-003, FIN-R-004, FIN-R-005, FIN-R-007, FIN-R-011 | 6 |
+| 🔄 **Mitigating** | FIN-R-006 (journal + master data closed; GL pending) | 1 |
+| ⏳ **Planned — P0** | FIN-R-001, FIN-R-013 | 2 |
 | ⏳ **Planned — P2** | FIN-R-008, FIN-R-012 | 2 |
 | 📋 **Accepted / Deferred** | FIN-R-009, FIN-R-010 | 2 |
 
@@ -75,11 +78,11 @@ Every open **FIN-R** risk from P-009.10 is mapped to an engineering mission with
 | Mission | Risk(s) | Priority | Milestone | Status |
 |---------|---------|----------|-----------|--------|
 | P-009.12 | FIN-R-001, FIN-R-013, FIN-R-006 | P0 | Wave A Completion | ⏳ Planned |
-| P-009.13 | FIN-R-005, FIN-R-006 | P0 | Wave A Completion | ⏳ Planned |
-| P-009.14 | FIN-R-004 | P0 | Wave A Completion | ⏳ Planned |
-| P-009.15 | FIN-R-003 | P0 | Wave A Completion | 🚫 Blocked (HCM) |
-| P-009.16 | FIN-R-002 | P1 | Gate 6 | 🚫 Blocked (Platform) |
-| P-009.17 | FIN-R-007 | P1 | Gate 6 | ⏳ Planned |
+| P-009.13 | FIN-R-005, FIN-R-006 | P0 | Wave A Completion | ✅ Complete (`12c4ab5`) |
+| P-009.14 | FIN-R-004 | P0 | Wave A Completion | ✅ Complete (`f6a0935`) |
+| P-009.15 | FIN-R-003 | P0 | Wave A Completion | ✅ Complete (`869ad16`) |
+| P-009.16 | FIN-R-002 | P1 | Gate 6 | ✅ Complete (`9cddb12`) — ADR-013 Implemented |
+| P-009.17 | FIN-R-007 | P1 | Gate 6 | ✅ Complete (`65da475`) |
 | P-009.18 | FIN-R-008 | P2 | Gate 6 | ⏳ Planned |
 | P-009.19 | FIN-R-012 | P2 | Gate 6 | ⏳ Planned |
 | P-009.20 | FIN-R-009 | P2 | Wave B | 📋 Deferred |
