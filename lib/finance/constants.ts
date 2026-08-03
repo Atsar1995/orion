@@ -41,6 +41,7 @@ export const FINANCE_ROUTE_PERMISSIONS = {
 export const FINANCE_AUTHORIZED_EVENT_SOURCES = [
   "crm-workspace",
   "hospitality-workspace",
+  "hcm-workspace",
   "hr-workspace",
   "procurement-workspace",
   "inventory-workspace",

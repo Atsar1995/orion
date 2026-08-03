@@ -1,5 +1,6 @@
 import { FINANCE_IIL_SERVICE_ID } from "@/lib/finance/constants";
 import { FINANCE_BUSINESS_EVENT_SUBSCRIPTIONS } from "@/lib/finance/events/subscriptions";
+import { getFinanceEventConsumer } from "@/lib/finance/integration/financeIntegrationRegistry";
 import { defaultEventService } from "@/lib/finance/services/DefaultEventService";
 import { getFinanceEventPipelineService } from "@/lib/finance/services/financeEventPipelineRegistry";
 import type { IntelligenceIntegrationService } from "@/lib/platform/intelligence/IntelligenceIntegrationService";
@@ -30,6 +31,12 @@ export function registerFinanceEventSubscriptions(service: IntelligenceIntegrati
   }
 
   initializedServices.add(service);
+
+  try {
+    getFinanceEventConsumer().register(service);
+  } catch {
+    /* Composition root registers consumer before IIL bootstrap in tests */
+  }
 
   service.subscribe(
     {

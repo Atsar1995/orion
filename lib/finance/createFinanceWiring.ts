@@ -26,6 +26,12 @@ import { DefaultPostingService } from "@/lib/finance/services/PostingService";
 import { PostingValidationPipeline } from "@/lib/finance/services/PostingValidationPipeline";
 import { PostingValidationService } from "@/lib/finance/services/PostingValidationService";
 import { stubJournalService } from "@/lib/finance/services/JournalService";
+import { FinanceEventConsumer } from "@/lib/finance/integration/FinanceEventConsumer";
+import {
+  setFinanceEventConsumer,
+  setFinanceInboundProcessor,
+} from "@/lib/finance/integration/financeIntegrationRegistry";
+import { FinanceInboundProcessor } from "@/lib/finance/integration/FinanceInboundProcessor";
 import { stubReconciliationService } from "@/lib/finance/services/ReconciliationService";
 import { stubTaxService } from "@/lib/finance/services/TaxService";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
@@ -49,6 +55,8 @@ export type FinanceWiring = FinanceRepositories &
   readonly generalLedgerPosting: GeneralLedgerPostingService;
   readonly postingValidation: PostingValidationPipeline;
   readonly posting: DefaultPostingService;
+  readonly financeInboundProcessor: FinanceInboundProcessor;
+  readonly financeEventConsumer: FinanceEventConsumer;
   readonly budget: typeof stubBudgetService;
   readonly forecast: typeof stubForecastService;
   readonly tax: typeof stubTaxService;
@@ -113,6 +121,14 @@ export function createFinanceWiring(platformStore: PlatformStore): FinanceWiring
     platformStore.getTransactionManager(),
   );
   const postingService = new DefaultPostingService(journalPostingService);
+  const financeInboundProcessor = new FinanceInboundProcessor(
+    persistenceRepositories.journalRepository,
+    persistenceRepositories.eventLineageRepository,
+    journalPostingService,
+  );
+  const financeEventConsumer = new FinanceEventConsumer(financeInboundProcessor);
+  setFinanceInboundProcessor(financeInboundProcessor);
+  setFinanceEventConsumer(financeEventConsumer);
 
   return {
     platformStore,
@@ -133,6 +149,8 @@ export function createFinanceWiring(platformStore: PlatformStore): FinanceWiring
     generalLedgerPosting: generalLedgerPostingService,
     postingValidation: postingValidationPipeline,
     posting: postingService,
+    financeInboundProcessor,
+    financeEventConsumer,
     budget: stubBudgetService,
     forecast: stubForecastService,
     tax: stubTaxService,

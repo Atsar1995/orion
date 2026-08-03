@@ -140,6 +140,23 @@ export type {
   PostingValidationOutcome,
   PostingValidationStageResult,
 } from "@/lib/finance/services/PostingValidationStage";
+
+export {
+  FinanceEventConsumer,
+  FinanceEventDispatcher,
+  FinanceInboundProcessor,
+  HCM_FINANCE_EVENT_TYPES,
+  buildHcmFinanceIdempotencyKey,
+  resolveCanonicalEventType,
+  resetFinanceEventConsumerForTests,
+  resetFinanceIntegrationForTests,
+} from "@/lib/finance/integration";
+export type {
+  FinanceEventResult,
+  FinanceEventProcessingStatus,
+  HcmFinanceEventType,
+} from "@/lib/finance/integration";
+
 export type { BudgetService } from "@/lib/finance/services/BudgetService";
 export type { ForecastService } from "@/lib/finance/services/ForecastService";
 export type { TaxService } from "@/lib/finance/services/TaxService";
