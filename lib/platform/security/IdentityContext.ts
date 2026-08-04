@@ -6,10 +6,12 @@ import type { Permission, RoleSlug, Session } from "@/types/auth";
 import type { ServiceContext } from "@/types/services";
 import { getPermissionsForRole } from "@/lib/identity/role-permissions";
 import {
+  resolveCrmRolesForPlatformRole,
   resolveFinanceRolesForPlatformRole,
   resolveHcmRolesForPlatformRole,
   resolveOrganizationRole,
   resolvePlatformRole,
+  type CrmRole,
   type FinanceRole,
   type HcmRole,
 } from "@/lib/platform/security/Role";
@@ -23,6 +25,7 @@ export type IdentityContext = {
   readonly organizationRole: ReturnType<typeof resolveOrganizationRole>;
   readonly hcmRoles: readonly HcmRole[];
   readonly financeRoles: readonly FinanceRole[];
+  readonly crmRoles: readonly CrmRole[];
   readonly modulePermissions: readonly Permission[];
   readonly authenticated: boolean;
 };
@@ -37,6 +40,7 @@ export function createIdentityContextFromSession(session: Session): IdentityCont
     organizationRole: resolveOrganizationRole(session.user.role),
     hcmRoles: resolveHcmRolesForPlatformRole(session.user.role),
     financeRoles: resolveFinanceRolesForPlatformRole(session.user.role),
+    crmRoles: resolveCrmRolesForPlatformRole(session.user.role),
     modulePermissions: session.user.permissions.length
       ? session.user.permissions
       : getPermissionsForRole(session.user.role),
@@ -59,6 +63,7 @@ export function createIdentityContextFromServiceContext(
     organizationRole: resolveOrganizationRole(context.role),
     hcmRoles: resolveHcmRolesForPlatformRole(context.role),
     financeRoles: resolveFinanceRolesForPlatformRole(context.role),
+    crmRoles: resolveCrmRolesForPlatformRole(context.role),
     modulePermissions,
     authenticated: options.authenticated ?? true,
   };

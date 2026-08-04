@@ -46,11 +46,25 @@ export enum FinanceRole {
   ReadOnly = "finance_read_only",
 }
 
+/** CRM domain role profiles (permission bundles — not separate auth identities). */
+export enum CrmRole {
+  CrmAdministrator = "crm_administrator",
+  SalesDirector = "crm_sales_director",
+  SalesManager = "crm_sales_manager",
+  SalesExecutive = "crm_sales_executive",
+  AccountManager = "crm_account_manager",
+  CustomerSuccess = "crm_customer_success",
+  SupportAgent = "crm_support_agent",
+  CrmAuditor = "crm_auditor",
+  CrmReadOnly = "crm_read_only",
+}
+
 export type EnterpriseRole =
   | PlatformRole
   | OrganizationRole
   | HcmRole
   | FinanceRole
+  | CrmRole
   | RoleSlug;
 
 /** Maps session {@link RoleSlug} to enterprise organization role profile. */
@@ -144,5 +158,30 @@ export function resolveFinanceRolesForPlatformRole(role: RoleSlug): readonly Fin
       return [FinanceRole.ReadOnly];
     default:
       return [FinanceRole.ReadOnly];
+  }
+}
+
+/** CRM domain profiles granted by platform role (P-008.12 baseline). */
+export function resolveCrmRolesForPlatformRole(role: RoleSlug): readonly CrmRole[] {
+  switch (role) {
+    case SystemRole.SuperAdmin:
+    case SystemRole.OrganizationAdmin:
+    case SystemRole.Administrator:
+      return [CrmRole.CrmAdministrator];
+    case SystemRole.ServiceAccount:
+      return [CrmRole.CrmAdministrator, CrmRole.SalesExecutive];
+    case SystemRole.Executive:
+    case SystemRole.Founder:
+      return [CrmRole.SalesDirector];
+    case SystemRole.Manager:
+      return [CrmRole.SalesManager];
+    case SystemRole.Analyst:
+    case SystemRole.Staff:
+      return [CrmRole.SalesExecutive];
+    case SystemRole.ReadOnly:
+    case SystemRole.Guest:
+      return [CrmRole.CrmReadOnly];
+    default:
+      return [CrmRole.CrmReadOnly];
   }
 }

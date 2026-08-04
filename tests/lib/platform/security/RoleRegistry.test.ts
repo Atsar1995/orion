@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { FinanceRole, HcmRole, OrganizationRole, PlatformRole } from "@/lib/platform/security/Role";
-import { HCM_PERMISSIONS, defaultRoleRegistry } from "@/lib/platform/security/RoleRegistry";
+import { FinanceRole, HcmRole, OrganizationRole, PlatformRole, CrmRole } from "@/lib/platform/security/Role";
+import { CRM_PERMISSIONS, HCM_PERMISSIONS, defaultRoleRegistry } from "@/lib/platform/security/RoleRegistry";
 import { SystemRole } from "@/lib/auth/roles";
 
 describe("RoleRegistry", () => {
@@ -23,6 +23,7 @@ describe("RoleRegistry", () => {
       organizationRole: OrganizationRole.OrganizationAdministrator,
       hcmRoles: [HcmRole.HrAdministrator, HcmRole.PayrollManager],
       financeRoles: [FinanceRole.FinanceAdministrator],
+      crmRoles: [],
     });
 
     expect(effective.has(HCM_PERMISSIONS.recruitmentWrite)).toBe(true);
@@ -36,8 +37,15 @@ describe("RoleRegistry", () => {
       organizationRole: OrganizationRole.OrganizationOwner,
       hcmRoles: [],
       financeRoles: [FinanceRole.FinanceAdministrator],
+      crmRoles: [CrmRole.CrmAdministrator],
     });
 
     expect(effective.has(HCM_PERMISSIONS.orgWrite)).toBe(true);
+  });
+
+  it("grants CRM permissions to CRM administrator profile", () => {
+    const permissions = defaultRoleRegistry.getPermissionsForRole(CrmRole.CrmAdministrator);
+    expect(permissions.has(CRM_PERMISSIONS.leadCreate)).toBe(true);
+    expect(permissions.has(CRM_PERMISSIONS.eventReplay)).toBe(true);
   });
 });

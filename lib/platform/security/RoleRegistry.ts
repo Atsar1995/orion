@@ -4,6 +4,7 @@
 
 import { buildPermissionCode, type PermissionCode } from "@/lib/platform/security/Permission";
 import {
+  CrmRole,
   HcmRole,
   FinanceRole,
   OrganizationRole,
@@ -11,13 +12,14 @@ import {
   resolveHcmRolesForPlatformRole,
 } from "@/lib/platform/security/Role";
 import { FINANCE_PERMISSIONS } from "@/lib/finance/security/finance-permission-catalog";
+import { CRM_PERMISSIONS } from "@/lib/crm/security/crm-permission-catalog";
 import type { RoleSlug } from "@/types/auth";
 import { SystemRole } from "@/lib/auth/roles";
 
 export type RoleAssignment = {
-  readonly role: PlatformRole | OrganizationRole | HcmRole | FinanceRole | RoleSlug;
+  readonly role: PlatformRole | OrganizationRole | HcmRole | FinanceRole | CrmRole | RoleSlug;
   readonly permissions: readonly PermissionCode[];
-  readonly inherits?: readonly (PlatformRole | OrganizationRole | HcmRole | FinanceRole | RoleSlug)[];
+  readonly inherits?: readonly (PlatformRole | OrganizationRole | HcmRole | FinanceRole | CrmRole | RoleSlug)[];
 };
 
 const HCM_PERMISSIONS = {
@@ -42,6 +44,7 @@ const HCM_PERMISSIONS = {
 
 export { HCM_PERMISSIONS };
 export { FINANCE_PERMISSIONS };
+export { CRM_PERMISSIONS };
 
 const ROLE_ASSIGNMENTS: readonly RoleAssignment[] = [
   {
@@ -65,7 +68,11 @@ const ROLE_ASSIGNMENTS: readonly RoleAssignment[] = [
   },
   {
     role: OrganizationRole.OrganizationAdministrator,
-    permissions: [...Object.values(HCM_PERMISSIONS), ...Object.values(FINANCE_PERMISSIONS)],
+    permissions: [
+      ...Object.values(HCM_PERMISSIONS),
+      ...Object.values(FINANCE_PERMISSIONS),
+      ...Object.values(CRM_PERMISSIONS),
+    ],
   },
   {
     role: OrganizationRole.DepartmentManager,
@@ -215,6 +222,135 @@ const ROLE_ASSIGNMENTS: readonly RoleAssignment[] = [
       FINANCE_PERMISSIONS.paymentRead,
     ],
   },
+  {
+    role: CrmRole.CrmAdministrator,
+    permissions: Object.values(CRM_PERMISSIONS),
+  },
+  {
+    role: CrmRole.SalesDirector,
+    permissions: [
+      CRM_PERMISSIONS.accountRead,
+      CRM_PERMISSIONS.accountWrite,
+      CRM_PERMISSIONS.contactRead,
+      CRM_PERMISSIONS.contactWrite,
+      CRM_PERMISSIONS.organizationRead,
+      CRM_PERMISSIONS.organizationWrite,
+      CRM_PERMISSIONS.leadRead,
+      CRM_PERMISSIONS.leadCreate,
+      CRM_PERMISSIONS.leadQualify,
+      CRM_PERMISSIONS.opportunityRead,
+      CRM_PERMISSIONS.opportunityWrite,
+      CRM_PERMISSIONS.quoteRead,
+      CRM_PERMISSIONS.quoteWrite,
+      CRM_PERMISSIONS.salesOrderRead,
+      CRM_PERMISSIONS.salesOrderWrite,
+      CRM_PERMISSIONS.activityRead,
+      CRM_PERMISSIONS.activityWrite,
+      CRM_PERMISSIONS.intelligenceRead,
+      CRM_PERMISSIONS.auditRead,
+    ],
+  },
+  {
+    role: CrmRole.SalesManager,
+    permissions: [
+      CRM_PERMISSIONS.accountRead,
+      CRM_PERMISSIONS.contactRead,
+      CRM_PERMISSIONS.organizationRead,
+      CRM_PERMISSIONS.leadRead,
+      CRM_PERMISSIONS.leadCreate,
+      CRM_PERMISSIONS.leadQualify,
+      CRM_PERMISSIONS.opportunityRead,
+      CRM_PERMISSIONS.opportunityWrite,
+      CRM_PERMISSIONS.quoteRead,
+      CRM_PERMISSIONS.quoteWrite,
+      CRM_PERMISSIONS.activityRead,
+      CRM_PERMISSIONS.activityWrite,
+      CRM_PERMISSIONS.intelligenceRead,
+    ],
+  },
+  {
+    role: CrmRole.SalesExecutive,
+    permissions: [
+      CRM_PERMISSIONS.accountRead,
+      CRM_PERMISSIONS.contactRead,
+      CRM_PERMISSIONS.organizationRead,
+      CRM_PERMISSIONS.leadRead,
+      CRM_PERMISSIONS.leadCreate,
+      CRM_PERMISSIONS.opportunityRead,
+      CRM_PERMISSIONS.opportunityWrite,
+      CRM_PERMISSIONS.quoteRead,
+      CRM_PERMISSIONS.activityRead,
+      CRM_PERMISSIONS.activityWrite,
+    ],
+  },
+  {
+    role: CrmRole.AccountManager,
+    permissions: [
+      CRM_PERMISSIONS.accountRead,
+      CRM_PERMISSIONS.accountWrite,
+      CRM_PERMISSIONS.contactRead,
+      CRM_PERMISSIONS.contactWrite,
+      CRM_PERMISSIONS.organizationRead,
+      CRM_PERMISSIONS.organizationWrite,
+      CRM_PERMISSIONS.activityRead,
+      CRM_PERMISSIONS.activityWrite,
+      CRM_PERMISSIONS.intelligenceRead,
+      CRM_PERMISSIONS.caseRead,
+    ],
+  },
+  {
+    role: CrmRole.CustomerSuccess,
+    permissions: [
+      CRM_PERMISSIONS.accountRead,
+      CRM_PERMISSIONS.contactRead,
+      CRM_PERMISSIONS.contactWrite,
+      CRM_PERMISSIONS.caseRead,
+      CRM_PERMISSIONS.caseWrite,
+      CRM_PERMISSIONS.activityRead,
+      CRM_PERMISSIONS.activityWrite,
+    ],
+  },
+  {
+    role: CrmRole.SupportAgent,
+    permissions: [
+      CRM_PERMISSIONS.contactRead,
+      CRM_PERMISSIONS.caseRead,
+      CRM_PERMISSIONS.caseWrite,
+      CRM_PERMISSIONS.activityRead,
+      CRM_PERMISSIONS.activityWrite,
+    ],
+  },
+  {
+    role: CrmRole.CrmAuditor,
+    permissions: [
+      CRM_PERMISSIONS.accountRead,
+      CRM_PERMISSIONS.contactRead,
+      CRM_PERMISSIONS.organizationRead,
+      CRM_PERMISSIONS.leadRead,
+      CRM_PERMISSIONS.opportunityRead,
+      CRM_PERMISSIONS.quoteRead,
+      CRM_PERMISSIONS.salesOrderRead,
+      CRM_PERMISSIONS.caseRead,
+      CRM_PERMISSIONS.activityRead,
+      CRM_PERMISSIONS.auditRead,
+      CRM_PERMISSIONS.intelligenceRead,
+    ],
+  },
+  {
+    role: CrmRole.CrmReadOnly,
+    permissions: [
+      CRM_PERMISSIONS.accountRead,
+      CRM_PERMISSIONS.contactRead,
+      CRM_PERMISSIONS.organizationRead,
+      CRM_PERMISSIONS.leadRead,
+      CRM_PERMISSIONS.opportunityRead,
+      CRM_PERMISSIONS.quoteRead,
+      CRM_PERMISSIONS.salesOrderRead,
+      CRM_PERMISSIONS.caseRead,
+      CRM_PERMISSIONS.activityRead,
+      CRM_PERMISSIONS.intelligenceRead,
+    ],
+  },
 ];
 
 /** Role registry with inheritance resolution for platform and domain roles. */
@@ -227,7 +363,7 @@ export class RoleRegistry {
     }
   }
 
-  getPermissionsForRole(role: PlatformRole | OrganizationRole | HcmRole | FinanceRole | RoleSlug): Set<PermissionCode> {
+  getPermissionsForRole(role: PlatformRole | OrganizationRole | HcmRole | FinanceRole | CrmRole | RoleSlug): Set<PermissionCode> {
     return new Set(this.assignments.get(String(role)) ?? []);
   }
 
@@ -237,6 +373,7 @@ export class RoleRegistry {
     platformRole: PlatformRole;
     hcmRoles: readonly HcmRole[];
     financeRoles: readonly FinanceRole[];
+    crmRoles: readonly CrmRole[];
   }): Set<PermissionCode> {
     const effective = new Set<PermissionCode>();
 
@@ -259,12 +396,20 @@ export class RoleRegistry {
         effective.add(code);
       }
     }
+    for (const crmRole of identity.crmRoles) {
+      for (const code of this.getPermissionsForRole(crmRole)) {
+        effective.add(code);
+      }
+    }
 
     if (identity.role === SystemRole.SuperAdmin) {
       for (const code of Object.values(HCM_PERMISSIONS)) {
         effective.add(code);
       }
       for (const code of Object.values(FINANCE_PERMISSIONS)) {
+        effective.add(code);
+      }
+      for (const code of Object.values(CRM_PERMISSIONS)) {
         effective.add(code);
       }
       effective.add(buildPermissionCode("platform", "system", "admin"));

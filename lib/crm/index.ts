@@ -341,3 +341,19 @@ export type {
   CrmPersistenceCollection,
   CrmAggregateRecord,
 } from "@/lib/crm/persistence/CrmStoreBacking";
+
+export {
+  CRM_PERMISSIONS,
+  listCrmRouteRules,
+  resolveCrmRoutePermission,
+  CrmAuthorizationService,
+  defaultCrmAuthorizationService,
+  getCrmApiContext,
+  getCrmApiContextForRequest,
+  CrmAuthorizationError,
+} from "@/lib/crm/security";
+export type {
+  CrmPermissionCode,
+  CrmRoutePermissionRule,
+  CrmApiContextOptions,
+} from "@/lib/crm/security";
