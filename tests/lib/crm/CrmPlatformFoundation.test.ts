@@ -41,6 +41,8 @@ describe("CRM Platform Foundation (P-008.9 · P-008.10)", () => {
     expect(wiring.party.listOrganisations(CRM_SEED_ORG_ID).length).toBeGreaterThan(0);
     expect(wiring.commercial.listLeads(CRM_SEED_ORG_ID).length).toBeGreaterThan(0);
     expect(getCrmEventPipelineRegistry().initialized).toBe(true);
+    expect(getCrmEventPipelineRegistry().canonicalPublisherReady).toBe(true);
+    expect(wiring.canonicalEventPublisher).toBeDefined();
   });
 
   it("creates repository bundle from isolated backing", () => {

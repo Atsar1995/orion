@@ -1,7 +1,8 @@
-/** CRM event pipeline registry placeholder (Mission P-008.9 · ADR-014 follow-up). */
+/** CRM event pipeline registry (Mission P-008.9 · P-008.14). */
 
 export type CrmEventPipelineRegistryState = {
   readonly initialized: boolean;
+  readonly canonicalPublisherReady: boolean;
   readonly backingOrganizationIds: () => readonly string[];
 };
 

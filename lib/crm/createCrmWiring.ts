@@ -14,6 +14,10 @@ import {
 } from "@/lib/crm/persistence/createCrmRepositories";
 import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import { CrmPartyFacade } from "@/lib/crm/parties";
+import {
+  CrmCanonicalEventPublisher,
+  defaultCrmCanonicalEventPublisher,
+} from "@/lib/crm/events";
 import { CrmService } from "@/lib/crm/services/CrmService";
 import { setCrmEventPipelineRegistry } from "@/lib/crm/services/crmEventPipelineRegistry";
 import {
@@ -22,7 +26,7 @@ import {
 } from "@/lib/crm/security/CrmAuthorizationService";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 
-/** CRM composition root — PlatformStore-backed dependency injection (Mission P-008.9 · P-008.10 · P-008.12). */
+/** CRM composition root — PlatformStore-backed dependency injection (Mission P-008.9 · P-008.10 · P-008.12 · P-008.14). */
 export type CrmWiring = CrmRepositories &
   CrmPersistenceRepositories & {
   readonly platformStore: PlatformStore;
@@ -35,6 +39,7 @@ export type CrmWiring = CrmRepositories &
   readonly executiveDashboardFacade: CrmExecutiveDashboardFacade;
   readonly crmService: CrmService;
   readonly authorization: CrmAuthorizationService;
+  readonly canonicalEventPublisher: CrmCanonicalEventPublisher;
 };
 
 /** Centralized CRM dependency wiring — internal composition root. */
@@ -49,6 +54,7 @@ export function createCrmWiring(platformStore: PlatformStore): CrmWiring {
 
   setCrmEventPipelineRegistry({
     initialized: true,
+    canonicalPublisherReady: true,
     backingOrganizationIds: () => [...backing.organizationFoundations.keys()],
   });
 
@@ -65,5 +71,6 @@ export function createCrmWiring(platformStore: PlatformStore): CrmWiring {
     executiveDashboardFacade: new CrmExecutiveDashboardFacade(repository),
     crmService: new CrmService(repository),
     authorization: defaultCrmAuthorizationService,
+    canonicalEventPublisher: defaultCrmCanonicalEventPublisher,
   };
 }

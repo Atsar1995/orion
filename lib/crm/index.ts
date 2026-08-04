@@ -357,3 +357,14 @@ export type {
   CrmRoutePermissionRule,
   CrmApiContextOptions,
 } from "@/lib/crm/security";
+
+export {
+  CRM_CANONICAL_EVENT_VERSION,
+  CRM_CANONICAL_OUTBOUND_EVENTS,
+  CRM_ALL_OUTBOUND_EVENTS,
+  CrmCanonicalEventPublisher,
+  defaultCrmCanonicalEventPublisher,
+  buildCrmCanonicalIdempotencyKey,
+  assertUniqueCrmEventCatalog,
+} from "@/lib/crm/events";
+export type { CrmCanonicalEventType, CrmOutboundEventType } from "@/lib/crm/events";
