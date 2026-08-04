@@ -331,3 +331,13 @@ export type {
 
 export type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 export { CRM_SEED_ORG_ID } from "@/lib/crm/persistence/createCrmStore";
+export { createCrmPersistenceRepositories } from "@/lib/crm/persistence/createCrmPersistenceRepositories";
+export type {
+  CrmPersistenceRepositories,
+  CreateCrmPersistenceRepositoriesOptions,
+} from "@/lib/crm/persistence/createCrmPersistenceRepositories";
+export type { CrmPersistenceRepository } from "@/lib/crm/persistence/CrmPersistenceRepository";
+export type {
+  CrmPersistenceCollection,
+  CrmAggregateRecord,
+} from "@/lib/crm/persistence/CrmStoreBacking";

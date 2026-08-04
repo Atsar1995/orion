@@ -8,6 +8,17 @@ import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConn
 export const CRM_COLLECTION_ORGANIZATION_FOUNDATION = "crm_organization_foundation";
 export const CRM_COLLECTION_IDEMPOTENCY_KEY = "crm_idempotency_key";
 export const CRM_COLLECTION_ENTITY_REGISTRY = "crm_entity_registry";
+export const CRM_COLLECTION_ACCOUNT = "crm_account";
+export const CRM_COLLECTION_CONTACT = "crm_contact";
+export const CRM_COLLECTION_ORGANIZATION = "crm_organization";
+export const CRM_COLLECTION_LEAD = "crm_lead";
+export const CRM_COLLECTION_OPPORTUNITY = "crm_opportunity";
+export const CRM_COLLECTION_QUOTE = "crm_quote";
+export const CRM_COLLECTION_ACTIVITY = "crm_activity";
+export const CRM_COLLECTION_CASE = "crm_case";
+export const CRM_COLLECTION_SALES_ORDER = "crm_sales_order";
+export const CRM_COLLECTION_NOTE = "crm_note";
+export const CRM_COLLECTION_ATTACHMENT = "crm_attachment";
 
 type PendingWrite = {
   readonly collection: string;

@@ -84,6 +84,8 @@ describe("PlatformStoreContract", () => {
 
         const backing = store.getCrmBacking();
         expect(backing.organizationFoundations).toBeInstanceOf(Map);
+        expect(backing.accounts).toBeInstanceOf(Map);
+        expect(backing.leads).toBeInstanceOf(Map);
         expect(backing.idempotencyKeys).toBeInstanceOf(Map);
         expect(backing.entityRegistry).toBeInstanceOf(Map);
       });

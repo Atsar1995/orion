@@ -5,6 +5,10 @@ import { CrmCustomerIntelligenceFacade } from "@/lib/crm/customer-intelligence";
 import { CrmExecutiveDashboardFacade } from "@/lib/crm/executive-dashboard";
 import { ensureCrmPlatformBacking } from "@/lib/crm/persistence/CrmPlatformBacking";
 import {
+  createCrmPersistenceRepositories,
+  type CrmPersistenceRepositories,
+} from "@/lib/crm/persistence/createCrmPersistenceRepositories";
+import {
   createCrmRepositories,
   type CrmRepositories,
 } from "@/lib/crm/persistence/createCrmRepositories";
@@ -14,8 +18,9 @@ import { CrmService } from "@/lib/crm/services/CrmService";
 import { setCrmEventPipelineRegistry } from "@/lib/crm/services/crmEventPipelineRegistry";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 
-/** CRM composition root — PlatformStore-backed dependency injection (Mission P-008.9). */
-export type CrmWiring = CrmRepositories & {
+/** CRM composition root — PlatformStore-backed dependency injection (Mission P-008.9 · P-008.10). */
+export type CrmWiring = CrmRepositories &
+  CrmPersistenceRepositories & {
   readonly platformStore: PlatformStore;
   readonly backing: CrmStoreBacking;
   readonly partyFacade: CrmPartyFacade;
@@ -30,7 +35,11 @@ export type CrmWiring = CrmRepositories & {
 /** Centralized CRM dependency wiring — internal composition root. */
 export function createCrmWiring(platformStore: PlatformStore): CrmWiring {
   const backing = ensureCrmPlatformBacking(platformStore);
-  const repositories = createCrmRepositories(backing);
+  const connection = platformStore.getDatabaseConnection?.() ?? undefined;
+  const persistenceRepositories = createCrmPersistenceRepositories({ platformStore, connection });
+  const repositories = createCrmRepositories(backing, {
+    crmRepository: persistenceRepositories.crmRepository,
+  });
   const repository = repositories.executiveDashboard;
 
   setCrmEventPipelineRegistry({
@@ -41,6 +50,7 @@ export function createCrmWiring(platformStore: PlatformStore): CrmWiring {
   return {
     platformStore,
     backing,
+    ...persistenceRepositories,
     ...repositories,
     partyFacade: new CrmPartyFacade(repository),
     commercialFacade: new CrmCommercialFacade(repository),

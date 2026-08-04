@@ -11,6 +11,17 @@ export const CRM_FOUNDATION_VERSION = "P-008.9";
 export function createCrmStore(): CrmStoreBacking {
   return {
     organizationFoundations: new Map(),
+    accounts: new Map(),
+    contacts: new Map(),
+    organizations: new Map(),
+    leads: new Map(),
+    opportunities: new Map(),
+    quotes: new Map(),
+    activities: new Map(),
+    cases: new Map(),
+    salesOrders: new Map(),
+    notes: new Map(),
+    attachments: new Map(),
     idempotencyKeys: new Map(),
     entityRegistry: new Map(),
   };

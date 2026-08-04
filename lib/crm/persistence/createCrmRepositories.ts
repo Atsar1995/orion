@@ -5,10 +5,11 @@ import type { CrmRepository } from "@/lib/crm/repositories/CrmRepository";
 import type { CustomerIntelligenceRepository } from "@/lib/crm/repositories/CustomerIntelligenceRepository";
 import type { ExecutiveDashboardRepository } from "@/lib/crm/repositories/ExecutiveDashboardRepository";
 import {
-  InMemoryCrmRepository,
+  InMemoryCrmRepository as LegacyInMemoryCrmRepository,
   defaultCrmRepository,
 } from "@/lib/crm/repositories/InMemoryCrmRepository";
 import type { PartyRepository } from "@/lib/crm/repositories/PartyRepository";
+import type { CrmPersistenceRepository } from "@/lib/crm/persistence/CrmPersistenceRepository";
 import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import { seedCrmStore } from "@/lib/crm/persistence/createCrmStore";
 
@@ -24,20 +25,22 @@ export type CrmRepositories = {
 };
 
 export type CreateCrmRepositoriesOptions = {
-  readonly repository?: InMemoryCrmRepository;
+  readonly crmRepository?: CrmPersistenceRepository;
+  readonly legacyRepository?: LegacyInMemoryCrmRepository;
 };
 
 /**
- * Creates CRM repositories against a shared PlatformStore backing.
- * Repository interfaces are unchanged — placeholder data remains in InMemoryCrmRepository (TD-002).
+ * Creates CRM domain repository interfaces against a shared PlatformStore backing.
+ * Legacy placeholder data remains in {@link defaultCrmRepository} until business missions migrate (TD-002).
  */
 export function createCrmRepositories(
   store: CrmStoreBacking,
   options?: CreateCrmRepositoriesOptions,
 ): CrmRepositories {
   seedCrmStore(store);
+  void options?.crmRepository;
 
-  const repository = options?.repository ?? defaultCrmRepository;
+  const repository = options?.legacyRepository ?? defaultCrmRepository;
 
   return {
     crm: repository,
