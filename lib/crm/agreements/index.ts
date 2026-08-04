@@ -1,5 +1,10 @@
 import { randomUUID } from "crypto";
 import { publishAgreementsEngineEvent } from "@/lib/crm/agreements-events";
+import {
+  CrmCanonicalEventPublisher,
+  defaultCrmCanonicalEventPublisher,
+} from "@/lib/crm/events";
+import { SalesOrderService, defaultSalesOrderService } from "@/lib/crm/services/SalesOrderService";
 import { formatCommercialCurrency } from "@/lib/crm/data/seed-commercial";
 import type {
   AgreementsBriefSignals,
@@ -140,7 +145,10 @@ export class ProposalService {
 
 /** Quotation management with pricing, discounts, taxes, validity. */
 export class QuotationService {
-  constructor(private readonly repository: AgreementsRepository) {}
+  constructor(
+    private readonly repository: AgreementsRepository,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+  ) {}
 
   list(context: ServiceContext): QuotationRecord[] {
     return this.repository.listQuotations(context.organizationId);
@@ -165,7 +173,16 @@ export class QuotationService {
       createdAt: now,
       updatedAt: now,
     };
-    return this.repository.createQuotation(record);
+    const created = this.repository.createQuotation(record);
+    this.canonicalPublisher.publishQuoteCreated(
+      {
+        quoteId: created.id,
+        correlationId: created.id,
+        opportunityId: created.opportunityId,
+      },
+      context,
+    );
+    return created;
   }
 
   issue(id: string, context: ServiceContext): QuotationRecord {
@@ -177,7 +194,10 @@ export class QuotationService {
 
 /** Contract lifecycle — immutable once signed; changes create new versions. */
 export class ContractService {
-  constructor(private readonly repository: AgreementsRepository) {}
+  constructor(
+    private readonly repository: AgreementsRepository,
+    private readonly salesOrders: SalesOrderService = defaultSalesOrderService,
+  ) {}
 
   list(context: ServiceContext, filter: AgreementSearchFilter = {}): ContractListItem[] {
     return this.repository.searchContracts(filter, context.organizationId).map((record) => ({
@@ -251,6 +271,20 @@ export class ContractService {
       { eventType: "ContractSigned", entityId: id, actorId: context.userId, actorName, payload: { partyId: existing.partyId } },
       context,
     );
+
+    this.salesOrders.confirm(
+      {
+        salesOrderId: activated.id,
+        quoteId: existing.quotationId,
+        amount: String(existing.pricing.total),
+        currencyCode: existing.pricing.currency,
+        correlationId: activated.id,
+        causationId: id,
+        period: activated.effectiveFrom.slice(0, 7),
+      },
+      context,
+    );
+
     return activated;
   }
 
@@ -501,10 +535,14 @@ export class CrmAgreementsFacade {
   readonly renewals: RenewalService;
   readonly analytics: AgreementAnalyticsService;
 
-  constructor(repository: AgreementsRepository) {
+  constructor(
+    repository: AgreementsRepository,
+    canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+    salesOrders: SalesOrderService = defaultSalesOrderService,
+  ) {
     this.proposals = new ProposalService(repository);
-    this.quotations = new QuotationService(repository);
-    this.contracts = new ContractService(repository);
+    this.quotations = new QuotationService(repository, canonicalPublisher);
+    this.contracts = new ContractService(repository, salesOrders);
     this.rates = new RateAgreementService(repository);
     this.approvals = new ApprovalWorkflowService(repository);
     this.renewals = new RenewalService(repository, this.contracts);

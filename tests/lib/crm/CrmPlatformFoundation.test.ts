@@ -43,6 +43,8 @@ describe("CRM Platform Foundation (P-008.9 · P-008.10)", () => {
     expect(getCrmEventPipelineRegistry().initialized).toBe(true);
     expect(getCrmEventPipelineRegistry().canonicalPublisherReady).toBe(true);
     expect(wiring.canonicalEventPublisher).toBeDefined();
+    expect(wiring.salesOrderService).toBeDefined();
+    expect(wiring.caseService).toBeDefined();
   });
 
   it("creates repository bundle from isolated backing", () => {

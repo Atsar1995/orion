@@ -19,6 +19,8 @@ import {
   defaultCrmCanonicalEventPublisher,
 } from "@/lib/crm/events";
 import { CrmService } from "@/lib/crm/services/CrmService";
+import { CaseService } from "@/lib/crm/services/CaseService";
+import { SalesOrderService, defaultSalesOrderService } from "@/lib/crm/services/SalesOrderService";
 import { setCrmEventPipelineRegistry } from "@/lib/crm/services/crmEventPipelineRegistry";
 import {
   CrmAuthorizationService,
@@ -26,7 +28,7 @@ import {
 } from "@/lib/crm/security/CrmAuthorizationService";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 
-/** CRM composition root — PlatformStore-backed dependency injection (Mission P-008.9 · P-008.10 · P-008.12 · P-008.14). */
+/** CRM composition root — PlatformStore-backed dependency injection (Mission P-008.9 · P-008.10 · P-008.12 · P-008.14 · P-008.15). */
 export type CrmWiring = CrmRepositories &
   CrmPersistenceRepositories & {
   readonly platformStore: PlatformStore;
@@ -40,6 +42,8 @@ export type CrmWiring = CrmRepositories &
   readonly crmService: CrmService;
   readonly authorization: CrmAuthorizationService;
   readonly canonicalEventPublisher: CrmCanonicalEventPublisher;
+  readonly salesOrderService: SalesOrderService;
+  readonly caseService: CaseService;
 };
 
 /** Centralized CRM dependency wiring — internal composition root. */
@@ -52,6 +56,9 @@ export function createCrmWiring(platformStore: PlatformStore): CrmWiring {
   });
   const repository = repositories.executiveDashboard;
 
+  const canonicalEventPublisher = defaultCrmCanonicalEventPublisher;
+  const salesOrderService = defaultSalesOrderService;
+
   setCrmEventPipelineRegistry({
     initialized: true,
     canonicalPublisherReady: true,
@@ -63,14 +70,16 @@ export function createCrmWiring(platformStore: PlatformStore): CrmWiring {
     backing,
     ...persistenceRepositories,
     ...repositories,
-    partyFacade: new CrmPartyFacade(repository),
-    commercialFacade: new CrmCommercialFacade(repository),
-    agreementsFacade: new CrmAgreementsFacade(repository),
+    partyFacade: new CrmPartyFacade(repository, canonicalEventPublisher),
+    commercialFacade: new CrmCommercialFacade(repository, canonicalEventPublisher),
+    agreementsFacade: new CrmAgreementsFacade(repository, canonicalEventPublisher, salesOrderService),
     commercialIntelligenceFacade: new CrmCommercialIntelligenceFacade(repository),
     customerIntelligenceFacade: new CrmCustomerIntelligenceFacade(repository),
     executiveDashboardFacade: new CrmExecutiveDashboardFacade(repository),
     crmService: new CrmService(repository),
     authorization: defaultCrmAuthorizationService,
-    canonicalEventPublisher: defaultCrmCanonicalEventPublisher,
+    canonicalEventPublisher,
+    salesOrderService,
+    caseService: new CaseService(backing, canonicalEventPublisher),
   };
 }

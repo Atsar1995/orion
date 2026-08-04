@@ -1,5 +1,9 @@
 import { randomUUID } from "crypto";
 import { publishPartyEngineEvent } from "@/lib/crm/crm-events";
+import {
+  CrmCanonicalEventPublisher,
+  defaultCrmCanonicalEventPublisher,
+} from "@/lib/crm/events";
 import type { PartyRepository } from "@/lib/crm/repositories/PartyRepository";
 import type {
   OrganisationDetailView,
@@ -38,6 +42,10 @@ type PartyServiceContext = ServiceContext;
 
 function todayIso(): string {
   return new Date().toISOString();
+}
+
+function hasCustomerRole(roles: readonly string[]): boolean {
+  return roles.includes("customer");
 }
 
 function matchesQuery(value: string | undefined, query: string): boolean {
@@ -99,6 +107,7 @@ export class OrganisationService {
   constructor(
     private readonly repository: PartyRepository,
     private readonly rules: PartyRulesEngine,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
   ) {}
 
   list(context: PartyServiceContext, filter: PartySearchFilter = {}): OrganisationListView {
@@ -190,6 +199,18 @@ export class OrganisationService {
       },
       context,
     );
+
+    if (hasCustomerRole(created.roles)) {
+      this.canonicalPublisher.publishCustomerCreated(
+        {
+          customerId: created.id,
+          correlationId: created.id,
+          displayName: created.displayName,
+        },
+        context,
+      );
+    }
+
     return created;
   }
 
@@ -211,6 +232,18 @@ export class OrganisationService {
       },
       context,
     );
+
+    if (hasCustomerRole(updated.roles)) {
+      this.canonicalPublisher.publishCustomerUpdated(
+        {
+          customerId: id,
+          correlationId: id,
+          version: updated.updatedAt,
+        },
+        context,
+      );
+    }
+
     return updated;
   }
 
@@ -273,6 +306,7 @@ export class PersonService {
   constructor(
     private readonly repository: PartyRepository,
     private readonly rules: PartyRulesEngine,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
   ) {}
 
   getDetail(id: string, context: PartyServiceContext): PersonDetailView | null {
@@ -337,6 +371,18 @@ export class PersonService {
       },
       context,
     );
+
+    if (hasCustomerRole(created.roles)) {
+      this.canonicalPublisher.publishCustomerCreated(
+        {
+          customerId: created.id,
+          correlationId: created.id,
+          displayName: created.displayName,
+        },
+        context,
+      );
+    }
+
     return created;
   }
 
@@ -356,6 +402,18 @@ export class PersonService {
       },
       context,
     );
+
+    if (hasCustomerRole(updated.roles)) {
+      this.canonicalPublisher.publishCustomerUpdated(
+        {
+          customerId: id,
+          correlationId: id,
+          version: updated.updatedAt,
+        },
+        context,
+      );
+    }
+
     return updated;
   }
 
@@ -501,10 +559,13 @@ export class CrmPartyFacade {
   readonly timeline: PartyTimelineService;
   readonly explorer: RelationshipExplorerService;
 
-  constructor(repository: PartyRepository) {
+  constructor(
+    repository: PartyRepository,
+    canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+  ) {
     const rules = new PartyRulesEngine();
-    this.organisations = new OrganisationService(repository, rules);
-    this.persons = new PersonService(repository, rules);
+    this.organisations = new OrganisationService(repository, rules, canonicalPublisher);
+    this.persons = new PersonService(repository, rules, canonicalPublisher);
     this.search = new PartySearchService(repository);
     this.relationships = new PartyRelationshipService(repository, rules);
     this.analytics = new PartyAnalyticsService(repository);

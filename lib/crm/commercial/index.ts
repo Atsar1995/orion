@@ -1,5 +1,9 @@
 import { randomUUID } from "crypto";
 import { publishCommercialEngineEvent } from "@/lib/crm/commercial-events";
+import {
+  CrmCanonicalEventPublisher,
+  defaultCrmCanonicalEventPublisher,
+} from "@/lib/crm/events";
 import { mapCommercialToLegacyOpportunity } from "@/lib/crm/commercial/commercial-mapper";
 import { formatCommercialCurrency } from "@/lib/crm/data/seed-commercial";
 import type {
@@ -79,6 +83,7 @@ export class LeadService {
   constructor(
     private readonly repository: CommercialRepository,
     private readonly scoring: ScoringEngine,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
   ) {}
 
   list(context: ServiceContext, filter: LeadSearchFilter = {}): LeadListView {
@@ -130,13 +135,35 @@ export class LeadService {
       { eventType: "LeadCreated", entityId: created.id, actorId: context.userId, actorName, payload: { source: created.source } },
       context,
     );
+    this.canonicalPublisher.publishLeadCreated(
+      {
+        leadId: created.id,
+        correlationId: created.id,
+        source: created.source,
+        owner: created.owner,
+      },
+      context,
+    );
     return created;
   }
 
   modify(id: string, patch: ModifyLeadInput, context: ServiceContext): LeadRecord {
     const existing = this.repository.getLead(id);
     if (!existing || existing.organizationId !== context.organizationId) throw new Error("LEAD_NOT_FOUND");
-    return this.repository.updateLead(id, { ...patch, updatedAt: todayIso() }) ?? existing;
+    const updated = this.repository.updateLead(id, { ...patch, updatedAt: todayIso() }) ?? existing;
+
+    if (patch.status === "qualified" && existing.status !== "qualified") {
+      this.canonicalPublisher.publishLeadQualified(
+        {
+          leadId: id,
+          correlationId: id,
+          qualifiedBy: context.userId,
+        },
+        context,
+      );
+    }
+
+    return updated;
   }
 
   qualify(id: string, context: ServiceContext): LeadRecord {
@@ -165,6 +192,7 @@ export class OpportunityService {
   constructor(
     private readonly repository: CommercialRepository,
     private readonly scoring: ScoringEngine,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
   ) {}
 
   list(context: ServiceContext, filter: OpportunitySearchFilter = {}) {
@@ -209,6 +237,15 @@ export class OpportunityService {
       { eventType: "OpportunityCreated", entityId: created.id, actorId: context.userId, actorName, payload: { stage: created.stage, partyId: created.partyId } },
       context,
     );
+    this.canonicalPublisher.publishOpportunityCreated(
+      {
+        opportunityId: created.id,
+        correlationId: created.id,
+        leadId: created.leadId,
+        stage: created.stage,
+      },
+      context,
+    );
     return created;
   }
 
@@ -228,6 +265,24 @@ export class OpportunityService {
     } else if (patch.stage === "lost") {
       publishCommercialEngineEvent({ eventType: "OpportunityLost", entityId: id, actorId: context.userId, actorName }, context);
     }
+
+    if (
+      patch.stage !== undefined &&
+      patch.stage !== existing.stage &&
+      (patch.stage === "won" || patch.stage === "lost" || patch.stage === "closed")
+    ) {
+      const outcome = patch.stage === "lost" ? "lost" : "won";
+      this.canonicalPublisher.publishOpportunityClosed(
+        {
+          opportunityId: id,
+          correlationId: id,
+          outcome,
+          amount: String(updated.valueAmount),
+        },
+        context,
+      );
+    }
+
     return updated;
   }
 
@@ -407,11 +462,14 @@ export class CrmCommercialFacade {
   readonly activities: CommercialActivityService;
   readonly scoring: ScoringEngine;
 
-  constructor(repository: CommercialRepository) {
+  constructor(
+    repository: CommercialRepository,
+    canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+  ) {
     const scoring = new ScoringEngine();
     this.scoring = scoring;
-    this.leads = new LeadService(repository, scoring);
-    this.opportunities = new OpportunityService(repository, scoring);
+    this.leads = new LeadService(repository, scoring, canonicalPublisher);
+    this.opportunities = new OpportunityService(repository, scoring, canonicalPublisher);
     this.pipeline = new PipelineService(repository);
     this.forecast = new ForecastService(repository);
     this.activities = new CommercialActivityService(repository);
