@@ -29,7 +29,7 @@ function contextFor(role: ServiceContext["role"], organizationId = ORG_A): Servi
   };
 }
 
-describe("CRM Authorization (P-008.12)", () => {
+describe("CRM Authorization (P-008.12 · P-008.13)", () => {
   it("registers the CRM permission catalog", () => {
     expect(CRM_PERMISSIONS.admin).toBe("crm:admin:manage");
     expect(CRM_PERMISSIONS.leadCreate).toBe("crm:lead:create");

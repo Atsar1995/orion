@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getCrmApiContextForRequest } from "@/lib/crm/security/CrmPermissionGuards";
 import { crmAgreementsService } from "@/lib/crm";
 import type { AgreementSearchFilter, CreateProposalInput } from "@/types/crm-agreements";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
-  const { context } = await getDecisionServiceContext();
+  const crmAuth = await getCrmApiContextForRequest(request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context } = crmAuth;
   const url = new URL(request.url);
   const filter: AgreementSearchFilter = {
     query: url.searchParams.get("query") ?? undefined,
@@ -19,7 +21,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const { context, executiveName } = await getDecisionServiceContext();
+  const crmAuth = await getCrmApiContextForRequest(request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context, executiveName } = crmAuth;
   const body = (await request.json()) as CreateProposalInput;
 
   try {

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getCrmApiContextForRequest } from "@/lib/crm/security/CrmPermissionGuards";
 import { crmPartyService } from "@/lib/crm";
 
 export const dynamic = "force-dynamic";
@@ -9,7 +9,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const { context } = await getDecisionServiceContext();
+  const crmAuth = await getCrmApiContextForRequest(_request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context } = crmAuth;
   const timeline = crmPartyService.timeline.list(id, context);
   return NextResponse.json({ success: true, data: timeline });
 }

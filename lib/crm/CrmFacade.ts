@@ -54,7 +54,7 @@ export class CrmFacade {
       healthMonitoringReady: true,
       readyForPlatformPersistence: true,
       readyForCanonicalEvents: false,
-      readyForRbac: false,
+      readyForRbac: true,
       readyForCertification: false,
     };
   }

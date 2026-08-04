@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getCrmApiContextForRequest } from "@/lib/crm/security/CrmPermissionGuards";
 import { crmPartyService } from "@/lib/crm";
 import type { ModifyPartyInput } from "@/types/crm-party";
 
@@ -10,7 +10,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const { context } = await getDecisionServiceContext();
+  const crmAuth = await getCrmApiContextForRequest(_request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context } = crmAuth;
   const detail = crmPartyService.organisations.getDetail(id, context);
 
   if (!detail) {
@@ -25,7 +27,9 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const { context, executiveName } = await getDecisionServiceContext();
+  const crmAuth = await getCrmApiContextForRequest(request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context, executiveName } = crmAuth;
   const body = (await request.json()) as ModifyPartyInput;
 
   try {

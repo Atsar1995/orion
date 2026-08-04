@@ -1,18 +1,22 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getCrmApiContextForRequest } from "@/lib/crm/security/CrmPermissionGuards";
 import { crmPartyService } from "@/lib/crm";
 import type { CreatePersonInput } from "@/types/crm-party";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const { context } = await getDecisionServiceContext();
+export async function GET(request: Request) {
+  const crmAuth = await getCrmApiContextForRequest(request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context } = crmAuth;
   const result = crmPartyService.search.search({}, context);
   return NextResponse.json({ success: true, data: result });
 }
 
 export async function POST(request: Request) {
-  const { context, executiveName } = await getDecisionServiceContext();
+  const crmAuth = await getCrmApiContextForRequest(request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context, executiveName } = crmAuth;
   const body = (await request.json()) as CreatePersonInput;
 
   try {

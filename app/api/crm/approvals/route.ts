@@ -1,18 +1,22 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getCrmApiContextForRequest } from "@/lib/crm/security/CrmPermissionGuards";
 import { crmAgreementsService } from "@/lib/crm";
 import type { DecideApprovalInput, RequestApprovalInput } from "@/types/crm-agreements";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
-  const { context } = await getDecisionServiceContext();
+export async function GET(request: Request) {
+  const crmAuth = await getCrmApiContextForRequest(request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context } = crmAuth;
   const pending = crmAgreementsService.approvals.listPending(context);
   return NextResponse.json({ success: true, data: pending });
 }
 
 export async function POST(request: Request) {
-  const { context } = await getDecisionServiceContext();
+  const crmAuth = await getCrmApiContextForRequest(request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context } = crmAuth;
   const body = (await request.json()) as RequestApprovalInput;
 
   try {
@@ -25,7 +29,9 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
-  const { context, executiveName } = await getDecisionServiceContext();
+  const crmAuth = await getCrmApiContextForRequest(request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context, executiveName } = crmAuth;
   const body = (await request.json()) as DecideApprovalInput;
 
   try {

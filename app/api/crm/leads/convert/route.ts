@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
-import { getDecisionServiceContext } from "@/lib/decisions/server-context";
+import { getCrmApiContextForRequest } from "@/lib/crm/security/CrmPermissionGuards";
 import { crmCommercialService } from "@/lib/crm";
 import type { ConvertLeadInput } from "@/types/crm-commercial";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
-  const { context, executiveName } = await getDecisionServiceContext();
+  const crmAuth = await getCrmApiContextForRequest(request);
+  if (crmAuth.errorResponse) return crmAuth.errorResponse;
+  const { context, executiveName } = crmAuth;
   const body = (await request.json()) as ConvertLeadInput;
 
   try {
