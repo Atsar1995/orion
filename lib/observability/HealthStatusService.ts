@@ -94,6 +94,18 @@ export class HealthStatusService {
         : "Finance persistence repositories require initialized PlatformStore.",
     });
 
+    const crmStoreHealth =
+      storeConfig.provider === StoreProvider.InMemory
+        ? new InMemoryPlatformStore({ configuration: storeConfig }).getCrmBacking()
+        : null;
+    checks.push({
+      name: "crm_platform",
+      status: crmStoreHealth ? "healthy" : "degraded",
+      message: crmStoreHealth
+        ? "CRM store backing available via PlatformStore."
+        : "CRM backing resolves after relational platform store initialization.",
+    });
+
     const securityHealth = securityHealthService.getReport();
     checks.push({
       name: "platform_security",

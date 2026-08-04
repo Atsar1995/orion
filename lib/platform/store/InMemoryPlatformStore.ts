@@ -6,6 +6,8 @@ import {
   defaultHcmStore,
   type InMemoryHcmStore,
 } from "@/lib/hcm/data/InMemoryHcmStore";
+import { createCrmStore } from "@/lib/crm/persistence/createCrmStore";
+import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import { createFinanceStore } from "@/lib/finance/persistence/createFinanceStore";
 import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
@@ -30,6 +32,7 @@ export type InMemoryPlatformStoreOptions = {
   readonly configuration?: StoreConfiguration;
   readonly hcmStore?: InMemoryHcmStore;
   readonly financeStore?: FinanceStoreBacking;
+  readonly crmStore?: CrmStoreBacking;
   readonly transactionManager?: TransactionManager;
 };
 
@@ -40,6 +43,7 @@ export class InMemoryPlatformStore implements PlatformStore {
 
   private readonly hcmStore: InMemoryHcmStore;
   private readonly financeStore: FinanceStoreBacking;
+  private readonly crmStore: CrmStoreBacking;
   private readonly transactionManager: TransactionManager;
   private lifecycle: PlatformStoreLifecycleState = "created";
 
@@ -47,6 +51,7 @@ export class InMemoryPlatformStore implements PlatformStore {
     this.configuration = options.configuration ?? DEFAULT_STORE_CONFIGURATION;
     this.hcmStore = options.hcmStore ?? defaultHcmStore;
     this.financeStore = options.financeStore ?? createFinanceStore();
+    this.crmStore = options.crmStore ?? createCrmStore();
     this.transactionManager = options.transactionManager ?? new NoOpTransactionManager();
     this.lifecycle = "initialized";
   }
@@ -80,6 +85,10 @@ export class InMemoryPlatformStore implements PlatformStore {
     return this.financeStore;
   }
 
+  getCrmBacking(): CrmStoreBacking {
+    return this.crmStore;
+  }
+
   getHealth(): PlatformStoreHealthReport {
     if (this.lifecycle === "shutdown") {
       return createPlatformStoreHealthReport({
@@ -110,6 +119,7 @@ export class InMemoryPlatformStore implements PlatformStore {
       details: {
         hcmBacking: "InMemoryHcmStore",
         financeBacking: "FinanceStoreBacking",
+        crmBacking: "CrmStoreBacking",
       },
     });
   }

@@ -9,8 +9,14 @@ import {
   createPostgresFinanceStore,
   flushPostgresFinanceStore,
 } from "@/lib/platform/persistence/finance/createPostgresFinanceStore";
+import {
+  createPostgresCrmStore,
+  flushPostgresCrmStore,
+} from "@/lib/platform/persistence/crm/createPostgresCrmStore";
+import type { CrmEntityPersister } from "@/lib/platform/persistence/crm/CrmEntityPersister";
 import type { FinanceEntityPersister } from "@/lib/platform/persistence/finance/FinanceEntityPersister";
 import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
+import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import type {
   PlatformStore,
@@ -82,8 +88,10 @@ export class PostgresPlatformStore implements PlatformStore {
   private transactionManager: TransactionManager | null = null;
   private hcmStore: InMemoryHcmStore | null = null;
   private financeStore: FinanceStoreBacking | null = null;
+  private crmStore: CrmStoreBacking | null = null;
   private hcmPersister: HcmEntityPersister | null = null;
   private financePersister: FinanceEntityPersister | null = null;
+  private crmPersister: CrmEntityPersister | null = null;
   private initialized = false;
   private lastHealthReport: PlatformStoreHealthReport | null = null;
 
@@ -136,10 +144,13 @@ export class PostgresPlatformStore implements PlatformStore {
 
       const { store, persister } = await createPostgresHcmStore(runtime.connection);
       const financeRuntime = await createPostgresFinanceStore(runtime.connection);
+      const crmRuntime = await createPostgresCrmStore(runtime.connection);
       this.hcmStore = store;
       this.hcmPersister = persister;
       this.financeStore = financeRuntime.store;
       this.financePersister = financeRuntime.persister;
+      this.crmStore = crmRuntime.store;
+      this.crmPersister = crmRuntime.persister;
       this.transactionManager = runtime.createTransactionManager(
         persister,
         financeRuntime.persister,
@@ -163,6 +174,10 @@ export class PostgresPlatformStore implements PlatformStore {
       await flushPostgresFinanceStore(this.financePersister);
     }
 
+    if (this.crmPersister) {
+      await flushPostgresCrmStore(this.crmPersister);
+    }
+
     if (this.connection) {
       await this.connection.shutdown();
     }
@@ -170,8 +185,10 @@ export class PostgresPlatformStore implements PlatformStore {
     this.initialized = false;
     this.hcmStore = null;
     this.financeStore = null;
+    this.crmStore = null;
     this.hcmPersister = null;
     this.financePersister = null;
+    this.crmPersister = null;
     this.transactionManager = null;
     this.connection = null;
     this.migrationRunner = null;
@@ -195,6 +212,14 @@ export class PostgresPlatformStore implements PlatformStore {
     }
 
     return this.financeStore;
+  }
+
+  getCrmBacking(): CrmStoreBacking {
+    if (!this.crmStore) {
+      throw new PostgresPlatformStoreError("Platform store is not initialized.");
+    }
+
+    return this.crmStore;
   }
 
   getDatabaseConnection(): DatabaseConnection | null {

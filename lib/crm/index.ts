@@ -311,3 +311,23 @@ export function getCrmExecutiveRecommendations() {
 export function runCrmIntelligencePipeline() {
   return crmService.getIntelligence();
 }
+
+export {
+  CrmFacade,
+  crmFacade,
+  getCrmWorkspaceBootstrap,
+  createCrmWiring,
+  type CrmWiring,
+} from "@/lib/crm/CrmFacade";
+
+export type {
+  CrmCapabilityDescriptor,
+  CrmCapabilityStatus,
+  CrmDomainStatus,
+  CrmScopedRecord,
+  CrmWorkspaceBootstrap,
+  CrmWorkspaceView,
+} from "@/types/crm-core";
+
+export type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
+export { CRM_SEED_ORG_ID } from "@/lib/crm/persistence/createCrmStore";

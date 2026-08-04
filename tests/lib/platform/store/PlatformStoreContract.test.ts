@@ -78,6 +78,16 @@ describe("PlatformStoreContract", () => {
         expect(backing.idempotencyKeys).toBeInstanceOf(Map);
       });
 
+      it("exposes CRM backing after initialization", async () => {
+        const store = testCase.create();
+        await store.initialize();
+
+        const backing = store.getCrmBacking();
+        expect(backing.organizationFoundations).toBeInstanceOf(Map);
+        expect(backing.idempotencyKeys).toBeInstanceOf(Map);
+        expect(backing.entityRegistry).toBeInstanceOf(Map);
+      });
+
       it("shuts down gracefully", async () => {
         const store = testCase.create();
         await store.initialize();

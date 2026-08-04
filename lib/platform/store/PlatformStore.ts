@@ -9,6 +9,7 @@ import type {
 import type { StoreConfiguration, StoreProvider } from "@/lib/platform/store/StoreConfiguration";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
+import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConnection";
 import type {
   PersistenceTransaction,
@@ -28,6 +29,8 @@ export interface PlatformDomainStores {
   getHcmBacking(): HcmStoreBacking;
   /** Finance persistence backing (Mission P-009.5 Wave A). */
   getFinanceBacking(): FinanceStoreBacking;
+  /** CRM persistence backing (Mission P-008.9). */
+  getCrmBacking(): CrmStoreBacking;
 }
 
 /**

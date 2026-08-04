@@ -1,3 +1,5 @@
+import { resetDefaultCrmBackingForTests } from "@/lib/crm/persistence/createCrmStore";
+import { resetCrmEventPipelineRegistryForTests } from "@/lib/crm/services/crmEventPipelineRegistry";
 import { resetFinanceEventConsumerForTests } from "@/lib/finance/integration/FinanceEventConsumer";
 import { resetFinanceIntegrationForTests } from "@/lib/finance/integration/financeIntegrationRegistry";
 import { resetIntelligenceIntegrationForTests } from "@/lib/platform/intelligence";
@@ -13,6 +15,8 @@ import { resetDefaultPlatformStoreForTests } from "@/lib/platform/store/Platform
 export function resetPlatformIntegrationStateForTests(): void {
   resetIntelligenceIntegrationForTests();
   resetDefaultPlatformStoreForTests();
+  resetDefaultCrmBackingForTests();
+  resetCrmEventPipelineRegistryForTests();
   resetFinanceIntegrationForTests();
   resetFinanceEventConsumerForTests();
 }

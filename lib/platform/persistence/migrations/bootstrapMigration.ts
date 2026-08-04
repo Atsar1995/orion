@@ -71,8 +71,30 @@ export const bootstrapMigration: Migration = {
       CREATE INDEX IF NOT EXISTS idx_finance_entities_collection
       ON finance_entities (collection_name)
     `);
+
+    await query(`
+      CREATE TABLE IF NOT EXISTS crm_entities (
+        collection_name TEXT NOT NULL,
+        entity_id TEXT NOT NULL,
+        organization_id TEXT,
+        payload JSONB NOT NULL,
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        PRIMARY KEY (collection_name, entity_id)
+      )
+    `);
+
+    await query(`
+      CREATE INDEX IF NOT EXISTS idx_crm_entities_org
+      ON crm_entities (organization_id)
+    `);
+
+    await query(`
+      CREATE INDEX IF NOT EXISTS idx_crm_entities_collection
+      ON crm_entities (collection_name)
+    `);
   },
   async down({ query }) {
+    await query("DROP TABLE IF EXISTS crm_entities");
     await query("DROP TABLE IF EXISTS finance_entities");
     await query("DROP TABLE IF EXISTS hcm_entities");
     await query("DROP TABLE IF EXISTS platform_migration_history");

@@ -165,12 +165,20 @@ export class MockDatabaseConnection implements DatabaseConnection {
       return this.handleEntityUpsert("finance_entities", params) as DatabaseQueryResult<T>;
     }
 
+    if (normalized.startsWith("insert into crm_entities")) {
+      return this.handleEntityUpsert("crm_entities", params) as DatabaseQueryResult<T>;
+    }
+
     if (normalized.startsWith("insert into iil_entities")) {
       return this.handleEntityUpsert("iil_entities", params) as DatabaseQueryResult<T>;
     }
 
     if (normalized.startsWith("delete from finance_entities")) {
       return this.handleEntityDelete("finance_entities", params) as DatabaseQueryResult<T>;
+    }
+
+    if (normalized.startsWith("delete from crm_entities")) {
+      return this.handleEntityDelete("crm_entities", params) as DatabaseQueryResult<T>;
     }
 
     if (normalized.startsWith("delete from iil_entities")) {
@@ -237,6 +245,18 @@ export class MockDatabaseConnection implements DatabaseConnection {
           );
         }
       }
+
+      return mockResult(
+        rows.map((row) => ({
+          entity_id: row.entity_id,
+          payload: row.payload,
+        })),
+      );
+    }
+
+    if (normalized.includes("from crm_entities")) {
+      const collection = String(params?.[0]);
+      const rows = this.getTable("crm_entities").filter((row) => row.collection_name === collection);
 
       return mockResult(
         rows.map((row) => ({
