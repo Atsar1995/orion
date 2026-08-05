@@ -2,11 +2,13 @@ import type {
   ProcurementAggregateRecord,
   ProcurementPersistenceCollection,
 } from "@/lib/procurement/persistence/ProcurementStoreBacking";
+import { PROCUREMENT_REPOSITORY_INFRASTRUCTURE_VERSION } from "@/lib/procurement/persistence/createProcurementStore";
 
-/** Base Procurement persistence repository contract (Mission P-010.3). */
+/** Base Procurement persistence repository contract (Mission P-010.4). */
 export type ProcurementPersistenceRepository = {
   readonly domain: "procurement";
   readonly persistenceAdapter?: "in-memory" | "postgresql";
+  readonly infrastructureVersion: typeof PROCUREMENT_REPOSITORY_INFRASTRUCTURE_VERSION;
   getById(
     organizationId: string,
     collection: ProcurementPersistenceCollection,

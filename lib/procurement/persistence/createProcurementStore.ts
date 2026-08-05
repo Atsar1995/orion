@@ -7,6 +7,8 @@ export const PROCUREMENT_SEED_ORG_ID = "org-orania";
 
 export const PROCUREMENT_FOUNDATION_VERSION = "P-010.3";
 
+export const PROCUREMENT_REPOSITORY_INFRASTRUCTURE_VERSION = "P-010.4";
+
 /** Creates an empty Procurement store backing for PlatformStore integration. */
 export function createProcurementStore(): ProcurementStoreBacking {
   return {

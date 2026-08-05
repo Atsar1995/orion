@@ -94,8 +94,8 @@ Organization foundation markers use seed org `org-orania` and foundation version
 | Item | Status |
 |------|--------|
 | Platform foundation (this mission) | ✅ Implemented |
-| Full business persistence + domain services | ⏳ P-010.4 |
-| Supplier management | ⏳ P-010.5 |
+| Repository infrastructure | ✅ P-010.4 |
+| Supplier management services | ⏳ P-010.5 |
 | Requisitioning workflows | ⏳ P-010.6 |
 | RBAC permission catalog + REST | ⏳ P-010.8 |
 | Canonical events + ADR-014 registry | ⏳ P-010.9 |

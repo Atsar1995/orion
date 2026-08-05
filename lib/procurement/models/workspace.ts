@@ -11,7 +11,7 @@ export const PROCUREMENT_FOUNDATION_CAPABILITIES: readonly ProcurementCapability
   {
     key: "platform_persistence",
     label: "Platform Persistence",
-    status: "planned",
+    status: "active",
     mission: "P-010.4",
   },
   { key: "supplier_management", label: "Supplier Management", status: "planned", mission: "P-010.5" },

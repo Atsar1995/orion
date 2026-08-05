@@ -24,7 +24,7 @@ import { MigrationRunner } from "@/lib/platform/persistence/MigrationRunner";
 import { bootstrapMigration } from "@/lib/platform/persistence/migrations/bootstrapMigration";
 import { MockDatabaseConnection } from "@/tests/lib/platform/persistence/MockDatabaseConnection";
 
-describe("Procurement Platform Foundation (P-010.3)", () => {
+describe("Procurement Platform Foundation (P-010.3 · P-010.4)", () => {
   beforeEach(() => {
     resetDefaultPlatformStoreForTests();
   });
@@ -41,6 +41,8 @@ describe("Procurement Platform Foundation (P-010.3)", () => {
     expect(getProcurementEventPipelineRegistry().initialized).toBe(true);
     expect(getProcurementEventPipelineRegistry().canonicalPublisherReady).toBe(false);
     expect(wiring.procurement).toBe(wiring.procurementRepository);
+    expect(wiring.suppliers).toBe(wiring.procurementRepository);
+    expect(wiring.procurementRepository.infrastructureVersion).toBe("P-010.4");
   });
 
   it("creates repository bundle from isolated backing", () => {

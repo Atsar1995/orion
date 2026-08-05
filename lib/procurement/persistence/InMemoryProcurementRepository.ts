@@ -1,5 +1,8 @@
 import { getProcurementBackingCollection } from "@/lib/procurement/persistence/procurementBackingCollections";
 import type { ProcurementPersistenceRepository } from "@/lib/procurement/persistence/ProcurementPersistenceRepository";
+import {
+  PROCUREMENT_REPOSITORY_INFRASTRUCTURE_VERSION,
+} from "@/lib/procurement/persistence/createProcurementStore";
 import type {
   ProcurementAggregateRecord,
   ProcurementEntityRegistryEntry,
@@ -16,12 +19,13 @@ function entityRegistryKey(collection: string, entityId: string): string {
 }
 
 /**
- * In-memory Procurement persistence repository (Mission P-010.3).
+ * In-memory Procurement persistence repository (Mission P-010.4).
  * Organization-scoped collection access — no business rules or validation.
  */
 export class InMemoryProcurementRepository implements ProcurementPersistenceRepository {
   readonly domain = "procurement" as const;
   readonly persistenceAdapter?: "in-memory" | "postgresql" = "in-memory";
+  readonly infrastructureVersion = PROCUREMENT_REPOSITORY_INFRASTRUCTURE_VERSION;
 
   constructor(private readonly backing: ProcurementStoreBacking) {}
 

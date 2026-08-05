@@ -26,7 +26,7 @@ export type ProcurementAggregateRecord = {
   readonly updatedAt: string;
 };
 
-/** Shared Procurement business aggregate collections (Mission P-010.3). */
+/** Shared Procurement business aggregate collections (Mission P-010.3 · P-010.4). */
 export type ProcurementPersistenceCollection =
   | "vendors"
   | "vendorContacts"

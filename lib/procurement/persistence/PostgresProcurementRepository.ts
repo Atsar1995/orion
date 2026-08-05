@@ -4,7 +4,7 @@ import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConn
 import type { TransactionManager } from "@/lib/persistence/services/shared";
 
 /**
- * PostgreSQL Procurement persistence repository (Mission P-010.3).
+ * PostgreSQL Procurement persistence repository (Mission P-010.4).
  * Persistence is Map-wrapper driven via {@link ProcurementEntityPersister} on PlatformStore backing.
  */
 export class PostgresProcurementRepository extends InMemoryProcurementRepository {

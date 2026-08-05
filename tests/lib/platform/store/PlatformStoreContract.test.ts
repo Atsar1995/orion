@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { InMemoryPlatformStore, PostgresPlatformStore, StoreProvider } from "@/lib/platform/store";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
+import {
+  assertProcurementBackingCollections,
+  PROCUREMENT_PERSISTENCE_COLLECTIONS,
+  getProcurementBackingCollection,
+} from "@/lib/procurement/persistence/procurementBackingCollections";
 import { MockDatabaseConnection } from "@/tests/lib/platform/persistence/MockDatabaseConnection";
 import { MigrationRunner } from "@/lib/platform/persistence/MigrationRunner";
 import { MigrationRegistry } from "@/lib/platform/persistence/MigrationRegistry";
@@ -96,11 +101,13 @@ describe("PlatformStoreContract", () => {
 
         const backing = store.getProcurementBacking();
         expect(backing.organizationFoundations).toBeInstanceOf(Map);
-        expect(backing.vendors).toBeInstanceOf(Map);
-        expect(backing.requisitions).toBeInstanceOf(Map);
-        expect(backing.purchaseOrders).toBeInstanceOf(Map);
         expect(backing.idempotencyKeys).toBeInstanceOf(Map);
         expect(backing.entityRegistry).toBeInstanceOf(Map);
+        assertProcurementBackingCollections(backing);
+
+        for (const collection of PROCUREMENT_PERSISTENCE_COLLECTIONS) {
+          expect(getProcurementBackingCollection(backing, collection)).toBeInstanceOf(Map);
+        }
       });
 
       it("shuts down gracefully", async () => {

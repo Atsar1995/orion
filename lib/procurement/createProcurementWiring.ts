@@ -11,7 +11,7 @@ import type { ProcurementStoreBacking } from "@/lib/procurement/persistence/Proc
 import { setProcurementEventPipelineRegistry } from "@/lib/procurement/services/procurementEventPipelineRegistry";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 
-/** Procurement composition root — PlatformStore-backed dependency injection (Mission P-010.3). */
+/** Procurement composition root — PlatformStore-backed dependency injection (Mission P-010.3 · P-010.4). */
 export type ProcurementWiring = ProcurementRepositories &
   ProcurementPersistenceRepositories & {
     readonly platformStore: PlatformStore;

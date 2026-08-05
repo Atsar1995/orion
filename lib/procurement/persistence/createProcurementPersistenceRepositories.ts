@@ -6,7 +6,7 @@ import { PostgresProcurementRepository } from "@/lib/procurement/persistence/Pos
 import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConnection";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 
-/** Procurement persistence repository bundle — shared backing aggregate access. */
+/** Procurement persistence repository bundle — shared backing aggregate access (Mission P-010.4). */
 export type ProcurementPersistenceRepositories = {
   readonly procurementRepository: ProcurementPersistenceRepository;
 };

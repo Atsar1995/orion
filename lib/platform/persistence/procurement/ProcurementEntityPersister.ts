@@ -1,6 +1,6 @@
 /**
  * Procurement entity persistence adapter — JSONB backing for Procurement PlatformStore collections
- * (P-010.3 · ADR-007).
+ * (P-010.3 · P-010.4 · ADR-007).
  */
 
 import type {
