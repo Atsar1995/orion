@@ -1,13 +1,16 @@
 import type { FinanceInboundProcessor } from "@/lib/finance/integration/FinanceInboundProcessor";
 import {
+  resolveCrmCanonicalEventType,
   resolveCanonicalEventType,
+  type CrmFinanceEventType,
+  type FinanceInboundEventType,
   type HcmFinanceEventType,
 } from "@/lib/finance/integration/FinanceEventMapper";
 import type { FinanceEventResult } from "@/lib/finance/integration/FinanceEventResult";
 import type { IntelligenceEvent } from "@/types/intelligence-integration";
 import type { ServiceContext } from "@/types/services";
 
-/** Routes inbound HCM events to the Finance inbound processor (P-009.9). */
+/** Routes inbound HCM and CRM events to the Finance inbound processor (P-009.9 · P-009.19). */
 export class FinanceEventDispatcher {
   constructor(private readonly processor: FinanceInboundProcessor) {}
 
@@ -15,11 +18,13 @@ export class FinanceEventDispatcher {
   async dispatch(
     event: IntelligenceEvent,
     context: ServiceContext,
-    eventType: HcmFinanceEventType,
+    eventType: FinanceInboundEventType,
   ): Promise<FinanceEventResult> {
     switch (eventType) {
       case "hcm.workforce.cost.recorded":
       case "hcm.expense.approved":
+      case "crm.revenue.recognized":
+      case "crm.salesorder.confirmed":
         return this.processor.process(event, context, eventType);
       default: {
         const unsupported: never = eventType;
@@ -28,14 +33,14 @@ export class FinanceEventDispatcher {
           eventId: event.eventId,
           eventType: unsupported,
           code: "UNSUPPORTED_EVENT",
-          message: "Unsupported HCM finance event type",
+          message: "Unsupported inbound finance event type",
         };
       }
     }
   }
 
-  /** Resolves and dispatches when the envelope carries a supported canonical type. */
-  async dispatchIfSupported(
+  /** Resolves and dispatches when the envelope carries a supported HCM canonical type. */
+  async dispatchHcmIfSupported(
     event: IntelligenceEvent,
     context: ServiceContext,
   ): Promise<FinanceEventResult | null> {
@@ -46,4 +51,19 @@ export class FinanceEventDispatcher {
 
     return this.dispatch(event, context, eventType);
   }
+
+  /** Resolves and dispatches when the envelope carries a supported CRM canonical type. */
+  async dispatchCrmIfSupported(
+    event: IntelligenceEvent,
+    context: ServiceContext,
+  ): Promise<FinanceEventResult | null> {
+    const eventType = resolveCrmCanonicalEventType(event);
+    if (!eventType) {
+      return null;
+    }
+
+    return this.dispatch(event, context, eventType);
+  }
 }
+
+export type { CrmFinanceEventType, FinanceInboundEventType, HcmFinanceEventType };
