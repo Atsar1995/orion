@@ -8,6 +8,7 @@ import { AuthorizationError } from "@/lib/platform/security/AuthorizationResult"
 import type { PermissionCode } from "@/lib/platform/security/Permission";
 import type { ProcurementAuthorizationService } from "@/lib/procurement/security/ProcurementAuthorizationService";
 import type { VendorRecord } from "@/lib/procurement/types/supplier";
+import type { PurchaseRequisitionRecord } from "@/lib/procurement/types/requisition";
 import type { ServiceContext } from "@/types/services";
 
 export function nowIso(): string {
@@ -16,6 +17,22 @@ export function nowIso(): string {
 
 export function asVendorRecord(record: ProcurementAggregateRecord): VendorRecord {
   return record as VendorRecord;
+}
+
+export function asRequisitionRecord(record: ProcurementAggregateRecord): PurchaseRequisitionRecord {
+  return record as PurchaseRequisitionRecord;
+}
+
+export function getRequisitionOrThrow(
+  repository: ProcurementPersistenceRepository,
+  requisitionId: string,
+  context: ServiceContext,
+): PurchaseRequisitionRecord {
+  const record = repository.getById(context.organizationId, "requisitions", requisitionId);
+  if (!record) {
+    throw new Error("REQUISITION_NOT_FOUND");
+  }
+  return asRequisitionRecord(record);
 }
 
 export function getVendorOrThrow(

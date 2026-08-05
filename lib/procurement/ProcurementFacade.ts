@@ -16,10 +16,13 @@ import type {
 import type { SupplierService } from "@/lib/procurement/services/SupplierService";
 import type { VendorContactService } from "@/lib/procurement/services/VendorContactService";
 import type { VendorScorecardService } from "@/lib/procurement/services/VendorScorecardService";
+import type { PurchaseApprovalService } from "@/lib/procurement/services/PurchaseApprovalService";
+import type { PurchaseRequisitionService } from "@/lib/procurement/services/PurchaseRequisitionService";
 import type { ServiceContext } from "@/types/services";
 
 export const PROCUREMENT_MISSION_PLATFORM_FOUNDATION = "P-010.3";
 export const PROCUREMENT_MISSION_SUPPLIER_MANAGEMENT = "P-010.7";
+export const PROCUREMENT_MISSION_REQUISITION_MANAGEMENT = "P-010.8";
 
 function createDefaultProcurementWiring(): ProcurementWiring {
   return createProcurementWiring(new InMemoryPlatformStore());
@@ -56,6 +59,16 @@ export class ProcurementFacade {
       vendor: this.wiring.supplierService,
       contacts: this.wiring.vendorContactService,
       scorecards: this.wiring.vendorScorecardService,
+    };
+  }
+
+  get requisitions(): {
+    readonly purchase: PurchaseRequisitionService;
+    readonly approval: PurchaseApprovalService;
+  } {
+    return {
+      purchase: this.wiring.purchaseRequisitionService,
+      approval: this.wiring.purchaseApprovalService,
     };
   }
 

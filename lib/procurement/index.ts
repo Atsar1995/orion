@@ -5,6 +5,8 @@ export { createProcurementWiring, type ProcurementWiring } from "@/lib/procureme
 export { SupplierService } from "@/lib/procurement/services/SupplierService";
 export { VendorContactService } from "@/lib/procurement/services/VendorContactService";
 export { VendorScorecardService } from "@/lib/procurement/services/VendorScorecardService";
+export { PurchaseRequisitionService } from "@/lib/procurement/services/PurchaseRequisitionService";
+export { PurchaseApprovalService } from "@/lib/procurement/services/PurchaseApprovalService";
 export type {
   VendorRecord,
   VendorStatus,
@@ -17,9 +19,18 @@ export type {
   CreateVendorScorecardInput,
   UpdateVendorScorecardInput,
 } from "@/lib/procurement/types/supplier";
+export type {
+  PurchaseRequisitionRecord,
+  RequisitionStatus,
+  PurchaseApprovalRecord,
+  CreateRequisitionInput,
+  UpdateRequisitionInput,
+} from "@/lib/procurement/types/requisition";
 export const procurementSupplierService = procurementFacade.suppliers.vendor;
 export const procurementVendorContactService = procurementFacade.suppliers.contacts;
 export const procurementVendorScorecardService = procurementFacade.suppliers.scorecards;
+export const procurementRequisitionService = procurementFacade.requisitions.purchase;
+export const procurementApprovalService = procurementFacade.requisitions.approval;
 export {
   PROCUREMENT_SEED_ORG_ID,
   PROCUREMENT_FOUNDATION_VERSION,

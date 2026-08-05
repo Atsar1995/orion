@@ -14,9 +14,11 @@ import { ProcurementCanonicalEventPublisher } from "@/lib/procurement/events/Pro
 import { SupplierService } from "@/lib/procurement/services/SupplierService";
 import { VendorContactService } from "@/lib/procurement/services/VendorContactService";
 import { VendorScorecardService } from "@/lib/procurement/services/VendorScorecardService";
+import { PurchaseApprovalService } from "@/lib/procurement/services/PurchaseApprovalService";
+import { PurchaseRequisitionService } from "@/lib/procurement/services/PurchaseRequisitionService";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 
-/** Procurement composition root — PlatformStore-backed dependency injection (Mission P-010.3 · P-010.4 · P-010.5 · P-010.6 · P-010.7). */
+/** Procurement composition root — PlatformStore-backed dependency injection (Mission P-010.3 · P-010.4 · P-010.5 · P-010.6 · P-010.7 · P-010.8). */
 export type ProcurementWiring = ProcurementRepositories &
   ProcurementPersistenceRepositories & {
     readonly platformStore: PlatformStore;
@@ -26,6 +28,8 @@ export type ProcurementWiring = ProcurementRepositories &
     readonly supplierService: SupplierService;
     readonly vendorContactService: VendorContactService;
     readonly vendorScorecardService: VendorScorecardService;
+    readonly purchaseApprovalService: PurchaseApprovalService;
+    readonly purchaseRequisitionService: PurchaseRequisitionService;
   };
 
 /** Centralized Procurement dependency wiring — authoritative composition root. */
@@ -48,6 +52,16 @@ export function createProcurementWiring(platformStore: PlatformStore): Procureme
   );
   const vendorContactService = new VendorContactService(repositories.suppliers, authorization);
   const vendorScorecardService = new VendorScorecardService(repositories.suppliers, authorization);
+  const purchaseApprovalService = new PurchaseApprovalService(
+    repositories.requisitioning,
+    authorization,
+  );
+  const purchaseRequisitionService = new PurchaseRequisitionService(
+    repositories.requisitioning,
+    authorization,
+    canonicalEventPublisher,
+    purchaseApprovalService,
+  );
 
   setProcurementEventPipelineRegistry({
     initialized: true,
@@ -63,6 +77,8 @@ export function createProcurementWiring(platformStore: PlatformStore): Procureme
     supplierService,
     vendorContactService,
     vendorScorecardService,
+    purchaseApprovalService,
+    purchaseRequisitionService,
     ...persistenceRepositories,
     ...repositories,
   };
