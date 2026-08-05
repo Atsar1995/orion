@@ -43,3 +43,18 @@ export {
   getProcurementEventPipelineRegistry,
   setProcurementEventPipelineRegistry,
 } from "@/lib/procurement/services/procurementEventPipelineRegistry";
+export {
+  PROCUREMENT_PERMISSIONS,
+  resolveProcurementRoutePermission,
+  listProcurementRouteRules,
+  ProcurementAuthorizationService,
+  defaultProcurementAuthorizationService,
+  getProcurementApiContext,
+  getProcurementApiContextForRequest,
+  ProcurementAuthorizationError,
+} from "@/lib/procurement/security";
+export type {
+  ProcurementPermissionCode,
+  ProcurementRoutePermissionRule,
+  ProcurementApiContextOptions,
+} from "@/lib/procurement/security";

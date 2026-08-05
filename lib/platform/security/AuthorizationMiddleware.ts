@@ -27,6 +27,7 @@ import {
   resolveHcmRolesForPlatformRole,
   resolveOrganizationRole,
   resolvePlatformRole,
+  resolveProcurementRolesForPlatformRole,
 } from "@/lib/platform/security/Role";
 import type { ServiceContext } from "@/types/services";
 
@@ -65,6 +66,7 @@ function createDevelopmentFallbackContext(): AuthorizedRequestContext {
       hcmRoles: resolveHcmRolesForPlatformRole(fallbackContext.role),
       financeRoles: resolveFinanceRolesForPlatformRole(fallbackContext.role),
       crmRoles: resolveCrmRolesForPlatformRole(fallbackContext.role),
+      procurementRoles: resolveProcurementRolesForPlatformRole(fallbackContext.role),
       modulePermissions: getPermissionsForRole(fallbackContext.role),
       authenticated: true,
     },

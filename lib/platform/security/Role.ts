@@ -59,12 +59,26 @@ export enum CrmRole {
   CrmReadOnly = "crm_read_only",
 }
 
+/** Procurement domain role profiles (permission bundles — not separate auth identities). */
+export enum ProcurementRole {
+  ProcurementAdministrator = "procurement_administrator",
+  ProcurementDirector = "procurement_director",
+  ProcurementManager = "procurement_manager",
+  Buyer = "procurement_buyer",
+  PurchasingOfficer = "procurement_purchasing_officer",
+  ReceivingOfficer = "procurement_receiving_officer",
+  SupplierManager = "procurement_supplier_manager",
+  ProcurementAuditor = "procurement_auditor",
+  ProcurementReadOnly = "procurement_read_only",
+}
+
 export type EnterpriseRole =
   | PlatformRole
   | OrganizationRole
   | HcmRole
   | FinanceRole
   | CrmRole
+  | ProcurementRole
   | RoleSlug;
 
 /** Maps session {@link RoleSlug} to enterprise organization role profile. */
@@ -183,5 +197,30 @@ export function resolveCrmRolesForPlatformRole(role: RoleSlug): readonly CrmRole
       return [CrmRole.CrmReadOnly];
     default:
       return [CrmRole.CrmReadOnly];
+  }
+}
+
+/** Procurement domain profiles granted by platform role (P-010.5 baseline). */
+export function resolveProcurementRolesForPlatformRole(role: RoleSlug): readonly ProcurementRole[] {
+  switch (role) {
+    case SystemRole.SuperAdmin:
+    case SystemRole.OrganizationAdmin:
+    case SystemRole.Administrator:
+      return [ProcurementRole.ProcurementAdministrator];
+    case SystemRole.ServiceAccount:
+      return [ProcurementRole.ProcurementAdministrator, ProcurementRole.Buyer];
+    case SystemRole.Executive:
+    case SystemRole.Founder:
+      return [ProcurementRole.ProcurementDirector];
+    case SystemRole.Manager:
+      return [ProcurementRole.ProcurementManager];
+    case SystemRole.Analyst:
+    case SystemRole.Staff:
+      return [ProcurementRole.Buyer];
+    case SystemRole.ReadOnly:
+    case SystemRole.Guest:
+      return [ProcurementRole.ProcurementReadOnly];
+    default:
+      return [ProcurementRole.ProcurementReadOnly];
   }
 }

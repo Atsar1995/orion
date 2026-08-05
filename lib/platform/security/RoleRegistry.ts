@@ -5,21 +5,38 @@
 import { buildPermissionCode, type PermissionCode } from "@/lib/platform/security/Permission";
 import {
   CrmRole,
-  HcmRole,
   FinanceRole,
+  HcmRole,
   OrganizationRole,
   PlatformRole,
+  ProcurementRole,
   resolveHcmRolesForPlatformRole,
 } from "@/lib/platform/security/Role";
 import { FINANCE_PERMISSIONS } from "@/lib/finance/security/finance-permission-catalog";
 import { CRM_PERMISSIONS } from "@/lib/crm/security/crm-permission-catalog";
+import { PROCUREMENT_PERMISSIONS } from "@/lib/procurement/security/procurement-permission-catalog";
 import type { RoleSlug } from "@/types/auth";
 import { SystemRole } from "@/lib/auth/roles";
 
 export type RoleAssignment = {
-  readonly role: PlatformRole | OrganizationRole | HcmRole | FinanceRole | CrmRole | RoleSlug;
+  readonly role:
+    | PlatformRole
+    | OrganizationRole
+    | HcmRole
+    | FinanceRole
+    | CrmRole
+    | ProcurementRole
+    | RoleSlug;
   readonly permissions: readonly PermissionCode[];
-  readonly inherits?: readonly (PlatformRole | OrganizationRole | HcmRole | FinanceRole | CrmRole | RoleSlug)[];
+  readonly inherits?: readonly (
+    | PlatformRole
+    | OrganizationRole
+    | HcmRole
+    | FinanceRole
+    | CrmRole
+    | ProcurementRole
+    | RoleSlug
+  )[];
 };
 
 const HCM_PERMISSIONS = {
@@ -45,6 +62,7 @@ const HCM_PERMISSIONS = {
 export { HCM_PERMISSIONS };
 export { FINANCE_PERMISSIONS };
 export { CRM_PERMISSIONS };
+export { PROCUREMENT_PERMISSIONS };
 
 const ROLE_ASSIGNMENTS: readonly RoleAssignment[] = [
   {
@@ -72,6 +90,7 @@ const ROLE_ASSIGNMENTS: readonly RoleAssignment[] = [
       ...Object.values(HCM_PERMISSIONS),
       ...Object.values(FINANCE_PERMISSIONS),
       ...Object.values(CRM_PERMISSIONS),
+      ...Object.values(PROCUREMENT_PERMISSIONS),
     ],
   },
   {
@@ -351,6 +370,124 @@ const ROLE_ASSIGNMENTS: readonly RoleAssignment[] = [
       CRM_PERMISSIONS.intelligenceRead,
     ],
   },
+  {
+    role: ProcurementRole.ProcurementAdministrator,
+    permissions: Object.values(PROCUREMENT_PERMISSIONS),
+  },
+  {
+    role: ProcurementRole.ProcurementDirector,
+    permissions: [
+      PROCUREMENT_PERMISSIONS.supplierRead,
+      PROCUREMENT_PERMISSIONS.supplierWrite,
+      PROCUREMENT_PERMISSIONS.vendorApprove,
+      PROCUREMENT_PERMISSIONS.requisitionRead,
+      PROCUREMENT_PERMISSIONS.requisitionCreate,
+      PROCUREMENT_PERMISSIONS.requisitionApprove,
+      PROCUREMENT_PERMISSIONS.rfqRead,
+      PROCUREMENT_PERMISSIONS.rfqWrite,
+      PROCUREMENT_PERMISSIONS.quotationRead,
+      PROCUREMENT_PERMISSIONS.quotationWrite,
+      PROCUREMENT_PERMISSIONS.purchaseOrderRead,
+      PROCUREMENT_PERMISSIONS.purchaseOrderCreate,
+      PROCUREMENT_PERMISSIONS.purchaseOrderApprove,
+      PROCUREMENT_PERMISSIONS.goodsReceiptRead,
+      PROCUREMENT_PERMISSIONS.invoiceRead,
+      PROCUREMENT_PERMISSIONS.invoiceApprove,
+      PROCUREMENT_PERMISSIONS.contractRead,
+      PROCUREMENT_PERMISSIONS.contractWrite,
+      PROCUREMENT_PERMISSIONS.auditRead,
+      PROCUREMENT_PERMISSIONS.intelligenceRead,
+    ],
+  },
+  {
+    role: ProcurementRole.ProcurementManager,
+    permissions: [
+      PROCUREMENT_PERMISSIONS.supplierRead,
+      PROCUREMENT_PERMISSIONS.requisitionRead,
+      PROCUREMENT_PERMISSIONS.requisitionCreate,
+      PROCUREMENT_PERMISSIONS.requisitionApprove,
+      PROCUREMENT_PERMISSIONS.rfqRead,
+      PROCUREMENT_PERMISSIONS.quotationRead,
+      PROCUREMENT_PERMISSIONS.purchaseOrderRead,
+      PROCUREMENT_PERMISSIONS.purchaseOrderCreate,
+      PROCUREMENT_PERMISSIONS.purchaseOrderApprove,
+      PROCUREMENT_PERMISSIONS.goodsReceiptRead,
+      PROCUREMENT_PERMISSIONS.invoiceRead,
+      PROCUREMENT_PERMISSIONS.intelligenceRead,
+    ],
+  },
+  {
+    role: ProcurementRole.Buyer,
+    permissions: [
+      PROCUREMENT_PERMISSIONS.supplierRead,
+      PROCUREMENT_PERMISSIONS.requisitionRead,
+      PROCUREMENT_PERMISSIONS.requisitionCreate,
+      PROCUREMENT_PERMISSIONS.rfqRead,
+      PROCUREMENT_PERMISSIONS.rfqWrite,
+      PROCUREMENT_PERMISSIONS.quotationRead,
+      PROCUREMENT_PERMISSIONS.quotationWrite,
+      PROCUREMENT_PERMISSIONS.purchaseOrderRead,
+      PROCUREMENT_PERMISSIONS.contractRead,
+    ],
+  },
+  {
+    role: ProcurementRole.PurchasingOfficer,
+    permissions: [
+      PROCUREMENT_PERMISSIONS.supplierRead,
+      PROCUREMENT_PERMISSIONS.requisitionRead,
+      PROCUREMENT_PERMISSIONS.purchaseOrderRead,
+      PROCUREMENT_PERMISSIONS.purchaseOrderCreate,
+      PROCUREMENT_PERMISSIONS.purchaseOrderApprove,
+      PROCUREMENT_PERMISSIONS.contractRead,
+    ],
+  },
+  {
+    role: ProcurementRole.ReceivingOfficer,
+    permissions: [
+      PROCUREMENT_PERMISSIONS.purchaseOrderRead,
+      PROCUREMENT_PERMISSIONS.goodsReceiptRead,
+      PROCUREMENT_PERMISSIONS.goodsReceiptWrite,
+    ],
+  },
+  {
+    role: ProcurementRole.SupplierManager,
+    permissions: [
+      PROCUREMENT_PERMISSIONS.supplierRead,
+      PROCUREMENT_PERMISSIONS.supplierWrite,
+      PROCUREMENT_PERMISSIONS.vendorApprove,
+      PROCUREMENT_PERMISSIONS.contractRead,
+      PROCUREMENT_PERMISSIONS.contractWrite,
+    ],
+  },
+  {
+    role: ProcurementRole.ProcurementAuditor,
+    permissions: [
+      PROCUREMENT_PERMISSIONS.supplierRead,
+      PROCUREMENT_PERMISSIONS.requisitionRead,
+      PROCUREMENT_PERMISSIONS.rfqRead,
+      PROCUREMENT_PERMISSIONS.quotationRead,
+      PROCUREMENT_PERMISSIONS.purchaseOrderRead,
+      PROCUREMENT_PERMISSIONS.goodsReceiptRead,
+      PROCUREMENT_PERMISSIONS.invoiceRead,
+      PROCUREMENT_PERMISSIONS.contractRead,
+      PROCUREMENT_PERMISSIONS.auditRead,
+      PROCUREMENT_PERMISSIONS.intelligenceRead,
+    ],
+  },
+  {
+    role: ProcurementRole.ProcurementReadOnly,
+    permissions: [
+      PROCUREMENT_PERMISSIONS.supplierRead,
+      PROCUREMENT_PERMISSIONS.requisitionRead,
+      PROCUREMENT_PERMISSIONS.rfqRead,
+      PROCUREMENT_PERMISSIONS.quotationRead,
+      PROCUREMENT_PERMISSIONS.purchaseOrderRead,
+      PROCUREMENT_PERMISSIONS.goodsReceiptRead,
+      PROCUREMENT_PERMISSIONS.invoiceRead,
+      PROCUREMENT_PERMISSIONS.contractRead,
+      PROCUREMENT_PERMISSIONS.intelligenceRead,
+    ],
+  },
 ];
 
 /** Role registry with inheritance resolution for platform and domain roles. */
@@ -363,7 +500,16 @@ export class RoleRegistry {
     }
   }
 
-  getPermissionsForRole(role: PlatformRole | OrganizationRole | HcmRole | FinanceRole | CrmRole | RoleSlug): Set<PermissionCode> {
+  getPermissionsForRole(
+    role:
+      | PlatformRole
+      | OrganizationRole
+      | HcmRole
+      | FinanceRole
+      | CrmRole
+      | ProcurementRole
+      | RoleSlug,
+  ): Set<PermissionCode> {
     return new Set(this.assignments.get(String(role)) ?? []);
   }
 
@@ -374,6 +520,7 @@ export class RoleRegistry {
     hcmRoles: readonly HcmRole[];
     financeRoles: readonly FinanceRole[];
     crmRoles: readonly CrmRole[];
+    procurementRoles: readonly ProcurementRole[];
   }): Set<PermissionCode> {
     const effective = new Set<PermissionCode>();
 
@@ -401,6 +548,11 @@ export class RoleRegistry {
         effective.add(code);
       }
     }
+    for (const procurementRole of identity.procurementRoles) {
+      for (const code of this.getPermissionsForRole(procurementRole)) {
+        effective.add(code);
+      }
+    }
 
     if (identity.role === SystemRole.SuperAdmin) {
       for (const code of Object.values(HCM_PERMISSIONS)) {
@@ -410,6 +562,9 @@ export class RoleRegistry {
         effective.add(code);
       }
       for (const code of Object.values(CRM_PERMISSIONS)) {
+        effective.add(code);
+      }
+      for (const code of Object.values(PROCUREMENT_PERMISSIONS)) {
         effective.add(code);
       }
       effective.add(buildPermissionCode("platform", "system", "admin"));

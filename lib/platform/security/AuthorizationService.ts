@@ -83,7 +83,9 @@ export class AuthorizationService {
     const [domain] = permission.split(":");
 
     const authorized =
-      domain === "finance" || domain === "crm" ? domainAllowed : moduleAllowed && domainAllowed;
+      domain === "finance" || domain === "crm" || domain === "procurement"
+        ? domainAllowed
+        : moduleAllowed && domainAllowed;
 
     if (authorized) {
       const result = allowResult(

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { FinanceRole, HcmRole, OrganizationRole, PlatformRole, CrmRole } from "@/lib/platform/security/Role";
-import { CRM_PERMISSIONS, HCM_PERMISSIONS, defaultRoleRegistry } from "@/lib/platform/security/RoleRegistry";
+import { FinanceRole, HcmRole, OrganizationRole, PlatformRole, CrmRole, ProcurementRole } from "@/lib/platform/security/Role";
+import { CRM_PERMISSIONS, HCM_PERMISSIONS, PROCUREMENT_PERMISSIONS, defaultRoleRegistry } from "@/lib/platform/security/RoleRegistry";
 import { SystemRole } from "@/lib/auth/roles";
 
 describe("RoleRegistry", () => {
@@ -24,6 +24,7 @@ describe("RoleRegistry", () => {
       hcmRoles: [HcmRole.HrAdministrator, HcmRole.PayrollManager],
       financeRoles: [FinanceRole.FinanceAdministrator],
       crmRoles: [],
+      procurementRoles: [],
     });
 
     expect(effective.has(HCM_PERMISSIONS.recruitmentWrite)).toBe(true);
@@ -38,6 +39,7 @@ describe("RoleRegistry", () => {
       hcmRoles: [],
       financeRoles: [FinanceRole.FinanceAdministrator],
       crmRoles: [CrmRole.CrmAdministrator],
+      procurementRoles: [ProcurementRole.ProcurementAdministrator],
     });
 
     expect(effective.has(HCM_PERMISSIONS.orgWrite)).toBe(true);
@@ -47,5 +49,18 @@ describe("RoleRegistry", () => {
     const permissions = defaultRoleRegistry.getPermissionsForRole(CrmRole.CrmAdministrator);
     expect(permissions.has(CRM_PERMISSIONS.leadCreate)).toBe(true);
     expect(permissions.has(CRM_PERMISSIONS.eventReplay)).toBe(true);
+  });
+
+  it("grants Procurement permissions to procurement administrator profile", () => {
+    const permissions = defaultRoleRegistry.getPermissionsForRole(
+      ProcurementRole.ProcurementAdministrator,
+    );
+    expect(permissions.has(PROCUREMENT_PERMISSIONS.requisitionCreate)).toBe(true);
+    expect(permissions.has(PROCUREMENT_PERMISSIONS.eventReplay)).toBe(true);
+  });
+
+  it("grants procurement permissions to organization administrator profile", () => {
+    const permissions = defaultRoleRegistry.getPermissionsForRole(OrganizationRole.OrganizationAdministrator);
+    expect(permissions.has(PROCUREMENT_PERMISSIONS.purchaseOrderApprove)).toBe(true);
   });
 });
