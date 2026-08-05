@@ -11,11 +11,27 @@
 **Architecture Baseline:** v1.0 Candidate (RC)
 
 **Supersedes:** Informal roadmap fragments — consolidates [P-014.1 Strategy](./ORION_Enterprise_Platform_Strategy_v1.0.md) into the official master plan  
-**Baseline Sources:** [Enterprise Governance (G-001)](../11_Governance/Governance/G-001-Enterprise-Architecture-Governance-Charter.md) · [Enterprise Architecture Handbook v1.0](./ORION_Enterprise_Architecture_Handbook_v1.0.md) · [Enterprise HCM RC1](../06_Releases/v1.0.1-rc1-Certification.md) · [Platform Retrospective v1.0](./ORION_Platform_Retrospective_v1.0.md) · [Platform Strategy v1.0](./ORION_Enterprise_Platform_Strategy_v1.0.md) · [Release Framework](../06_Releases/Release-Policy.md) · **[P-016.6 v2.0 Baseline](./P-016.6-Architecture-Baseline.md)** *(August 2026 addendum)*
+**Baseline Sources:** [Enterprise Governance (G-001)](../11_Governance/Governance/G-001-Enterprise-Architecture-Governance-Charter.md) · [Enterprise Architecture Handbook v1.0](./ORION_Enterprise_Architecture_Handbook_v1.0.md) · [Enterprise HCM RC1](../06_Releases/v1.0.1-rc1-Certification.md) · [Platform Retrospective v1.0](./ORION_Platform_Retrospective_v1.0.md) · [Platform Strategy v1.0](./ORION_Enterprise_Platform_Strategy_v1.0.md) · [Release Framework](../06_Releases/Release-Policy.md) · **[P-016.7 v2.0 Readiness Sync](./P-016.7-Enterprise-Readiness-Update.md)** *(August 2026 addendum)*
 
 ---
 
-## v2.0 August 2026 Baseline Addendum (P-016.6)
+## v2.0 August 2026 Baseline Addendum (P-016.7)
+
+| Milestone | Status | Reference |
+|-----------|--------|-----------|
+| Wave 1 ADR acceptance (013·014·015·020) | ✅ Accepted | [P-016.5](./P-016.5-Architecture-Review-Board-Ratification.md) |
+| ADR-013 Durable IIL | ✅ Implemented | P-009.16 · `9cddb12` |
+| Finance Gate 5 Wave A engineering | ✅ CONDITIONAL GO | [Finance-Gate5-Closure-Program](../Finance/Certification/Finance-Gate5-Closure-Program.md) |
+| CRM Gate 5 Wave B + persistence + wiring | ✅ CONDITIONAL GO | P-008.17 · P-008.18 · `b4853d7` |
+| CRM → Finance enterprise reference chain | ✅ Certified | P-009.19 · `3f259d9` · **CRM-R-003 CLOSED** |
+| HCM → Finance enterprise reference chain | ✅ Certified | P-009.9 · P-009.15 |
+| v2.0 GA release | ❌ NO-GO | FIN-R-001 GL PostgreSQL |
+
+**Authoritative baseline:** [ORION-v2.0-Baseline.md](../99_History/ORION-v2.0-Baseline.md) · [ORION-v2.0-Milestone-CRM-Finance.md](../99_History/ORION-v2.0-Milestone-CRM-Finance.md) · [P-016.7 Readiness Update](./P-016.7-Enterprise-Readiness-Update.md)
+
+---
+
+## v2.0 August 2026 Baseline Addendum (P-016.6 — superseded by P-016.7 for scores)
 
 | Milestone | Status | Reference |
 |-----------|--------|-----------|

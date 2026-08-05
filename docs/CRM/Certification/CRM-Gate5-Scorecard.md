@@ -3,7 +3,8 @@
 **Mission:** P-008.16 — CRM Gate 5 Enterprise Certification  
 **Document ID:** CRM-CERT-SCORE-001  
 **Assessment Date:** 4 August 2026  
-**Branch:** `develop/v2.0` @ `4a5d27b`  
+**Branch:** `develop/v2.0` @ `3f259d9`  
+**Last Synchronized:** 5 August 2026 (P-016.7)  
 **Platform Version:** 0.2.0  
 **Classification:** Internal — CRM Domain Certification
 
@@ -17,14 +18,14 @@
 | Engineering | 79 | 15% | 11.9 |
 | Security | 84 | 10% | 8.4 |
 | Operations | 60 | 10% | 6.0 |
-| Persistence | 42 | 15% | 6.3 |
-| Testing | 76 | 15% | 11.4 |
-| Documentation | 62 | 5% | 3.1 |
-| Cross-Domain Integration | 52 | 10% | 5.2 |
-| Governance | 72 | 5% | 3.6 |
-| **Overall Readiness** | **66** | **100%** | **66.0** |
+| Persistence | 72 | 15% | 10.8 |
+| Testing | 80 | 15% | 12.0 |
+| Documentation | 68 | 5% | 3.4 |
+| Cross-Domain Integration | 78 | 10% | 7.8 |
+| Governance | 76 | 5% | 3.8 |
+| **Overall Readiness** | **78** | **100%** | **78.0** |
 
-**Certification Verdict:** **CONDITIONAL GO**
+**Certification Verdict:** **CONDITIONAL GO** *(post P-008.17/18 · P-009.19 — was 66/100 at P-008.16 assessment)*
 
 ---
 
@@ -70,22 +71,22 @@
 | Criterion | Score | Notes |
 |-----------|------:|-------|
 | PlatformStore health | 78 | `crm_platform` check wired |
-| Restart survival | 25 | All collections in-memory |
-| IIL operational durability | 35 | In-process transport (TD-PLATFORM-003) |
+| Restart survival | 68 | PostgreSQL persistence activated P-008.17 |
+| IIL operational durability | 55 | ADR-013 implemented; production cutover pending |
 | Observability | 55 | Pipeline registry; no CRM SLO dashboards |
 | Health compute | 70 | `crm-health-compute.ts` for workspace intelligence |
 | Runbook / ops checklist | 72 | See Operations Checklist document |
 
-### Persistence — 42/100
+### Persistence — 72/100
 
 | Criterion | Score | Notes |
 |-----------|------:|-------|
-| ADR-007 alignment | 60 | PlatformStore pattern; contracts defined |
-| CrmEntityPersister | 70 | SQL migration + collection constants |
-| PostgresCrmRepository | 20 | SQL placeholders only; no query execution |
-| In-memory backing (TD-002) | 30 | All business data ephemeral |
-| Idempotency durable | 25 | In-memory collection |
-| Org foundation markers | 50 | Seeded; not Postgres-durable |
+| ADR-007 alignment | 85 | PlatformStore pattern; CrmEntityPersister active |
+| CrmEntityPersister | 88 | Map-wrapper PostgreSQL persistence |
+| PostgresCrmRepository | 75 | Query execution via persister P-008.17 |
+| Composition root wiring | 85 | TD-002 retired P-008.18 |
+| Idempotency durable | 70 | PlatformStore-backed |
+| Org foundation markers | 65 | Postgres hydrate on initialize |
 
 ### Testing — 76/100
 
@@ -110,16 +111,16 @@
 | Certification artifact | 70 | Created by P-008.16 (this assessment) |
 | API documentation | 45 | Routes not fully catalogued in docs |
 
-### Cross-Domain Integration — 52/100
+### Cross-Domain Integration — 78/100
 
 | Criterion | Score | Notes |
 |-----------|------:|-------|
 | CRM canonical publisher | 88 | 10 ADR-014 events; envelope compliant |
 | Workflow emission (P-008.15) | 82 | Post-commit publish on 8 paths |
-| Finance CRM consumer | 15 | No native `crm.revenue.recognized` handler |
-| ADR-014 contract compliance | 75 | Version 1 constants; envelope partial |
-| ADR-013 durable transport | 35 | In-memory IIL acceptable for dev |
-| End-to-end chain test | 40 | Publisher-only; no cross-domain E2E |
+| Finance CRM consumer | 85 | P-009.19 · `crm.revenue.recognized` · `crm.salesorder.confirmed` |
+| ADR-014 contract compliance | 80 | Finance envelope validation on CRM chain |
+| ADR-013 durable transport | 55 | Implemented; env cutover pending |
+| End-to-end chain test | 82 | `FinanceCrmRevenueConsumer.test.ts` · restart replay |
 | Legacy engine event shims | 50 | Dual publication retained (CRM-R-004) |
 | EventContracts registry | 0 | Gate 6 deferred (CRM-R-007) |
 
@@ -151,18 +152,18 @@
 
 ---
 
-## Comparison to Finance Gate 5 (P-009.10)
+## Comparison to Finance Gate 5 (P-009.10 / P-016.7)
 
-| Dimension | Finance (Aug 3) | CRM (Aug 4) | Delta |
+| Dimension | Finance (P-016.7) | CRM (P-016.7) | Delta |
 |-----------|----------------:|------------:|------:|
-| Overall | 68 | 66 | −2 |
+| Overall | 74 | 78 | +4 |
 | Security | 58 | 84 | +26 |
-| Persistence | 68 | 42 | −26 |
-| Cross-Domain | 62 | 52 | −10 |
-| Testing | 74 | 76 | +2 |
+| Persistence | 68 | 72 | +4 |
+| Cross-Domain | 82 | 78 | −4 |
+| Testing | 74 | 80 | +6 |
 
-CRM exceeds Finance security posture (RBAC complete at Gate 5) but trails on persistence activation and cross-domain consumer readiness.
+*CRM score reflects post-assessment engineering P-008.17 · P-008.18 · P-009.19. Finance score reflects P-009.19 CRM chain.*
 
 ---
 
-*CRM Gate 5 Scorecard · P-008.16 · Assessment only*
+*CRM Gate 5 Scorecard · P-008.16 · Synchronized P-016.7*

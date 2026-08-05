@@ -3,8 +3,8 @@
 **Mission:** P-009.10 — Finance Gate 5 Enterprise Certification  
 **Document ID:** FIN-CERT-RISK-001  
 **Assessment Date:** 3 August 2026  
-**Last Synchronized:** 3 August 2026 (P-016.6)  
-**Branch Baseline:** `develop/v2.0` @ `65da475`  
+**Last Synchronized:** 5 August 2026 (P-016.7)  
+**Branch Baseline:** `develop/v2.0` @ `3f259d9`  
 **Classification:** Internal — Finance Domain Certification
 
 **Baseline:** [P-016.6 Architecture Baseline](../../00_Governance/P-016.6-Architecture-Baseline.md) · [Finance-GA001-Certification.md](./Finance-GA001-Certification.md)
@@ -71,8 +71,8 @@
 
 ## Risk Trend
 
-Wave A engineering (P-009.13–P-009.17) closed **5 of 6** high risks. Remaining high risk is **GL PostgreSQL durability (FIN-R-001)**. Architecture risks (ADR-014 registry, ADR-015 CRM convergence) tracked in [P-016.6](../../00_Governance/P-016.6-Architecture-Baseline.md).
+Wave A engineering (P-009.13–P-009.19) closed **5 of 6** high risks and established **two enterprise reference chains**. Remaining high risk is **GL PostgreSQL durability (FIN-R-001)**. CRM-R-003 closed at P-009.19. Architecture risks (ADR-014 registry) tracked in [P-016.7](../../00_Governance/P-016.7-Enterprise-Readiness-Update.md).
 
 ---
 
-*Finance Gate 5 Risk Register · P-009.10 · Synchronized P-016.6*
+*Finance Gate 5 Risk Register · P-009.10 · Synchronized P-016.7*

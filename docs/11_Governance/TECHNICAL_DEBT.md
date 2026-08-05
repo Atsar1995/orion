@@ -1,10 +1,10 @@
 # ORION Technical Debt Register
 
-**Version:** Wave 1 v1.1 · v2.0 August Baseline  
-**Last Updated:** 3 August 2026  
+**Version:** Wave 1 v1.2 · v2.0 August Baseline  
+**Last Updated:** 5 August 2026  
 **Authority:** Chief Enterprise Architect  
-**Status:** Synchronized — P-016.6 Architecture Baseline  
-**Previous Baseline:** v1.0 (23 August 2026 — P-015.7 Wave 1 Quality Gate)
+**Status:** Synchronized — P-016.7 Enterprise Readiness Update  
+**Previous Baseline:** v1.1 (3 August 2026 — P-016.6 Architecture Baseline)
 
 ---
 
@@ -17,18 +17,18 @@ This register tracks known technical debt, deferred features, and improvement ba
 
 ---
 
-## Summary (v2.0 August Baseline — P-016.6)
+## Summary (v2.0 August Baseline — P-016.7)
 
 | Severity | Open | Resolved | Partial | Deferred | Accepted |
 |----------|------|----------|---------|----------|----------|
 | **Critical** | 0 | 2 | 0 | 0 | 0 |
-| **High** | 2 | 4 | 0 | 0 | 0 |
-| **Medium** | 4 | 2 | 1 | 0 | 0 |
+| **High** | 1 | 7 | 0 | 0 | 0 |
+| **Medium** | 4 | 3 | 1 | 0 | 0 |
 | **Low** | 4 | 0 | 0 | 0 | 0 |
 
-**REG-001 (Critical governance debt):** **Closed** — register synchronized through P-016.6.
+**REG-001 (Critical governance debt):** **Closed** — register synchronized through P-016.7.
 
-**P-016.6 closures:** TD-PLATFORM-003 · AG-002 (durable IIL) · FIN-R-002/003/004/005/007 promoted from Finance risk register.
+**P-016.7 closures:** CRM-R-001 · CRM-R-002 · CRM-R-003 · CRM-R-006 (CRM persistence · composition root · Finance CRM consumer).
 
 ---
 
@@ -183,12 +183,12 @@ This register tracks known technical debt, deferred features, and improvement ba
 | **ID** | TD-DOMAIN-PERSIST-001 |
 | **Domain** | CRM · Finance |
 | **Severity** | Medium |
-| **Status** | **Partial** (P-016.6) |
-| **Description** | CRM in-memory; Finance journals + master data PostgreSQL-durable; **GL entries/balances still in-memory** (FIN-R-001). |
-| **Mitigation** | P-009.13 master data ✅ · P-009.12 GL persist (planned) |
-| **Owner** | Finance Domain · Platform Engineering |
+| **Status** | **Partial** (P-016.7) |
+| **Description** | CRM PostgreSQL-durable (P-008.17) ✅ · Finance journals + master data PostgreSQL-durable ✅ · **GL entries/balances still in-memory** (FIN-R-001). |
+| **Mitigation** | P-009.13 master data ✅ · P-008.17 CRM persist ✅ · P-009.12 GL persist (planned) |
+| **Owner** | Finance Domain · Platform Engineering · CRM Domain |
 | **Target** | P-009.12 Wave A completion |
-| **Evidence** | `tests/lib/finance/FinanceMasterDataPersistence.test.ts` · commit `12c4ab5` |
+| **Evidence** | `tests/lib/crm/CrmPersistenceRestart.test.ts` · `tests/lib/finance/FinanceMasterDataPersistence.test.ts` · commit `b4853d7` |
 
 ### AG-002 — Durable IIL Transport Plan
 
@@ -284,7 +284,8 @@ When items are added, each entry shall include:
 | 30 Jul 2026 | v0.3 | Initial baseline — no entries |
 | 23 Aug 2026 | v1.0 | P-015.7 sync — REG-001 closed · Wave 1 P0 items resolved · backlog classified |
 | 3 Aug 2026 | v1.1 | P-016.6 sync — TD-PLATFORM-003 · AG-002 closed · TD-DOMAIN-PERSIST-001 partial · Finance Gate 5 risk promotion |
+| 5 Aug 2026 | v1.2 | P-016.7 sync — CRM-R-001/002/003/006 closed · CRM→Finance chain · CRM Postgres persist |
 
 ---
 
-*See also: [P-016.6 Architecture Baseline](../00_Governance/P-016.6-Architecture-Baseline.md) · [ORION-v2.0-Baseline.md](../99_History/ORION-v2.0-Baseline.md) · [P-015.7 Wave 1 Completion Report](../00_Governance/P-015.7-Wave1-Completion-Report.md) · Domain certification in [`Certification/`](./Certification/)*
+*See also: [P-016.7 Enterprise Readiness Update](../00_Governance/P-016.7-Enterprise-Readiness-Update.md) · [P-016.6 Architecture Baseline](../00_Governance/P-016.6-Architecture-Baseline.md) · [ORION-v2.0-Milestone-CRM-Finance.md](../99_History/ORION-v2.0-Milestone-CRM-Finance.md) · [P-015.7 Wave 1 Completion Report](../00_Governance/P-015.7-Wave1-Completion-Report.md) · Domain certification in [`Certification/`](./Certification/)*

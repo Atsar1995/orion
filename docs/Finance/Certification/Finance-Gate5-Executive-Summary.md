@@ -2,21 +2,21 @@
 
 **Mission:** P-009.11 — Finance Gate 5 Closure Program  
 **Document ID:** FIN-CLOSE-EXEC-001  
-**Date:** 3 August 2026  
+**Date:** 3 August 2026 · **Updated:** 5 August 2026 (P-016.7)  
 **Audience:** Founder · Program Director · Chief Enterprise Architect · Domain Leads  
 **Classification:** Internal — Executive Brief
 
-**Related:** [Closure Program](./Finance-Gate5-Closure-Program.md) · [Closure Roadmap](./Finance-Gate5-Closure-Roadmap.md) · [P-009.10 Certification Report](./Finance-Gate5-Certification-Report.md)
+**Related:** [Closure Program](./Finance-Gate5-Closure-Program.md) · [Closure Roadmap](./Finance-Gate5-Closure-Roadmap.md) · [P-009.10 Certification Report](./Finance-Gate5-Certification-Report.md) · [P-016.7 Readiness Update](../../00_Governance/P-016.7-Enterprise-Readiness-Update.md)
 
 ---
 
 ## Situation
 
-Finance Gate 5 Wave A is **engineering-complete** and **certified CONDITIONAL GO** at **68/100** readiness (P-009.10, commit `a5b2f72`).
+Finance Gate 5 Wave A is **engineering-complete** and **certified CONDITIONAL GO** at **74/100** readiness (P-016.7 sync; was 68/100 at P-009.10).
 
-Wave A delivered the first governed accounting behaviour on ORION v2.0: journal posting, general ledger mutation, eight-stage validation pipeline, PostgreSQL-durable journals and event lineage, and a Finance-side HCM event consumer.
+Wave A delivered governed accounting behaviour on ORION v2.0: journal posting, general ledger mutation, eight-stage validation pipeline, PostgreSQL-durable journals and event lineage, and **two enterprise reference chains** — HCM → Finance (P-009.9) and CRM → Finance (P-009.19).
 
-**Production deployment is not authorized.** Five high-severity risks remain, clustered around durability, security, and cross-domain integration — not core posting logic correctness.
+**Production deployment is not authorized.** Primary remaining blocker is **FIN-R-001** (GL PostgreSQL durability). CRM-R-003 closed at P-009.19.
 
 ---
 

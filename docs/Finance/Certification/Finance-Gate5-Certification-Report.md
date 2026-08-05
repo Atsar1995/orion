@@ -44,7 +44,8 @@ Wave A is **authorized for continued development, integration testing, and archi
 | Journal posting UoW | P-009.7C | ✅ Certified |
 | General ledger posting | P-009.7D | ✅ Certified |
 | Posting validation pipeline | P-009.8 | ✅ Certified |
-| HCM → Finance event chain | P-009.9 | ✅ Certified (Finance consumer) |
+| HCM → Finance event chain | P-009.9 · P-009.15 | ✅ Certified |
+| CRM → Finance event chain | P-009.19 | ✅ Certified |
 
 ### 2.2 Explicitly Out of Scope
 
@@ -83,13 +84,18 @@ Rollback restores journal status and in-memory GL state atomically within the tr
 
 ### 3.3 Cross-Domain Integration
 
-Finance consumer (`FinanceEventConsumer`) validates ADR-014 envelope semantics and executes:
+Finance consumer (`FinanceEventConsumer`) validates ADR-014 envelope semantics on **two enterprise reference chains**:
+
+| Chain | Events | Status |
+|-------|--------|--------|
+| HCM → Finance | `hcm.workforce.cost.recorded` · `hcm.expense.approved` | ✅ P-009.9 · P-009.15 |
+| CRM → Finance | `crm.revenue.recognized` · `crm.salesorder.confirmed` | ✅ P-009.19 · CRM-R-003 closed |
 
 ```
 IIL → Envelope → Contract → Org → Idempotency → Journal → Validation → Post → GL → Lineage
 ```
 
-**Gap:** HCM upstream does not yet emit native `hcm.workforce.cost.recorded` / `hcm.expense.approved` events. Chain is consumer-certified with synthetic test events.
+**Documentation:** [HCM-Finance-Event-Chain.md](../Integration/HCM-Finance-Event-Chain.md) · [Finance-CRM-Revenue-Integration.md](../Integration/Finance-CRM-Revenue-Integration.md)
 
 ---
 

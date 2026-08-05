@@ -5,7 +5,8 @@
 **Program:** P-008 — ORION Enterprise CRM  
 **Gate:** Gate 5 — Wave B Engineering Certification  
 **Assessment Date:** 4 August 2026  
-**Branch:** `develop/v2.0` @ `4a5d27b`  
+**Branch:** `develop/v2.0` @ `3f259d9`  
+**Post-Assessment Sync:** P-016.7 (5 August 2026)  
 **Platform Version:** 0.2.0  
 **Classification:** Internal — CRM Domain Certification  
 **Authority:** CRM Domain Lead · Chief Enterprise Architect
@@ -27,7 +28,7 @@ Wave B delivers a complete **platform foundation** (composition root, PlatformSt
 **Overall Readiness Score:** **66/100**  
 **Official Certification:** **CONDITIONAL GO**
 
-CRM Gate 5 is **authorized for continued development, integration testing, and Gate 6 planning**. Unconditional production deployment requires closure of high-severity risks documented in the [Risk Register](./CRM-Gate5-Risk-Register.md).
+**Post-assessment engineering (P-008.17 · P-008.18 · P-009.19):** PostgreSQL persistence activated · composition root convergence · Finance CRM consumer live. High risks CRM-R-001 · CRM-R-002 · CRM-R-003 **CLOSED**. Updated score: **78/100** — see [Scorecard](./CRM-Gate5-Scorecard.md) · [P-016.7](../../00_Governance/P-016.7-Enterprise-Readiness-Update.md).
 
 ---
 
@@ -90,7 +91,7 @@ Domain Service → Repository commit → CrmCanonicalEventPublisher.publish*()
       → Consumers: Finance · Intelligence · Analytics *(consumers not yet implemented)*
 ```
 
-**Gap:** Finance has no native consumer for `crm.revenue.recognized` or `crm.salesorder.confirmed`. Chain is publisher-certified with unit/integration tests only (CRM-R-003).
+**Gap (closed P-009.19):** ~~Finance has no native consumer~~ — Finance now consumes `crm.revenue.recognized` and `crm.salesorder.confirmed` via `FinanceEventConsumer` CRM chain. See [Finance-CRM-Revenue-Integration.md](../../Finance/Integration/Finance-CRM-Revenue-Integration.md).
 
 ---
 
@@ -107,9 +108,7 @@ Domain Service → Repository commit → CrmCanonicalEventPublisher.publish*()
 | Idempotency keys | ❌ In-memory | ❌ |
 | Entity registry | ❌ In-memory | ❌ |
 
-`PostgresCrmRepository` exists with parameterized SQL placeholders (`CRM_SELECT_BY_ID`, `CRM_UPSERT`, etc.) but **query execution is deferred** — constructor voids all SQL constants without executing them (CRM-R-001).
-
-**Verdict:** Repository infrastructure meets ADR-007 pattern definition. Production durability is not yet active. Business logic operates on `InMemoryCrmRepository` via TD-002 singleton path (CRM-R-002).
+**Verdict (updated P-008.17):** PostgreSQL persistence active via `CrmEntityPersister` Map-wrapper. Restart survival certified in `CrmPersistenceRestart.test.ts`. Composition root is sole wiring path (P-008.18 · CRM-R-002 closed).
 
 ---
 
@@ -154,7 +153,7 @@ Repository factory and contracts are stable and tested. Dual-path wiring: compos
 | Event catalogue + uniqueness guard | ✅ `crm-event-catalog.ts` |
 | Workflow emission (P-008.15) | ✅ 8 trigger paths |
 | Legacy engine event shims | ⚠️ Dual publication (HCM pattern) — CRM-R-004 |
-| Finance consumer | ❌ Not implemented — CRM-R-003 |
+| Finance consumer | ✅ P-009.19 — CRM-R-003 closed |
 | EventContracts registry | ❌ Gate 6 deferred — CRM-R-007 |
 
 Key emission paths certified in `CrmWorkflowEventEmission.test.ts`:
@@ -225,8 +224,7 @@ P-008.16 adds this certification pack under `docs/CRM/Certification/`.
 |-----------|-------|-------|
 | Dev/staging CRM operations | ✅ | In-memory backing fully functional |
 | Production CRM operations | ❌ | Postgres activation + Finance consumer blockers |
-| Cross-domain CRM → Finance chain (dev) | ⚠️ | Publisher emits; no Finance consumer |
-| Cross-domain CRM → Finance chain (prod) | ❌ | CRM-R-003 |
+| Cross-domain CRM → Finance chain | ✅ | P-009.19 · integration tests |
 | Restart recovery | ❌ | All collections in-memory |
 | Health monitoring | ✅ | `crm_platform` in HealthStatusService |
 | Runbook | ✅ | Operations Checklist provided |
@@ -295,9 +293,11 @@ npm test -- tests/lib/crm tests/lib/platform/security tests/platform/iil  # 265 
 
 ### Conditions for Unconditional GO
 
-1. Activate PostgreSQL query execution in `PostgresCrmRepository` (CRM-R-001)
-2. Route business logic through composition root repositories; retire TD-002 singleton path (CRM-R-002)
-3. Implement Finance consumer for `crm.revenue.recognized` and `crm.salesorder.confirmed` (CRM-R-003)
+1. ~~Activate PostgreSQL query execution~~ ✅ P-008.17
+2. ~~Route business logic through composition root~~ ✅ P-008.18
+3. ~~Implement Finance CRM consumer~~ ✅ P-009.19
+4. Unify CRM facade surface (CRM-R-009)
+5. Add GA-001 CRM restart scenario (CRM-R-010)
 4. Durable IIL transport or executive waiver with compensating controls (TD-PLATFORM-003)
 5. Extend GA-001 with CRM restart-survival scenario (CRM-R-010)
 6. Set `CrmFacade.readyForCertification: true` after above conditions met

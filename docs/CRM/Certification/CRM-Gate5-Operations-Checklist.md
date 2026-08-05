@@ -16,7 +16,7 @@
 - [ ] `CrmEntityPersister` connected when `StoreProvider.PostgreSQL`
 - [ ] CRM health endpoint returns healthy on `/api/health` (`crm_platform` aggregate)
 - [ ] `createCrmWiring()` invoked at application bootstrap
-- [ ] **Gap:** `PostgresCrmRepository` does not execute SQL — in-memory backing active (CRM-R-001)
+- [x] PostgreSQL persistence via `CrmEntityPersister` (P-008.17 · CRM-R-001 closed)
 
 ### CRM Business Operations
 
@@ -42,8 +42,8 @@
 - [ ] `sourceService: crm-workspace` and `sourceDomain: crm`
 - [ ] Idempotency key follows deterministic pattern per event type
 - [ ] IIL publisher registered via `getIntelligenceIntegrationService()`
-- [ ] **Gap:** Finance consumer not registered for CRM canonical types (CRM-R-003)
-- [ ] **Manual:** Verify Finance receives `crm.revenue.recognized` after contract sign (not yet possible)
+- [x] Finance consumer registered for CRM canonical types (P-009.19 · CRM-R-003 closed)
+- [ ] **Manual:** Verify Finance receives `crm.revenue.recognized` after contract sign in staging
 
 ### Canonical Event Verification
 
@@ -62,7 +62,7 @@
 
 ### Restart & Recovery
 
-- [ ] **Manual:** Confirm CRM data after restart (not yet durable — see CRM-R-001)
+- [x] **Manual:** Confirm CRM data after restart (`CrmPersistenceRestart.test.ts`)
 - [ ] **Manual:** Confirm IIL queue state after restart (in-memory — see CRM-R-011)
 - [ ] **Manual:** Confirm canonical event idempotency after restart (publisher keys deterministic; IIL state ephemeral)
 

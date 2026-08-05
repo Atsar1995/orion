@@ -20,11 +20,11 @@
 | Persistence | 68 | 15% | 10.2 |
 | Testing | 74 | 15% | 11.1 |
 | Documentation | 78 | 5% | 3.9 |
-| Cross-Domain Integration | 62 | 10% | 6.2 |
+| **Cross-Domain Integration** | 82 | 10% | 8.2 |
 | Governance | 75 | 5% | 3.8 |
-| **Overall Readiness** | **68** | **100%** | **68.0** |
+| **Overall Readiness** | **74** | **100%** | **74.0** |
 
-**Certification Verdict:** **CONDITIONAL GO**
+**Certification Verdict:** **CONDITIONAL GO** *(P-016.7 sync — CRM chain added P-009.19)*
 
 ---
 
@@ -107,15 +107,16 @@
 | Certification artifact | 70 | Created by P-009.10 (this assessment) |
 | API documentation | 60 | README scaffold; routes not fully catalogued |
 
-### Cross-Domain Integration — 62/100
+### Cross-Domain Integration — 82/100
 
 | Criterion | Score | Notes |
 |-----------|------:|-------|
 | HCM consumer (Finance) | 85 | Envelope, version, org, idempotency |
-| HCM publisher | 25 | No native `workforce.cost` / `expense.approved` emitters |
-| ADR-014 contract compliance | 70 | Canonical types in mapper; envelope partial |
-| ADR-013 durable transport | 30 | In-memory IIL acceptable for Wave A spike |
-| End-to-end chain test | 80 | `FinanceEventConsumer.test.ts` (9 cases) |
+| HCM publisher | 85 | P-009.15 native publishers |
+| CRM consumer (Finance) | 85 | P-009.19 · `crm.revenue.recognized` · `crm.salesorder.confirmed` |
+| ADR-014 contract compliance | 80 | HCM + CRM inbound chains |
+| ADR-013 durable transport | 75 | Implemented P-009.16 |
+| End-to-end chain tests | 85 | HCM + CRM consumer suites (19 cases) |
 | Outbound `finance.journal.posted` | 0 | Not implemented (Wave B) |
 
 ### Governance — 75/100
