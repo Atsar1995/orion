@@ -18,9 +18,11 @@ import { PurchaseApprovalService } from "@/lib/procurement/services/PurchaseAppr
 import { PurchaseRequisitionService } from "@/lib/procurement/services/PurchaseRequisitionService";
 import { PurchaseOrderService } from "@/lib/procurement/services/PurchaseOrderService";
 import { PurchaseContractService } from "@/lib/procurement/services/PurchaseContractService";
+import { GoodsReceiptService } from "@/lib/procurement/services/GoodsReceiptService";
+import { ReceivingLineService } from "@/lib/procurement/services/ReceivingLineService";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 
-/** Procurement composition root — PlatformStore-backed dependency injection (Mission P-010.3 · P-010.4 · P-010.5 · P-010.6 · P-010.7 · P-010.8 · P-010.9). */
+/** Procurement composition root — PlatformStore-backed dependency injection (Mission P-010.3 · P-010.4 · P-010.5 · P-010.6 · P-010.7 · P-010.8 · P-010.9 · P-010.10). */
 export type ProcurementWiring = ProcurementRepositories &
   ProcurementPersistenceRepositories & {
     readonly platformStore: PlatformStore;
@@ -34,6 +36,8 @@ export type ProcurementWiring = ProcurementRepositories &
     readonly purchaseRequisitionService: PurchaseRequisitionService;
     readonly purchaseOrderService: PurchaseOrderService;
     readonly purchaseContractService: PurchaseContractService;
+    readonly goodsReceiptService: GoodsReceiptService;
+    readonly receivingLineService: ReceivingLineService;
   };
 
 /** Centralized Procurement dependency wiring — authoritative composition root. */
@@ -75,6 +79,12 @@ export function createProcurementWiring(platformStore: PlatformStore): Procureme
     repositories.ordering,
     authorization,
   );
+  const goodsReceiptService = new GoodsReceiptService(
+    repositories.receiving,
+    authorization,
+    canonicalEventPublisher,
+  );
+  const receivingLineService = new ReceivingLineService(repositories.receiving, authorization);
 
   setProcurementEventPipelineRegistry({
     initialized: true,
@@ -94,6 +104,8 @@ export function createProcurementWiring(platformStore: PlatformStore): Procureme
     purchaseRequisitionService,
     purchaseOrderService,
     purchaseContractService,
+    goodsReceiptService,
+    receivingLineService,
     ...persistenceRepositories,
     ...repositories,
   };

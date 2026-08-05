@@ -9,6 +9,8 @@ export { PurchaseRequisitionService } from "@/lib/procurement/services/PurchaseR
 export { PurchaseApprovalService } from "@/lib/procurement/services/PurchaseApprovalService";
 export { PurchaseOrderService } from "@/lib/procurement/services/PurchaseOrderService";
 export { PurchaseContractService } from "@/lib/procurement/services/PurchaseContractService";
+export { GoodsReceiptService } from "@/lib/procurement/services/GoodsReceiptService";
+export { ReceivingLineService } from "@/lib/procurement/services/ReceivingLineService";
 export type {
   VendorRecord,
   VendorStatus,
@@ -38,6 +40,16 @@ export type {
   CreatePurchaseContractInput,
   UpdatePurchaseContractInput,
 } from "@/lib/procurement/types/purchase-order";
+export type {
+  GoodsReceiptRecord,
+  GoodsReceiptStatus,
+  ReceivingLineRecord,
+  CreateGoodsReceiptInput,
+  UpdateGoodsReceiptInput,
+  CreateReceivingLineInput,
+  UpdateReceivingLineInput,
+  ReceiveItemsInput,
+} from "@/lib/procurement/types/goods-receipt";
 export const procurementSupplierService = procurementFacade.suppliers.vendor;
 export const procurementVendorContactService = procurementFacade.suppliers.contacts;
 export const procurementVendorScorecardService = procurementFacade.suppliers.scorecards;
@@ -45,6 +57,8 @@ export const procurementRequisitionService = procurementFacade.requisitions.purc
 export const procurementApprovalService = procurementFacade.requisitions.approval;
 export const procurementPurchaseOrderService = procurementFacade.orders.purchase;
 export const procurementPurchaseContractService = procurementFacade.orders.contracts;
+export const procurementGoodsReceiptService = procurementFacade.receiving.goodsReceipt;
+export const procurementReceivingLineService = procurementFacade.receiving.lines;
 export {
   PROCUREMENT_SEED_ORG_ID,
   PROCUREMENT_FOUNDATION_VERSION,

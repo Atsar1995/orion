@@ -13,6 +13,10 @@ import type {
   PurchaseContractRecord,
   PurchaseOrderRecord,
 } from "@/lib/procurement/types/purchase-order";
+import type {
+  GoodsReceiptRecord,
+  ReceivingLineRecord,
+} from "@/lib/procurement/types/goods-receipt";
 import type { ServiceContext } from "@/types/services";
 
 export function nowIso(): string {
@@ -139,6 +143,86 @@ export function assertContractVendorMatch(
 ): void {
   if (contract.vendorId !== vendorId) {
     throw new Error("CONTRACT_VENDOR_MISMATCH");
+  }
+}
+
+export function asGoodsReceiptRecord(record: ProcurementAggregateRecord): GoodsReceiptRecord {
+  return record as GoodsReceiptRecord;
+}
+
+export function asReceivingLineRecord(record: ProcurementAggregateRecord): ReceivingLineRecord {
+  return record as ReceivingLineRecord;
+}
+
+export function getGoodsReceiptOrThrow(
+  repository: ProcurementPersistenceRepository,
+  goodsReceiptId: string,
+  context: ServiceContext,
+): GoodsReceiptRecord {
+  const record = repository.getById(context.organizationId, "goodsReceipts", goodsReceiptId);
+  if (!record) {
+    throw new Error("GOODS_RECEIPT_NOT_FOUND");
+  }
+  return asGoodsReceiptRecord(record);
+}
+
+export function getReceivingLineOrThrow(
+  repository: ProcurementPersistenceRepository,
+  lineId: string,
+  context: ServiceContext,
+): ReceivingLineRecord {
+  const record = repository.getById(context.organizationId, "receivingLines", lineId);
+  if (!record) {
+    throw new Error("RECEIVING_LINE_NOT_FOUND");
+  }
+  return asReceivingLineRecord(record);
+}
+
+export function listReceivingLinesForReceipt(
+  repository: ProcurementPersistenceRepository,
+  goodsReceiptId: string,
+  organizationId: string,
+): readonly ReceivingLineRecord[] {
+  return repository
+    .listByOrganization(organizationId, "receivingLines")
+    .map(asReceivingLineRecord)
+    .filter((entry) => entry.goodsReceiptId === goodsReceiptId);
+}
+
+export function assertApprovedPurchaseOrderForReceipt(
+  repository: ProcurementPersistenceRepository,
+  purchaseOrderId: string,
+  context: ServiceContext,
+): PurchaseOrderRecord {
+  const purchaseOrder = getPurchaseOrderOrThrow(repository, purchaseOrderId, context);
+  if (purchaseOrder.status !== "approved" && purchaseOrder.status !== "closed") {
+    throw new Error("PURCHASE_ORDER_NOT_APPROVED");
+  }
+  return purchaseOrder;
+}
+
+export function assertUniqueGoodsReceiptNumber(
+  repository: ProcurementPersistenceRepository,
+  organizationId: string,
+  goodsReceiptNumber: string,
+  excludeGoodsReceiptId?: string,
+): void {
+  const normalized = goodsReceiptNumber.trim().toUpperCase();
+  if (!normalized) {
+    throw new Error("INVALID_GOODS_RECEIPT_NUMBER");
+  }
+
+  const duplicate = repository
+    .listByOrganization(organizationId, "goodsReceipts")
+    .map(asGoodsReceiptRecord)
+    .find(
+      (entry) =>
+        entry.goodsReceiptNumber.toUpperCase() === normalized &&
+        (!excludeGoodsReceiptId || entry.id !== excludeGoodsReceiptId),
+    );
+
+  if (duplicate) {
+    throw new Error("DUPLICATE_GOODS_RECEIPT_NUMBER");
   }
 }
 
