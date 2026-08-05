@@ -8,7 +8,7 @@ import {
   mapCrmBriefOvernightChanges,
   mapCrmBriefRecommendations,
 } from "@/lib/crm/mappers/brief-contribution";
-import { crmService, defaultCrmRepository } from "@/lib/crm";
+import { crmRepository, crmService } from "@/lib/crm";
 import {
   aggregateHealth,
   aggregateRecommendations,
@@ -133,7 +133,7 @@ function mergeRecommendations(intelligence: ReturnType<typeof crmService.getInte
 }
 
 function mergeAlerts(intelligence: ReturnType<typeof crmService.getIntelligence>): BriefAlert[] {
-  const crmAlerts = mapCrmBriefAlerts(defaultCrmRepository, intelligence);
+  const crmAlerts = mapCrmBriefAlerts(crmRepository, intelligence);
   const bundle = aggregateRecommendations();
 
   const platformAlerts: BriefAlert[] = bundle.criticalAlerts.map((alert, index) => ({

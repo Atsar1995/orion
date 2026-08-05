@@ -7,7 +7,7 @@ import {
   mapCrmBriefOvernightChanges,
   mapCrmBriefRecommendations,
   mapCrmBriefBusinessHealth,
-  defaultCrmRepository,
+  crmRepository,
 } from "@/lib/crm";
 import { mapIntelligenceBusToBriefView } from "@/lib/executive/brief/map-intelligence-bus-to-brief";
 import { IntelligenceBusBriefRepository } from "@/lib/executive/brief/BriefService";
@@ -27,7 +27,7 @@ describe("CRM Executive Brief contribution (16A.7)", () => {
   });
 
   it("maps CRM alerts for the shared brief", () => {
-    const alerts = mapCrmBriefAlerts(defaultCrmRepository, intelligence);
+    const alerts = mapCrmBriefAlerts(crmRepository, intelligence);
 
     expect(alerts.length).toBeGreaterThan(0);
     expect(alerts.some((alert) => alert.href?.startsWith("/crm"))).toBe(true);

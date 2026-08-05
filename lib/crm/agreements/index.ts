@@ -2,9 +2,8 @@ import { randomUUID } from "crypto";
 import { publishAgreementsEngineEvent } from "@/lib/crm/agreements-events";
 import {
   CrmCanonicalEventPublisher,
-  defaultCrmCanonicalEventPublisher,
 } from "@/lib/crm/events";
-import { SalesOrderService, defaultSalesOrderService } from "@/lib/crm/services/SalesOrderService";
+import { SalesOrderService } from "@/lib/crm/services/SalesOrderService";
 import { formatCommercialCurrency } from "@/lib/crm/data/seed-commercial";
 import type {
   AgreementsBriefSignals,
@@ -147,7 +146,7 @@ export class ProposalService {
 export class QuotationService {
   constructor(
     private readonly repository: AgreementsRepository,
-    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher,
   ) {}
 
   list(context: ServiceContext): QuotationRecord[] {
@@ -196,7 +195,7 @@ export class QuotationService {
 export class ContractService {
   constructor(
     private readonly repository: AgreementsRepository,
-    private readonly salesOrders: SalesOrderService = defaultSalesOrderService,
+    private readonly salesOrders: SalesOrderService,
   ) {}
 
   list(context: ServiceContext, filter: AgreementSearchFilter = {}): ContractListItem[] {
@@ -501,7 +500,8 @@ export class AgreementAnalyticsService {
 
   getRegistry(context: ServiceContext): AgreementsRegistryView {
     const proposals = new ProposalService(this.repository).list(context);
-    const contracts = new ContractService(this.repository).list(context);
+    const salesOrders = new SalesOrderService(new CrmCanonicalEventPublisher());
+    const contracts = new ContractService(this.repository, salesOrders).list(context);
     const rateAgreements = new RateAgreementService(this.repository).list(context);
     return { proposals, contracts, rateAgreements };
   }
@@ -537,8 +537,8 @@ export class CrmAgreementsFacade {
 
   constructor(
     repository: AgreementsRepository,
-    canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
-    salesOrders: SalesOrderService = defaultSalesOrderService,
+    canonicalPublisher: CrmCanonicalEventPublisher,
+    salesOrders: SalesOrderService,
   ) {
     this.proposals = new ProposalService(repository);
     this.quotations = new QuotationService(repository, canonicalPublisher);

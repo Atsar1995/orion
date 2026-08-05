@@ -3,13 +3,9 @@ import { PROVIDER_VERSION, WORKSPACE_IDS } from "@/lib/intelligence/constants";
 import type { RegisteredExecutiveProvider } from "@/lib/intelligence/provider-registry";
 
 import {
-
+  crmRepository,
   crmService,
-
-  defaultCrmRepository,
-
   mapCrmProviderMetrics,
-
 } from "@/lib/crm";
 
 import {
@@ -56,7 +52,7 @@ export const crmExecutiveProvider: RegisteredExecutiveProvider = {
 
     const intelligence = getIntelligence();
 
-    return mapCrmBriefPlatformAlerts(defaultCrmRepository, intelligence);
+    return mapCrmBriefPlatformAlerts(crmRepository, intelligence);
 
   },
 
@@ -100,7 +96,7 @@ export const crmExecutiveProvider: RegisteredExecutiveProvider = {
 
   getRisks() {
 
-    return mapCrmBriefPlatformAlerts(defaultCrmRepository, getIntelligence()).map((alert) => ({
+    return mapCrmBriefPlatformAlerts(crmRepository, getIntelligence()).map((alert) => ({
 
       severity: alert.severity,
 

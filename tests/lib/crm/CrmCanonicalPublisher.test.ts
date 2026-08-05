@@ -6,6 +6,7 @@ import {
   CRM_ALL_OUTBOUND_EVENTS,
   assertUniqueCrmEventCatalog,
   buildCrmCanonicalIdempotencyKey,
+  CrmCanonicalEventPublisher,
   defaultCrmCanonicalEventPublisher,
 } from "@/lib/crm/events";
 import { CRM_IIL_SERVICE_ID } from "@/lib/crm/constants";
@@ -51,7 +52,8 @@ describe("CRM Canonical Event Publisher (P-008.14)", () => {
     expect(crmFacade.getDomainStatus().readyForCanonicalEvents).toBe(true);
 
     const wiring = createCrmWiring(new InMemoryPlatformStore());
-    expect(wiring.canonicalEventPublisher).toBe(defaultCrmCanonicalEventPublisher);
+    expect(wiring.canonicalEventPublisher).toBeInstanceOf(CrmCanonicalEventPublisher);
+    expect(wiring.canonicalEventPublisher).not.toBe(defaultCrmCanonicalEventPublisher);
     expect(getCrmEventPipelineRegistry().canonicalPublisherReady).toBe(true);
   });
 

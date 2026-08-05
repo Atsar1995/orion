@@ -11,7 +11,6 @@ import type { CrmOverviewView } from "@/lib/crm/models/overview";
 import { CrmCustomerIntelligenceFacade } from "@/lib/crm/customer-intelligence";
 import { CrmExecutiveDashboardFacade } from "@/lib/crm/executive-dashboard";
 import type { ExecutiveDashboardRepository } from "@/lib/crm/repositories/ExecutiveDashboardRepository";
-import { defaultCrmRepository } from "@/lib/crm/repositories/InMemoryCrmRepository";
 import type { ServiceContext } from "@/types/services";
 import { CrmAgreementsFacade } from "@/lib/crm/agreements";
 import { CrmCommercialIntelligenceFacade } from "@/lib/crm/commercial-intelligence";
@@ -32,9 +31,17 @@ import {
   createCrmActivitiesService,
 } from "@/lib/crm/services/activities/CrmActivitiesService";
 import { CrmPartyFacade } from "@/lib/crm/parties";
+import { CrmCanonicalEventPublisher } from "@/lib/crm/events";
+import { SalesOrderService } from "@/lib/crm/services/SalesOrderService";
 
 export type CrmServiceContext = {
   userId?: string;
+};
+
+export type CreateCrmServiceOptions = {
+  readonly repository: ExecutiveDashboardRepository;
+  readonly canonicalPublisher: CrmCanonicalEventPublisher;
+  readonly salesOrderService: SalesOrderService;
 };
 
 /** CRM workspace business service — no React imports. */
@@ -49,13 +56,25 @@ export class CrmService {
   readonly customerIntelligence: CrmCustomerIntelligenceFacade;
   readonly executiveDashboard: CrmExecutiveDashboardFacade;
 
-  constructor(private readonly repository: ExecutiveDashboardRepository = defaultCrmRepository) {
+  private readonly options: CreateCrmServiceOptions;
+
+  constructor(options: CreateCrmServiceOptions | ExecutiveDashboardRepository) {
+    const resolved = isCreateCrmServiceOptions(options)
+      ? options
+      : {
+          repository: options,
+          canonicalPublisher: new CrmCanonicalEventPublisher(),
+          salesOrderService: new SalesOrderService(new CrmCanonicalEventPublisher()),
+        };
+
+    this.options = resolved;
+    const { repository, canonicalPublisher, salesOrderService } = resolved;
     this.customers = createCrmCustomersService(repository);
     this.opportunities = createCrmOpportunitiesService(repository);
     this.activities = createCrmActivitiesService(repository);
-    this.parties = new CrmPartyFacade(repository);
-    this.commercial = new CrmCommercialFacade(repository);
-    this.agreements = new CrmAgreementsFacade(repository);
+    this.parties = new CrmPartyFacade(repository, canonicalPublisher);
+    this.commercial = new CrmCommercialFacade(repository, canonicalPublisher);
+    this.agreements = new CrmAgreementsFacade(repository, canonicalPublisher, salesOrderService);
     this.intelligence = new CrmCommercialIntelligenceFacade(repository);
     this.customerIntelligence = new CrmCustomerIntelligenceFacade(repository);
     this.executiveDashboard = new CrmExecutiveDashboardFacade(repository);
@@ -99,26 +118,26 @@ export class CrmService {
   /** CRM intelligence insights dashboard (Mission 16A.6). */
   getInsights(_context?: CrmServiceContext) {
     void _context;
-    return mapCrmInsightsView(this.repository, this.getIntelligence());
+    return mapCrmInsightsView(this.options.repository, this.getIntelligence());
   }
 
   /** Full intelligence pipeline result for provider and brief integration. */
   getIntelligence(_context?: CrmServiceContext): CrmIntelligenceResult {
     void _context;
-    return mapCrmIntelligenceResult(this.repository);
+    return mapCrmIntelligenceResult(this.options.repository);
   }
 
   /** CRM dashboard view model for `/crm` (Mission 16A.2). */
   getDashboard(_context?: CrmServiceContext): CrmDashboardView {
     void _context;
-    return mapCrmDashboardView(this.repository);
+    return mapCrmDashboardView(this.options.repository);
   }
 
   /** Overview dashboard view model for `/crm`. */
   getOverview(_context?: CrmServiceContext): CrmOverviewView {
     void _context;
     const intelligence = this.getIntelligence();
-    return mapCrmOverviewView(this.repository, intelligence);
+    return mapCrmOverviewView(this.options.repository, intelligence);
   }
 
   /** Universal party brief signals for Executive Brief (Mission P-008.1). */
@@ -158,8 +177,28 @@ export class CrmService {
   }
 }
 
-export function createCrmService(repository?: ExecutiveDashboardRepository): CrmService {
-  return new CrmService(repository);
+export function createCrmService(
+  options: CreateCrmServiceOptions | ExecutiveDashboardRepository,
+): CrmService {
+  if (isCreateCrmServiceOptions(options)) {
+    return new CrmService(options);
+  }
+
+  const canonicalPublisher = new CrmCanonicalEventPublisher();
+  return new CrmService({
+    repository: options,
+    canonicalPublisher,
+    salesOrderService: new SalesOrderService(canonicalPublisher),
+  });
 }
 
-export const crmService = createCrmService();
+function isCreateCrmServiceOptions(
+  value: CreateCrmServiceOptions | ExecutiveDashboardRepository,
+): value is CreateCrmServiceOptions {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "canonicalPublisher" in value &&
+    "salesOrderService" in value
+  );
+}

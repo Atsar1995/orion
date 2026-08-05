@@ -1,4 +1,6 @@
 import { CrmAgreementsFacade } from "@/lib/crm/agreements";
+import { CrmCanonicalEventPublisher } from "@/lib/crm/events";
+import { SalesOrderService } from "@/lib/crm/services/SalesOrderService";
 import { formatCommercialCurrency } from "@/lib/crm/commercial";
 import { CrmCommercialIntelligenceFacade } from "@/lib/crm/commercial-intelligence";
 import { CrmCustomerIntelligenceFacade } from "@/lib/crm/customer-intelligence";
@@ -519,7 +521,9 @@ export class CrmExecutiveDashboardFacade {
   constructor(repository: ExecutiveDashboardRepository) {
     const commercial = new CrmCommercialIntelligenceFacade(repository);
     const customer = new CrmCustomerIntelligenceFacade(repository);
-    const agreements = new CrmAgreementsFacade(repository);
+    const canonicalPublisher = new CrmCanonicalEventPublisher();
+    const salesOrders = new SalesOrderService(canonicalPublisher);
+    const agreements = new CrmAgreementsFacade(repository, canonicalPublisher, salesOrders);
     this.kpis = new ExecutiveKpiAggregator(commercial, customer, agreements);
     this.alerts = new AlertManagementService(repository, commercial, customer, agreements);
     this.widgets = new CommercialWidgetLibrary();

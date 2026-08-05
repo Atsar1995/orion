@@ -1,4 +1,4 @@
-// TD-002: Placeholder CRM repository until connected business platform (v2.x)
+// Domain CRM repository — wired exclusively through createCrmWiring() (P-008.18).
 
 import {
   CRM_CUSTOMER_ALERTS,
@@ -642,5 +642,3 @@ export class InMemoryCrmRepository implements ExecutiveDashboardRepository {
     return [...RELATIONSHIP_ACTIONS];
   }
 }
-
-export const defaultCrmRepository = new InMemoryCrmRepository();

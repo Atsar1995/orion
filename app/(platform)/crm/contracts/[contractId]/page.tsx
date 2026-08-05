@@ -2,9 +2,8 @@ import { notFound } from "next/navigation";
 import { CrmContractDetailContent } from "@/components/crm/CrmContractDetailContent";
 import { CrmSectionHeader } from "@/components/crm/CrmSectionHeader";
 import { WORKSPACE_SECTION_CLASS } from "@/lib/constants";
-import { crmAgreementsService } from "@/lib/crm";
+import { crmAgreementsService, crmRepository } from "@/lib/crm";
 import { partyName } from "@/lib/crm/agreements";
-import { defaultCrmRepository } from "@/lib/crm/repositories/InMemoryCrmRepository";
 import { getDecisionServiceContext } from "@/lib/decisions/server-context";
 
 type PageProps = {
@@ -27,7 +26,7 @@ export default async function CrmContractDetailPage({ params }: PageProps) {
       <section aria-label="CRM Contract Detail" className={WORKSPACE_SECTION_CLASS}>
         <CrmContractDetailContent
           contract={contract}
-          partyName={partyName(defaultCrmRepository, contract.partyId)}
+          partyName={partyName(crmRepository, contract.partyId)}
         />
       </section>
     </>

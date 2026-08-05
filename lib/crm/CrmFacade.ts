@@ -6,7 +6,6 @@ import {
   CRM_WORKSPACE_LABEL,
 } from "@/lib/crm/constants";
 import { createCrmWiring, type CrmWiring } from "@/lib/crm/createCrmWiring";
-import { getDefaultCrmBacking } from "@/lib/crm/persistence/createCrmStore";
 import { CRM_FOUNDATION_CAPABILITIES } from "@/lib/crm/models/workspace";
 import { CrmAgreementsFacade } from "@/lib/crm/agreements";
 import { CrmCommercialFacade } from "@/lib/crm/commercial";
@@ -14,6 +13,7 @@ import { CrmCommercialIntelligenceFacade } from "@/lib/crm/commercial-intelligen
 import { CrmCustomerIntelligenceFacade } from "@/lib/crm/customer-intelligence";
 import { CrmExecutiveDashboardFacade } from "@/lib/crm/executive-dashboard";
 import { CrmPartyFacade } from "@/lib/crm/parties";
+import type { ExecutiveDashboardRepository } from "@/lib/crm/repositories/ExecutiveDashboardRepository";
 import { CrmService } from "@/lib/crm/services/CrmService";
 import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
 import type { CrmDomainStatus, CrmWorkspaceBootstrap, CrmWorkspaceView } from "@/types/crm-core";
@@ -22,11 +22,13 @@ import type { ServiceContext } from "@/types/services";
 export const CRM_MISSION_PLATFORM_FOUNDATION = "P-008.9";
 
 function createDefaultCrmWiring(): CrmWiring {
-  return createCrmWiring(new InMemoryPlatformStore({ crmStore: getDefaultCrmBacking() }));
+  return createCrmWiring(new InMemoryPlatformStore());
 }
 
-/** Public CRM Domain facade (Mission P-008.9 · Platform Foundation). */
+/** Public CRM Domain facade (Mission P-008.9 · P-008.18 composition root). */
 export class CrmFacade {
+  readonly wiring: CrmWiring;
+  readonly repository: ExecutiveDashboardRepository;
   readonly party: CrmPartyFacade;
   readonly commercial: CrmCommercialFacade;
   readonly agreements: CrmAgreementsFacade;
@@ -35,7 +37,9 @@ export class CrmFacade {
   readonly executiveDashboard: CrmExecutiveDashboardFacade;
   readonly crmService: CrmService;
 
-  constructor(private readonly wiring: CrmWiring = createDefaultCrmWiring()) {
+  constructor(wiring: CrmWiring = createDefaultCrmWiring()) {
+    this.wiring = wiring;
+    this.repository = wiring.executiveDashboard;
     this.party = wiring.partyFacade;
     this.commercial = wiring.commercialFacade;
     this.agreements = wiring.agreementsFacade;
@@ -85,4 +89,4 @@ export function getCrmWorkspaceBootstrap(context: ServiceContext): CrmWorkspaceB
   return crmFacade.getWorkspaceBootstrap(context);
 }
 
-export { createCrmWiring, type CrmWiring } from "@/lib/crm/createCrmWiring";
+export { createCrmWiring, type CrmWiring, type CreateCrmWiringOptions } from "@/lib/crm/createCrmWiring";

@@ -154,6 +154,7 @@ export class PostgresPlatformStore implements PlatformStore {
       this.transactionManager = runtime.createTransactionManager(
         persister,
         financeRuntime.persister,
+        crmRuntime.persister,
       );
       this.initialized = true;
       this.lastHealthReport = await this.buildHealthReport("PostgreSQL platform store initialized.");
@@ -280,8 +281,8 @@ export class PostgresPlatformStore implements PlatformStore {
         configuration: this.persistenceConfiguration,
         connection: this.connection,
         migrationRunner: this.migrationRunner,
-        createTransactionManager: (hcmPersister, financePersister) =>
-          new PostgresTransactionManager(this.connection!, hcmPersister, financePersister),
+        createTransactionManager: (hcmPersister, financePersister, crmPersister) =>
+          new PostgresTransactionManager(this.connection!, hcmPersister, financePersister, crmPersister),
       };
     }
 

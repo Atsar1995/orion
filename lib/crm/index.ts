@@ -1,11 +1,4 @@
-import { crmService } from "@/lib/crm/services/CrmService";
-import { CrmCustomerIntelligenceFacade } from "@/lib/crm/customer-intelligence";
-import { CrmExecutiveDashboardFacade } from "@/lib/crm/executive-dashboard";
-import { CrmCommercialIntelligenceFacade } from "@/lib/crm/commercial-intelligence";
-import { CrmAgreementsFacade } from "@/lib/crm/agreements";
-import { CrmPartyFacade } from "@/lib/crm/parties";
-import { CrmCommercialFacade } from "@/lib/crm/commercial";
-import { defaultCrmRepository } from "@/lib/crm/repositories/InMemoryCrmRepository";
+import { crmFacade } from "@/lib/crm/CrmFacade";
 
 /**
  * CRM workspace public API (CTO-008 v2).
@@ -114,7 +107,6 @@ export type { ExecutiveDashboardRepository } from "@/lib/crm/repositories/Execut
 export type { PartyRepository } from "@/lib/crm/repositories/PartyRepository";
 export {
   InMemoryCrmRepository,
-  defaultCrmRepository,
 } from "@/lib/crm/repositories/InMemoryCrmRepository";
 
 export { CrmPartyFacade } from "@/lib/crm/parties";
@@ -148,7 +140,9 @@ export type {
   PersonRecord,
 } from "@/types/crm-party";
 
-export const crmPartyService = new CrmPartyFacade(defaultCrmRepository);
+export const crmRepository = crmFacade.repository;
+
+export const crmPartyService = crmFacade.party;
 
 export { CrmCommercialFacade } from "@/lib/crm/commercial";
 export { mapCrmCommercialBriefSignals } from "@/lib/crm/mappers/commercial-brief";
@@ -175,7 +169,7 @@ export type {
   RevenueForecastRecord,
 } from "@/types/crm-commercial";
 
-export const crmCommercialService = new CrmCommercialFacade(defaultCrmRepository);
+export const crmCommercialService = crmFacade.commercial;
 
 export { CrmAgreementsFacade } from "@/lib/crm/agreements";
 export { mapCrmAgreementsBriefSignals } from "@/lib/crm/mappers/agreements-brief";
@@ -205,7 +199,7 @@ export type {
   RenewalRecord,
 } from "@/types/crm-agreements";
 
-export const crmAgreementsService = new CrmAgreementsFacade(defaultCrmRepository);
+export const crmAgreementsService = crmFacade.agreements;
 
 export { CrmCommercialIntelligenceFacade } from "@/lib/crm/commercial-intelligence";
 export { mapCrmCommercialIntelligenceBriefSignals } from "@/lib/crm/mappers/commercial-intelligence-brief";
@@ -227,7 +221,7 @@ export type {
   RelationshipHealthRecord,
 } from "@/types/crm-commercial-intelligence";
 
-export const crmCommercialIntelligenceService = new CrmCommercialIntelligenceFacade(defaultCrmRepository);
+export const crmCommercialIntelligenceService = crmFacade.commercialIntelligence;
 
 export { CrmCustomerIntelligenceFacade } from "@/lib/crm/customer-intelligence";
 export { mapCrmCustomerIntelligenceBriefSignals } from "@/lib/crm/mappers/customer-intelligence-brief";
@@ -250,7 +244,7 @@ export type {
   RetentionRiskRecord,
 } from "@/types/crm-customer-intelligence";
 
-export const crmCustomerIntelligenceService = new CrmCustomerIntelligenceFacade(defaultCrmRepository);
+export const crmCustomerIntelligenceService = crmFacade.customerIntelligence;
 
 export { CrmExecutiveDashboardFacade } from "@/lib/crm/executive-dashboard";
 export { mapCrmExecutiveBriefSignals } from "@/lib/crm/mappers/crm-executive-brief";
@@ -273,13 +267,15 @@ export type {
   PerformanceTrendRecord,
 } from "@/types/crm-executive-dashboard";
 
-export const crmExecutiveDashboardService = new CrmExecutiveDashboardFacade(defaultCrmRepository);
+export const crmExecutiveDashboardService = crmFacade.executiveDashboard;
+
+export const crmService = crmFacade.crmService;
 
 export {
   CrmService,
   createCrmService,
-  crmService,
   type CrmServiceContext,
+  type CreateCrmServiceOptions,
 } from "@/lib/crm/services/CrmService";
 
 export { getPipelineChartPoints, getPipelineMaxCount } from "@/lib/crm/mappers/pipeline-utils";
@@ -318,6 +314,7 @@ export {
   getCrmWorkspaceBootstrap,
   createCrmWiring,
   type CrmWiring,
+  type CreateCrmWiringOptions,
 } from "@/lib/crm/CrmFacade";
 
 export type {

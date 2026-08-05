@@ -1,7 +1,4 @@
-import {
-  CrmCanonicalEventPublisher,
-  defaultCrmCanonicalEventPublisher,
-} from "@/lib/crm/events";
+import { CrmCanonicalEventPublisher } from "@/lib/crm/events";
 import type { CrmAggregateRecord, CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import type { ServiceContext } from "@/types/services";
 
@@ -14,7 +11,7 @@ type CaseRecord = CrmAggregateRecord & {
 export class CaseService {
   constructor(
     private readonly backing: CrmStoreBacking,
-    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher,
   ) {}
 
   /** Registers a case record — test and integration bootstrap only. */

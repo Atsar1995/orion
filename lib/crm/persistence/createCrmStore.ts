@@ -62,19 +62,7 @@ export function isCrmStoreEmpty(store: CrmStoreBacking): boolean {
   return store.organizationFoundations.size === 0;
 }
 
-let defaultCrmBacking: CrmStoreBacking | null = null;
-
-/** Process-wide default CRM backing for legacy singleton repositories. */
-export function getDefaultCrmBacking(): CrmStoreBacking {
-  if (!defaultCrmBacking) {
-    defaultCrmBacking = createCrmStore();
-    seedCrmStore(defaultCrmBacking);
-  }
-
-  return defaultCrmBacking;
-}
-
-/** Resets the default backing — test isolation only. */
+/** Resets legacy singleton backing — retained for test harness compatibility (P-008.18). */
 export function resetDefaultCrmBackingForTests(): void {
-  defaultCrmBacking = null;
+  // No-op: TD-002 process-wide backing retired; PlatformStore owns CRM backing lifetime.
 }

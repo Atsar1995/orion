@@ -1,9 +1,6 @@
 import { randomUUID } from "crypto";
 import { publishCommercialEngineEvent } from "@/lib/crm/commercial-events";
-import {
-  CrmCanonicalEventPublisher,
-  defaultCrmCanonicalEventPublisher,
-} from "@/lib/crm/events";
+import { CrmCanonicalEventPublisher } from "@/lib/crm/events";
 import { mapCommercialToLegacyOpportunity } from "@/lib/crm/commercial/commercial-mapper";
 import { formatCommercialCurrency } from "@/lib/crm/data/seed-commercial";
 import type {
@@ -83,7 +80,7 @@ export class LeadService {
   constructor(
     private readonly repository: CommercialRepository,
     private readonly scoring: ScoringEngine,
-    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher,
   ) {}
 
   list(context: ServiceContext, filter: LeadSearchFilter = {}): LeadListView {
@@ -192,7 +189,7 @@ export class OpportunityService {
   constructor(
     private readonly repository: CommercialRepository,
     private readonly scoring: ScoringEngine,
-    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher,
   ) {}
 
   list(context: ServiceContext, filter: OpportunitySearchFilter = {}) {
@@ -464,7 +461,7 @@ export class CrmCommercialFacade {
 
   constructor(
     repository: CommercialRepository,
-    canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+    canonicalPublisher: CrmCanonicalEventPublisher,
   ) {
     const scoring = new ScoringEngine();
     this.scoring = scoring;

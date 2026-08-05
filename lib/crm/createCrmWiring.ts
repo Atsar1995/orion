@@ -14,21 +14,20 @@ import {
 } from "@/lib/crm/persistence/createCrmRepositories";
 import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import { CrmPartyFacade } from "@/lib/crm/parties";
-import {
-  CrmCanonicalEventPublisher,
-  defaultCrmCanonicalEventPublisher,
-} from "@/lib/crm/events";
+import { CrmCanonicalEventPublisher } from "@/lib/crm/events";
 import { CrmService } from "@/lib/crm/services/CrmService";
 import { CaseService } from "@/lib/crm/services/CaseService";
-import { SalesOrderService, defaultSalesOrderService } from "@/lib/crm/services/SalesOrderService";
+import { SalesOrderService } from "@/lib/crm/services/SalesOrderService";
 import { setCrmEventPipelineRegistry } from "@/lib/crm/services/crmEventPipelineRegistry";
-import {
-  CrmAuthorizationService,
-  defaultCrmAuthorizationService,
-} from "@/lib/crm/security/CrmAuthorizationService";
+import { CrmAuthorizationService } from "@/lib/crm/security/CrmAuthorizationService";
+import type { InMemoryCrmRepository } from "@/lib/crm/repositories/InMemoryCrmRepository";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 
-/** CRM composition root — PlatformStore-backed dependency injection (Mission P-008.9 · P-008.10 · P-008.12 · P-008.14 · P-008.15). */
+export type CreateCrmWiringOptions = {
+  readonly repository?: InMemoryCrmRepository;
+};
+
+/** CRM composition root — PlatformStore-backed dependency injection (Mission P-008.9 · P-008.18). */
 export type CrmWiring = CrmRepositories &
   CrmPersistenceRepositories & {
   readonly platformStore: PlatformStore;
@@ -46,18 +45,23 @@ export type CrmWiring = CrmRepositories &
   readonly caseService: CaseService;
 };
 
-/** Centralized CRM dependency wiring — internal composition root. */
-export function createCrmWiring(platformStore: PlatformStore): CrmWiring {
+/** Centralized CRM dependency wiring — authoritative composition root. */
+export function createCrmWiring(
+  platformStore: PlatformStore,
+  options?: CreateCrmWiringOptions,
+): CrmWiring {
   const backing = ensureCrmPlatformBacking(platformStore);
   const connection = platformStore.getDatabaseConnection?.() ?? undefined;
   const persistenceRepositories = createCrmPersistenceRepositories({ platformStore, connection });
   const repositories = createCrmRepositories(backing, {
     crmRepository: persistenceRepositories.crmRepository,
+    repository: options?.repository,
   });
   const repository = repositories.executiveDashboard;
 
-  const canonicalEventPublisher = defaultCrmCanonicalEventPublisher;
-  const salesOrderService = defaultSalesOrderService;
+  const canonicalEventPublisher = new CrmCanonicalEventPublisher();
+  const salesOrderService = new SalesOrderService(canonicalEventPublisher);
+  const authorization = new CrmAuthorizationService();
 
   setCrmEventPipelineRegistry({
     initialized: true,
@@ -72,12 +76,20 @@ export function createCrmWiring(platformStore: PlatformStore): CrmWiring {
     ...repositories,
     partyFacade: new CrmPartyFacade(repository, canonicalEventPublisher),
     commercialFacade: new CrmCommercialFacade(repository, canonicalEventPublisher),
-    agreementsFacade: new CrmAgreementsFacade(repository, canonicalEventPublisher, salesOrderService),
+    agreementsFacade: new CrmAgreementsFacade(
+      repository,
+      canonicalEventPublisher,
+      salesOrderService,
+    ),
     commercialIntelligenceFacade: new CrmCommercialIntelligenceFacade(repository),
     customerIntelligenceFacade: new CrmCustomerIntelligenceFacade(repository),
     executiveDashboardFacade: new CrmExecutiveDashboardFacade(repository),
-    crmService: new CrmService(repository),
-    authorization: defaultCrmAuthorizationService,
+    crmService: new CrmService({
+      repository,
+      canonicalPublisher: canonicalEventPublisher,
+      salesOrderService,
+    }),
+    authorization,
     canonicalEventPublisher,
     salesOrderService,
     caseService: new CaseService(backing, canonicalEventPublisher),

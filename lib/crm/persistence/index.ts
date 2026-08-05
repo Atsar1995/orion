@@ -10,7 +10,6 @@ export {
   createCrmStore,
   seedCrmStore,
   isCrmStoreEmpty,
-  getDefaultCrmBacking,
   resetDefaultCrmBackingForTests,
   registerOrganizationFoundation,
   isOrganizationRegistered,

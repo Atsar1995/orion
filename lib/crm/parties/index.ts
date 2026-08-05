@@ -1,9 +1,6 @@
 import { randomUUID } from "crypto";
 import { publishPartyEngineEvent } from "@/lib/crm/crm-events";
-import {
-  CrmCanonicalEventPublisher,
-  defaultCrmCanonicalEventPublisher,
-} from "@/lib/crm/events";
+import { CrmCanonicalEventPublisher } from "@/lib/crm/events";
 import type { PartyRepository } from "@/lib/crm/repositories/PartyRepository";
 import type {
   OrganisationDetailView,
@@ -107,7 +104,7 @@ export class OrganisationService {
   constructor(
     private readonly repository: PartyRepository,
     private readonly rules: PartyRulesEngine,
-    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher,
   ) {}
 
   list(context: PartyServiceContext, filter: PartySearchFilter = {}): OrganisationListView {
@@ -306,7 +303,7 @@ export class PersonService {
   constructor(
     private readonly repository: PartyRepository,
     private readonly rules: PartyRulesEngine,
-    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+    private readonly canonicalPublisher: CrmCanonicalEventPublisher,
   ) {}
 
   getDetail(id: string, context: PartyServiceContext): PersonDetailView | null {
@@ -561,7 +558,7 @@ export class CrmPartyFacade {
 
   constructor(
     repository: PartyRepository,
-    canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
+    canonicalPublisher: CrmCanonicalEventPublisher,
   ) {
     const rules = new PartyRulesEngine();
     this.organisations = new OrganisationService(repository, rules, canonicalPublisher);

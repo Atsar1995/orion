@@ -1,14 +1,11 @@
 import {
   CrmCanonicalEventPublisher,
-  defaultCrmCanonicalEventPublisher,
 } from "@/lib/crm/events";
 import type { ServiceContext } from "@/types/services";
 
 /** Confirms sales orders and emits canonical commercial events (Mission P-008.15). */
 export class SalesOrderService {
-  constructor(
-    private readonly canonicalPublisher: CrmCanonicalEventPublisher = defaultCrmCanonicalEventPublisher,
-  ) {}
+  constructor(private readonly canonicalPublisher: CrmCanonicalEventPublisher) {}
 
   confirm(
     input: {
@@ -45,5 +42,3 @@ export class SalesOrderService {
     );
   }
 }
-
-export const defaultSalesOrderService = new SalesOrderService();
