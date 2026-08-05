@@ -44,6 +44,20 @@ export {
   setProcurementEventPipelineRegistry,
 } from "@/lib/procurement/services/procurementEventPipelineRegistry";
 export {
+  PROCUREMENT_CANONICAL_EVENT_VERSION,
+  PROCUREMENT_CANONICAL_OUTBOUND_EVENTS,
+  PROCUREMENT_CANONICAL_ENTITY_TYPES,
+  PROCUREMENT_ALL_OUTBOUND_EVENTS,
+  assertUniqueProcurementEventCatalog,
+  ProcurementCanonicalEventPublisher,
+  defaultProcurementCanonicalEventPublisher,
+  buildProcurementCanonicalIdempotencyKey,
+} from "@/lib/procurement/events";
+export type {
+  ProcurementCanonicalEventType,
+  ProcurementOutboundEventType,
+} from "@/lib/procurement/events";
+export {
   PROCUREMENT_PERMISSIONS,
   resolveProcurementRoutePermission,
   listProcurementRouteRules,

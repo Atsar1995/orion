@@ -37,7 +37,7 @@ export class ProcurementFacade {
       eventPipelineRegistryReady: true,
       healthMonitoringReady: true,
       readyForPlatformPersistence: true,
-      readyForCanonicalEvents: false,
+      readyForCanonicalEvents: true,
       readyForRbac: true,
       readyForCertification: false,
     };

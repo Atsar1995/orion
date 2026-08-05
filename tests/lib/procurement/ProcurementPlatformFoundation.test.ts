@@ -39,10 +39,11 @@ describe("Procurement Platform Foundation (P-010.3 · P-010.4)", () => {
     expect(wiring.procurementRepository.persistenceAdapter).toBe("in-memory");
     expect(isOrganizationRegistered(wiring.backing, PROCUREMENT_SEED_ORG_ID)).toBe(true);
     expect(getProcurementEventPipelineRegistry().initialized).toBe(true);
-    expect(getProcurementEventPipelineRegistry().canonicalPublisherReady).toBe(false);
+    expect(getProcurementEventPipelineRegistry().canonicalPublisherReady).toBe(true);
     expect(wiring.procurement).toBe(wiring.procurementRepository);
     expect(wiring.suppliers).toBe(wiring.procurementRepository);
     expect(wiring.authorization).toBeDefined();
+    expect(wiring.canonicalEventPublisher).toBeDefined();
     expect(wiring.procurementRepository.infrastructureVersion).toBe("P-010.4");
   });
 

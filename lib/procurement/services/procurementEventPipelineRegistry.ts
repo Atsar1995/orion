@@ -1,4 +1,4 @@
-/** Procurement event pipeline registry (Mission P-010.3). */
+/** Procurement event pipeline registry (Mission P-010.3 · P-010.6). */
 
 export type ProcurementEventPipelineRegistryState = {
   readonly initialized: boolean;

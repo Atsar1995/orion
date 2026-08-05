@@ -18,6 +18,6 @@ export const PROCUREMENT_FOUNDATION_CAPABILITIES: readonly ProcurementCapability
   { key: "requisitioning", label: "Requisitioning", status: "planned", mission: "P-010.6" },
   { key: "ordering", label: "Purchase Ordering", status: "planned", mission: "P-010.7" },
   { key: "rbac", label: "RBAC Catalog", status: "active", mission: "P-010.5" },
-  { key: "canonical_events", label: "Canonical Events", status: "planned", mission: "P-010.9" },
+  { key: "canonical_events", label: "Canonical Events", status: "active", mission: "P-010.6" },
   { key: "rest_api", label: "REST API", status: "planned", mission: "P-010.10" },
 ];

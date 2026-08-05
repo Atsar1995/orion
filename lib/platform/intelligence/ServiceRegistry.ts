@@ -58,6 +58,13 @@ const DEFAULT_SERVICES: RegisteredService[] = [
     canSubscribe: false,
   },
   {
+    serviceId: "procurement-workspace",
+    label: "Procurement Workspace",
+    workspace: "Procurement",
+    canPublish: true,
+    canSubscribe: false,
+  },
+  {
     serviceId: "webhook-gateway",
     label: "Webhook Gateway",
     workspace: "Integrations",
