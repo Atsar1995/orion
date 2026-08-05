@@ -13,9 +13,13 @@ import type {
   ProcurementWorkspaceBootstrap,
   ProcurementWorkspaceView,
 } from "@/lib/procurement/types/procurement-core";
+import type { SupplierService } from "@/lib/procurement/services/SupplierService";
+import type { VendorContactService } from "@/lib/procurement/services/VendorContactService";
+import type { VendorScorecardService } from "@/lib/procurement/services/VendorScorecardService";
 import type { ServiceContext } from "@/types/services";
 
 export const PROCUREMENT_MISSION_PLATFORM_FOUNDATION = "P-010.3";
+export const PROCUREMENT_MISSION_SUPPLIER_MANAGEMENT = "P-010.7";
 
 function createDefaultProcurementWiring(): ProcurementWiring {
   return createProcurementWiring(new InMemoryPlatformStore());
@@ -40,6 +44,18 @@ export class ProcurementFacade {
       readyForCanonicalEvents: true,
       readyForRbac: true,
       readyForCertification: false,
+    };
+  }
+
+  get suppliers(): {
+    readonly vendor: SupplierService;
+    readonly contacts: VendorContactService;
+    readonly scorecards: VendorScorecardService;
+  } {
+    return {
+      vendor: this.wiring.supplierService,
+      contacts: this.wiring.vendorContactService,
+      scorecards: this.wiring.vendorScorecardService,
     };
   }
 

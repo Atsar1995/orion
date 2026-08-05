@@ -44,6 +44,9 @@ describe("Procurement Platform Foundation (P-010.3 · P-010.4)", () => {
     expect(wiring.suppliers).toBe(wiring.procurementRepository);
     expect(wiring.authorization).toBeDefined();
     expect(wiring.canonicalEventPublisher).toBeDefined();
+    expect(wiring.supplierService).toBeDefined();
+    expect(wiring.vendorContactService).toBeDefined();
+    expect(wiring.vendorScorecardService).toBeDefined();
     expect(wiring.procurementRepository.infrastructureVersion).toBe("P-010.4");
   });
 

@@ -1,5 +1,25 @@
+import { procurementFacade } from "@/lib/procurement/ProcurementFacade";
+
 export { ProcurementFacade, procurementFacade, getProcurementWorkspaceBootstrap } from "@/lib/procurement/ProcurementFacade";
 export { createProcurementWiring, type ProcurementWiring } from "@/lib/procurement/createProcurementWiring";
+export { SupplierService } from "@/lib/procurement/services/SupplierService";
+export { VendorContactService } from "@/lib/procurement/services/VendorContactService";
+export { VendorScorecardService } from "@/lib/procurement/services/VendorScorecardService";
+export type {
+  VendorRecord,
+  VendorStatus,
+  VendorContactRecord,
+  VendorScorecardRecord,
+  CreateSupplierInput,
+  UpdateSupplierInput,
+  CreateVendorContactInput,
+  UpdateVendorContactInput,
+  CreateVendorScorecardInput,
+  UpdateVendorScorecardInput,
+} from "@/lib/procurement/types/supplier";
+export const procurementSupplierService = procurementFacade.suppliers.vendor;
+export const procurementVendorContactService = procurementFacade.suppliers.contacts;
+export const procurementVendorScorecardService = procurementFacade.suppliers.scorecards;
 export {
   PROCUREMENT_SEED_ORG_ID,
   PROCUREMENT_FOUNDATION_VERSION,
