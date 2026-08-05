@@ -60,6 +60,11 @@ export const procurementPurchaseContractService = procurementFacade.orders.contr
 export const procurementGoodsReceiptService = procurementFacade.receiving.goodsReceipt;
 export const procurementReceivingLineService = procurementFacade.receiving.lines;
 export {
+  procurementOk,
+  procurementCreated,
+  procurementFromError,
+} from "@/lib/procurement/api/procurementApiResponse";
+export {
   PROCUREMENT_SEED_ORG_ID,
   PROCUREMENT_FOUNDATION_VERSION,
   PROCUREMENT_REPOSITORY_INFRASTRUCTURE_VERSION,

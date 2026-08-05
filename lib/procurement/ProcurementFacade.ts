@@ -29,6 +29,7 @@ export const PROCUREMENT_MISSION_SUPPLIER_MANAGEMENT = "P-010.7";
 export const PROCUREMENT_MISSION_REQUISITION_MANAGEMENT = "P-010.8";
 export const PROCUREMENT_MISSION_PURCHASE_ORDER_MANAGEMENT = "P-010.9";
 export const PROCUREMENT_MISSION_GOODS_RECEIPT_MANAGEMENT = "P-010.10";
+export const PROCUREMENT_MISSION_REST_API = "P-010.12";
 
 function createDefaultProcurementWiring(): ProcurementWiring {
   return createProcurementWiring(new InMemoryPlatformStore());

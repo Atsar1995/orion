@@ -20,5 +20,5 @@ export const PROCUREMENT_FOUNDATION_CAPABILITIES: readonly ProcurementCapability
   { key: "receiving", label: "Goods Receipt", status: "active", mission: "P-010.10" },
   { key: "rbac", label: "RBAC Catalog", status: "active", mission: "P-010.5" },
   { key: "canonical_events", label: "Canonical Events", status: "active", mission: "P-010.6" },
-  { key: "rest_api", label: "REST API", status: "planned", mission: "P-010.11" },
+  { key: "rest_api", label: "REST API", status: "active", mission: "P-010.12" },
 ];

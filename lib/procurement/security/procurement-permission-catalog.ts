@@ -48,6 +48,31 @@ const PROCUREMENT_ROUTE_RULES: readonly ProcurementRoutePermissionRule[] = [
     permission: PROCUREMENT_PERMISSIONS.vendorApprove,
   },
   {
+    method: "POST",
+    pathPattern: /^\/api\/procurement\/vendors\/[^/]+\/(?:activate|deactivate)/,
+    permission: PROCUREMENT_PERMISSIONS.supplierWrite,
+  },
+  {
+    method: "GET",
+    pathPattern: /^\/api\/procurement\/vendors\/[^/]+\/(?:contacts|scorecards)/,
+    permission: PROCUREMENT_PERMISSIONS.supplierRead,
+  },
+  {
+    method: "POST",
+    pathPattern: /^\/api\/procurement\/vendors\/[^/]+\/(?:contacts|scorecards)/,
+    permission: PROCUREMENT_PERMISSIONS.supplierWrite,
+  },
+  {
+    method: "PATCH",
+    pathPattern: /^\/api\/procurement\/vendors\/[^/]+\/(?:contacts|scorecards)\//,
+    permission: PROCUREMENT_PERMISSIONS.supplierWrite,
+  },
+  {
+    method: "GET",
+    pathPattern: /^\/api\/procurement\/vendors\/[^/]+$/,
+    permission: PROCUREMENT_PERMISSIONS.supplierRead,
+  },
+  {
     method: "GET",
     pathPattern: /^\/api\/procurement\/vendors(?:\/|$)/,
     permission: PROCUREMENT_PERMISSIONS.supplierRead,
@@ -71,6 +96,31 @@ const PROCUREMENT_ROUTE_RULES: readonly ProcurementRoutePermissionRule[] = [
     method: "POST",
     pathPattern: /^\/api\/procurement\/requisitions\/[^/]+\/approve/,
     permission: PROCUREMENT_PERMISSIONS.requisitionApprove,
+  },
+  {
+    method: "POST",
+    pathPattern: /^\/api\/procurement\/requisitions\/[^/]+\/(?:submit|cancel)/,
+    permission: PROCUREMENT_PERMISSIONS.requisitionCreate,
+  },
+  {
+    method: "POST",
+    pathPattern: /^\/api\/procurement\/requisitions\/[^/]+\/(?:reject|close)/,
+    permission: PROCUREMENT_PERMISSIONS.requisitionApprove,
+  },
+  {
+    method: "GET",
+    pathPattern: /^\/api\/procurement\/requisitions\/[^/]+\/approval/,
+    permission: PROCUREMENT_PERMISSIONS.requisitionRead,
+  },
+  {
+    method: "PATCH",
+    pathPattern: /^\/api\/procurement\/requisitions\//,
+    permission: PROCUREMENT_PERMISSIONS.requisitionCreate,
+  },
+  {
+    method: "GET",
+    pathPattern: /^\/api\/procurement\/requisitions\/[^/]+$/,
+    permission: PROCUREMENT_PERMISSIONS.requisitionRead,
   },
   {
     method: "GET",
@@ -108,6 +158,26 @@ const PROCUREMENT_ROUTE_RULES: readonly ProcurementRoutePermissionRule[] = [
     permission: PROCUREMENT_PERMISSIONS.purchaseOrderApprove,
   },
   {
+    method: "POST",
+    pathPattern: /^\/api\/procurement\/purchase-orders\/[^/]+\/(?:submit|cancel)/,
+    permission: PROCUREMENT_PERMISSIONS.purchaseOrderCreate,
+  },
+  {
+    method: "POST",
+    pathPattern: /^\/api\/procurement\/purchase-orders\/[^/]+\/close/,
+    permission: PROCUREMENT_PERMISSIONS.purchaseOrderApprove,
+  },
+  {
+    method: "PATCH",
+    pathPattern: /^\/api\/procurement\/purchase-orders\//,
+    permission: PROCUREMENT_PERMISSIONS.purchaseOrderCreate,
+  },
+  {
+    method: "GET",
+    pathPattern: /^\/api\/procurement\/purchase-orders\/[^/]+$/,
+    permission: PROCUREMENT_PERMISSIONS.purchaseOrderRead,
+  },
+  {
     method: "GET",
     pathPattern: /^\/api\/procurement\/purchase-orders(?:\/|$)/,
     permission: PROCUREMENT_PERMISSIONS.purchaseOrderRead,
@@ -126,6 +196,26 @@ const PROCUREMENT_ROUTE_RULES: readonly ProcurementRoutePermissionRule[] = [
     method: "POST",
     pathPattern: /^\/api\/procurement\/goods-receipts(?:\/|$)/,
     permission: PROCUREMENT_PERMISSIONS.goodsReceiptWrite,
+  },
+  {
+    method: "GET",
+    pathPattern: /^\/api\/procurement\/goods-receipts\/[^/]+\/lines/,
+    permission: PROCUREMENT_PERMISSIONS.goodsReceiptRead,
+  },
+  {
+    method: "PATCH",
+    pathPattern: /^\/api\/procurement\/goods-receipts\/[^/]+\/lines\//,
+    permission: PROCUREMENT_PERMISSIONS.goodsReceiptWrite,
+  },
+  {
+    method: "PATCH",
+    pathPattern: /^\/api\/procurement\/goods-receipts\//,
+    permission: PROCUREMENT_PERMISSIONS.goodsReceiptWrite,
+  },
+  {
+    method: "GET",
+    pathPattern: /^\/api\/procurement\/goods-receipts\/[^/]+$/,
+    permission: PROCUREMENT_PERMISSIONS.goodsReceiptRead,
   },
   {
     method: "POST",
@@ -156,6 +246,11 @@ const PROCUREMENT_ROUTE_RULES: readonly ProcurementRoutePermissionRule[] = [
     method: "PATCH",
     pathPattern: /^\/api\/procurement\/contracts\//,
     permission: PROCUREMENT_PERMISSIONS.contractWrite,
+  },
+  {
+    method: "GET",
+    pathPattern: /^\/api\/procurement\/contracts\/[^/]+$/,
+    permission: PROCUREMENT_PERMISSIONS.contractRead,
   },
   {
     method: "GET",
