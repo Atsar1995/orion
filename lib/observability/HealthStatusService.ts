@@ -106,6 +106,18 @@ export class HealthStatusService {
         : "CRM backing resolves after relational platform store initialization.",
     });
 
+    const procurementStoreHealth =
+      storeConfig.provider === StoreProvider.InMemory
+        ? new InMemoryPlatformStore({ configuration: storeConfig }).getProcurementBacking()
+        : null;
+    checks.push({
+      name: "procurement_platform",
+      status: procurementStoreHealth ? "healthy" : "degraded",
+      message: procurementStoreHealth
+        ? "Procurement store backing available via PlatformStore."
+        : "Procurement backing resolves after relational platform store initialization.",
+    });
+
     const securityHealth = securityHealthService.getReport();
     checks.push({
       name: "platform_security",

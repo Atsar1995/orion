@@ -13,6 +13,7 @@ import { PersistenceErrorCode } from "@/types/persistence";
 import { failure, success } from "@/lib/persistence/result";
 import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConnection";
 import type { CrmEntityPersister } from "@/lib/platform/persistence/crm/CrmEntityPersister";
+import type { ProcurementEntityPersister } from "@/lib/platform/persistence/procurement/ProcurementEntityPersister";
 import type { FinanceEntityPersister } from "@/lib/platform/persistence/finance/FinanceEntityPersister";
 import type { HcmEntityPersister } from "@/lib/platform/persistence/hcm/HcmEntityPersister";
 
@@ -28,6 +29,7 @@ export class PostgresTransactionManager implements TransactionManager {
     private readonly hcmPersister?: HcmEntityPersister,
     private readonly financePersister?: FinanceEntityPersister,
     private readonly crmPersister?: CrmEntityPersister,
+    private readonly procurementPersister?: ProcurementEntityPersister,
   ) {}
 
   async beginTransaction(): Promise<RepositoryResult<PersistenceTransaction>> {
@@ -37,6 +39,7 @@ export class PostgresTransactionManager implements TransactionManager {
       this.hcmPersister?.beginTransaction();
       this.financePersister?.beginTransaction();
       this.crmPersister?.beginTransaction();
+      this.procurementPersister?.beginTransaction();
 
       const transaction: PostgresPersistenceTransaction = {
         transactionId: randomUUID(),
@@ -66,6 +69,7 @@ export class PostgresTransactionManager implements TransactionManager {
       await this.hcmPersister?.flushPending();
       await this.financePersister?.flushPending();
       await this.crmPersister?.flushPending();
+      await this.procurementPersister?.flushPending();
       await active.client.query("COMMIT");
       return success(undefined);
     } catch (error) {
@@ -80,6 +84,7 @@ export class PostgresTransactionManager implements TransactionManager {
       this.hcmPersister?.endTransaction();
       this.financePersister?.endTransaction();
       this.crmPersister?.endTransaction();
+      this.procurementPersister?.endTransaction();
     }
   }
 
@@ -98,6 +103,7 @@ export class PostgresTransactionManager implements TransactionManager {
       this.hcmPersister?.discardPending();
       this.financePersister?.discardPending();
       this.crmPersister?.discardPending();
+      this.procurementPersister?.discardPending();
       return success(undefined);
     } catch (error) {
       return failure({
@@ -110,6 +116,7 @@ export class PostgresTransactionManager implements TransactionManager {
       this.hcmPersister?.endTransaction();
       this.financePersister?.endTransaction();
       this.crmPersister?.endTransaction();
+      this.procurementPersister?.endTransaction();
     }
   }
 

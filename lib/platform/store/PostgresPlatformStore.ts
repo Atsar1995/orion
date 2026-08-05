@@ -13,10 +13,16 @@ import {
   createPostgresCrmStore,
   flushPostgresCrmStore,
 } from "@/lib/platform/persistence/crm/createPostgresCrmStore";
+import {
+  createPostgresProcurementStore,
+  flushPostgresProcurementStore,
+} from "@/lib/platform/persistence/procurement/createPostgresProcurementStore";
 import type { CrmEntityPersister } from "@/lib/platform/persistence/crm/CrmEntityPersister";
+import type { ProcurementEntityPersister } from "@/lib/platform/persistence/procurement/ProcurementEntityPersister";
 import type { FinanceEntityPersister } from "@/lib/platform/persistence/finance/FinanceEntityPersister";
 import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
+import type { ProcurementStoreBacking } from "@/lib/procurement/persistence/ProcurementStoreBacking";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import type {
   PlatformStore,
@@ -89,9 +95,11 @@ export class PostgresPlatformStore implements PlatformStore {
   private hcmStore: InMemoryHcmStore | null = null;
   private financeStore: FinanceStoreBacking | null = null;
   private crmStore: CrmStoreBacking | null = null;
+  private procurementStore: ProcurementStoreBacking | null = null;
   private hcmPersister: HcmEntityPersister | null = null;
   private financePersister: FinanceEntityPersister | null = null;
   private crmPersister: CrmEntityPersister | null = null;
+  private procurementPersister: ProcurementEntityPersister | null = null;
   private initialized = false;
   private lastHealthReport: PlatformStoreHealthReport | null = null;
 
@@ -145,16 +153,20 @@ export class PostgresPlatformStore implements PlatformStore {
       const { store, persister } = await createPostgresHcmStore(runtime.connection);
       const financeRuntime = await createPostgresFinanceStore(runtime.connection);
       const crmRuntime = await createPostgresCrmStore(runtime.connection);
+      const procurementRuntime = await createPostgresProcurementStore(runtime.connection);
       this.hcmStore = store;
       this.hcmPersister = persister;
       this.financeStore = financeRuntime.store;
       this.financePersister = financeRuntime.persister;
       this.crmStore = crmRuntime.store;
       this.crmPersister = crmRuntime.persister;
+      this.procurementStore = procurementRuntime.store;
+      this.procurementPersister = procurementRuntime.persister;
       this.transactionManager = runtime.createTransactionManager(
         persister,
         financeRuntime.persister,
         crmRuntime.persister,
+        procurementRuntime.persister,
       );
       this.initialized = true;
       this.lastHealthReport = await this.buildHealthReport("PostgreSQL platform store initialized.");
@@ -179,6 +191,10 @@ export class PostgresPlatformStore implements PlatformStore {
       await flushPostgresCrmStore(this.crmPersister);
     }
 
+    if (this.procurementPersister) {
+      await flushPostgresProcurementStore(this.procurementPersister);
+    }
+
     if (this.connection) {
       await this.connection.shutdown();
     }
@@ -187,9 +203,11 @@ export class PostgresPlatformStore implements PlatformStore {
     this.hcmStore = null;
     this.financeStore = null;
     this.crmStore = null;
+    this.procurementStore = null;
     this.hcmPersister = null;
     this.financePersister = null;
     this.crmPersister = null;
+    this.procurementPersister = null;
     this.transactionManager = null;
     this.connection = null;
     this.migrationRunner = null;
@@ -221,6 +239,14 @@ export class PostgresPlatformStore implements PlatformStore {
     }
 
     return this.crmStore;
+  }
+
+  getProcurementBacking(): ProcurementStoreBacking {
+    if (!this.procurementStore) {
+      throw new PostgresPlatformStoreError("Platform store is not initialized.");
+    }
+
+    return this.procurementStore;
   }
 
   getDatabaseConnection(): DatabaseConnection | null {
@@ -281,8 +307,14 @@ export class PostgresPlatformStore implements PlatformStore {
         configuration: this.persistenceConfiguration,
         connection: this.connection,
         migrationRunner: this.migrationRunner,
-        createTransactionManager: (hcmPersister, financePersister, crmPersister) =>
-          new PostgresTransactionManager(this.connection!, hcmPersister, financePersister, crmPersister),
+        createTransactionManager: (hcmPersister, financePersister, crmPersister, procurementPersister) =>
+          new PostgresTransactionManager(
+            this.connection!,
+            hcmPersister,
+            financePersister,
+            crmPersister,
+            procurementPersister,
+          ),
       };
     }
 

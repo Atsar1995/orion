@@ -4,6 +4,8 @@
 
 import { resetDefaultCrmBackingForTests } from "@/lib/crm/persistence/createCrmStore";
 import { resetCrmEventPipelineRegistryForTests } from "@/lib/crm/services/crmEventPipelineRegistry";
+import { resetDefaultProcurementBackingForTests } from "@/lib/procurement/persistence/createProcurementStore";
+import { resetProcurementEventPipelineRegistryForTests } from "@/lib/procurement/services/procurementEventPipelineRegistry";
 import { resetDefaultFinanceBackingForTests } from "@/lib/finance/persistence/createFinanceStore";
 import { resetFinanceEventPipelineServiceForTests } from "@/lib/finance/services/financeEventPipelineRegistry";
 import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
@@ -83,6 +85,8 @@ export function resetDefaultPlatformStoreForTests(): void {
   defaultPlatformStoreInit = null;
   resetDefaultFinanceBackingForTests();
   resetDefaultCrmBackingForTests();
+  resetDefaultProcurementBackingForTests();
   resetFinanceEventPipelineServiceForTests();
   resetCrmEventPipelineRegistryForTests();
+  resetProcurementEventPipelineRegistryForTests();
 }

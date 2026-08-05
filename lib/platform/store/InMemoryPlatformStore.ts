@@ -8,6 +8,8 @@ import {
 } from "@/lib/hcm/data/InMemoryHcmStore";
 import { createCrmStore } from "@/lib/crm/persistence/createCrmStore";
 import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
+import { createProcurementStore } from "@/lib/procurement/persistence/createProcurementStore";
+import type { ProcurementStoreBacking } from "@/lib/procurement/persistence/ProcurementStoreBacking";
 import { createFinanceStore } from "@/lib/finance/persistence/createFinanceStore";
 import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
@@ -33,6 +35,7 @@ export type InMemoryPlatformStoreOptions = {
   readonly hcmStore?: InMemoryHcmStore;
   readonly financeStore?: FinanceStoreBacking;
   readonly crmStore?: CrmStoreBacking;
+  readonly procurementStore?: ProcurementStoreBacking;
   readonly transactionManager?: TransactionManager;
 };
 
@@ -44,6 +47,7 @@ export class InMemoryPlatformStore implements PlatformStore {
   private readonly hcmStore: InMemoryHcmStore;
   private readonly financeStore: FinanceStoreBacking;
   private readonly crmStore: CrmStoreBacking;
+  private readonly procurementStore: ProcurementStoreBacking;
   private readonly transactionManager: TransactionManager;
   private lifecycle: PlatformStoreLifecycleState = "created";
 
@@ -52,6 +56,7 @@ export class InMemoryPlatformStore implements PlatformStore {
     this.hcmStore = options.hcmStore ?? defaultHcmStore;
     this.financeStore = options.financeStore ?? createFinanceStore();
     this.crmStore = options.crmStore ?? createCrmStore();
+    this.procurementStore = options.procurementStore ?? createProcurementStore();
     this.transactionManager = options.transactionManager ?? new NoOpTransactionManager();
     this.lifecycle = "initialized";
   }
@@ -89,6 +94,10 @@ export class InMemoryPlatformStore implements PlatformStore {
     return this.crmStore;
   }
 
+  getProcurementBacking(): ProcurementStoreBacking {
+    return this.procurementStore;
+  }
+
   getHealth(): PlatformStoreHealthReport {
     if (this.lifecycle === "shutdown") {
       return createPlatformStoreHealthReport({
@@ -120,6 +129,7 @@ export class InMemoryPlatformStore implements PlatformStore {
         hcmBacking: "InMemoryHcmStore",
         financeBacking: "FinanceStoreBacking",
         crmBacking: "CrmStoreBacking",
+        procurementBacking: "ProcurementStoreBacking",
       },
     });
   }

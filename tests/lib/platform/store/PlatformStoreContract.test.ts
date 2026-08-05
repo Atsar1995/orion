@@ -90,6 +90,19 @@ describe("PlatformStoreContract", () => {
         expect(backing.entityRegistry).toBeInstanceOf(Map);
       });
 
+      it("exposes Procurement backing after initialization", async () => {
+        const store = testCase.create();
+        await store.initialize();
+
+        const backing = store.getProcurementBacking();
+        expect(backing.organizationFoundations).toBeInstanceOf(Map);
+        expect(backing.vendors).toBeInstanceOf(Map);
+        expect(backing.requisitions).toBeInstanceOf(Map);
+        expect(backing.purchaseOrders).toBeInstanceOf(Map);
+        expect(backing.idempotencyKeys).toBeInstanceOf(Map);
+        expect(backing.entityRegistry).toBeInstanceOf(Map);
+      });
+
       it("shuts down gracefully", async () => {
         const store = testCase.create();
         await store.initialize();
