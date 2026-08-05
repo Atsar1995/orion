@@ -9,6 +9,10 @@ import type { PermissionCode } from "@/lib/platform/security/Permission";
 import type { ProcurementAuthorizationService } from "@/lib/procurement/security/ProcurementAuthorizationService";
 import type { VendorRecord } from "@/lib/procurement/types/supplier";
 import type { PurchaseRequisitionRecord } from "@/lib/procurement/types/requisition";
+import type {
+  PurchaseContractRecord,
+  PurchaseOrderRecord,
+} from "@/lib/procurement/types/purchase-order";
 import type { ServiceContext } from "@/types/services";
 
 export function nowIso(): string {
@@ -33,6 +37,109 @@ export function getRequisitionOrThrow(
     throw new Error("REQUISITION_NOT_FOUND");
   }
   return asRequisitionRecord(record);
+}
+
+export function asPurchaseOrderRecord(record: ProcurementAggregateRecord): PurchaseOrderRecord {
+  return record as PurchaseOrderRecord;
+}
+
+export function asPurchaseContractRecord(record: ProcurementAggregateRecord): PurchaseContractRecord {
+  return record as PurchaseContractRecord;
+}
+
+export function getPurchaseOrderOrThrow(
+  repository: ProcurementPersistenceRepository,
+  purchaseOrderId: string,
+  context: ServiceContext,
+): PurchaseOrderRecord {
+  const record = repository.getById(context.organizationId, "purchaseOrders", purchaseOrderId);
+  if (!record) {
+    throw new Error("PURCHASE_ORDER_NOT_FOUND");
+  }
+  return asPurchaseOrderRecord(record);
+}
+
+export function getPurchaseContractOrThrow(
+  repository: ProcurementPersistenceRepository,
+  contractId: string,
+  context: ServiceContext,
+): PurchaseContractRecord {
+  const record = repository.getById(context.organizationId, "purchaseContracts", contractId);
+  if (!record) {
+    throw new Error("CONTRACT_NOT_FOUND");
+  }
+  return asPurchaseContractRecord(record);
+}
+
+export function assertUniquePurchaseOrderNumber(
+  repository: ProcurementPersistenceRepository,
+  organizationId: string,
+  purchaseOrderNumber: string,
+  excludePurchaseOrderId?: string,
+): void {
+  const normalized = purchaseOrderNumber.trim().toUpperCase();
+  if (!normalized) {
+    throw new Error("INVALID_PURCHASE_ORDER_NUMBER");
+  }
+
+  const duplicate = repository
+    .listByOrganization(organizationId, "purchaseOrders")
+    .map(asPurchaseOrderRecord)
+    .find(
+      (entry) =>
+        entry.purchaseOrderNumber.toUpperCase() === normalized &&
+        (!excludePurchaseOrderId || entry.id !== excludePurchaseOrderId),
+    );
+
+  if (duplicate) {
+    throw new Error("DUPLICATE_PURCHASE_ORDER_NUMBER");
+  }
+}
+
+export function assertUniqueContractNumber(
+  repository: ProcurementPersistenceRepository,
+  organizationId: string,
+  contractNumber: string,
+  excludeContractId?: string,
+): void {
+  const normalized = contractNumber.trim().toUpperCase();
+  if (!normalized) {
+    throw new Error("INVALID_CONTRACT_NUMBER");
+  }
+
+  const duplicate = repository
+    .listByOrganization(organizationId, "purchaseContracts")
+    .map(asPurchaseContractRecord)
+    .find(
+      (entry) =>
+        entry.contractNumber.toUpperCase() === normalized &&
+        (!excludeContractId || entry.id !== excludeContractId),
+    );
+
+  if (duplicate) {
+    throw new Error("DUPLICATE_CONTRACT_NUMBER");
+  }
+}
+
+export function assertApprovedRequisition(
+  repository: ProcurementPersistenceRepository,
+  requisitionId: string,
+  context: ServiceContext,
+): PurchaseRequisitionRecord {
+  const requisition = getRequisitionOrThrow(repository, requisitionId, context);
+  if (requisition.status !== "approved" && requisition.status !== "closed") {
+    throw new Error("REQUISITION_NOT_APPROVED");
+  }
+  return requisition;
+}
+
+export function assertContractVendorMatch(
+  contract: PurchaseContractRecord,
+  vendorId: string,
+): void {
+  if (contract.vendorId !== vendorId) {
+    throw new Error("CONTRACT_VENDOR_MISMATCH");
+  }
 }
 
 export function getVendorOrThrow(

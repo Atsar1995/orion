@@ -16,7 +16,7 @@ export const PROCUREMENT_FOUNDATION_CAPABILITIES: readonly ProcurementCapability
   },
   { key: "supplier_management", label: "Supplier Management", status: "active", mission: "P-010.7" },
   { key: "requisitioning", label: "Requisitioning", status: "active", mission: "P-010.8" },
-  { key: "ordering", label: "Purchase Ordering", status: "planned", mission: "P-010.7" },
+  { key: "ordering", label: "Purchase Ordering", status: "active", mission: "P-010.9" },
   { key: "rbac", label: "RBAC Catalog", status: "active", mission: "P-010.5" },
   { key: "canonical_events", label: "Canonical Events", status: "active", mission: "P-010.6" },
   { key: "rest_api", label: "REST API", status: "planned", mission: "P-010.10" },

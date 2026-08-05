@@ -49,6 +49,8 @@ describe("Procurement Platform Foundation (P-010.3 · P-010.4)", () => {
     expect(wiring.vendorScorecardService).toBeDefined();
     expect(wiring.purchaseRequisitionService).toBeDefined();
     expect(wiring.purchaseApprovalService).toBeDefined();
+    expect(wiring.purchaseOrderService).toBeDefined();
+    expect(wiring.purchaseContractService).toBeDefined();
     expect(wiring.procurementRepository.infrastructureVersion).toBe("P-010.4");
   });
 
