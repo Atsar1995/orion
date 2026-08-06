@@ -66,3 +66,21 @@ export {
   OperationalReadinessService,
   operationalReadinessService,
 } from "@/lib/platform/operations/OperationalReadinessService";
+
+export type {
+  EnterpriseReadinessReport,
+  EnterpriseReadinessSections,
+  PlatformVerificationResult,
+  ReadinessSection,
+  ReadinessSectionStatus,
+} from "@/lib/platform/operations/OperationalReadinessReport";
+export {
+  buildReadinessSection,
+  mapOperationalStatusToReadiness,
+  worstOperationalStatus,
+  worstReadinessStatus,
+} from "@/lib/platform/operations/OperationalReadinessReport";
+export {
+  EnterpriseReadinessService,
+  enterpriseReadinessService,
+} from "@/lib/platform/operations/EnterpriseReadinessService";

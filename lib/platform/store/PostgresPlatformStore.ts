@@ -26,6 +26,7 @@ import type { ProcurementStoreBacking } from "@/lib/procurement/persistence/Proc
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import type {
   PlatformStore,
+  PlatformStoreLifecycleState,
   PlatformStoreMigrationReadiness,
 } from "@/lib/platform/store/PlatformStore";
 import { createPlatformStoreHealthReport } from "@/lib/platform/store/PlatformStoreHealth";
@@ -101,6 +102,7 @@ export class PostgresPlatformStore implements PlatformStore {
   private crmPersister: CrmEntityPersister | null = null;
   private procurementPersister: ProcurementEntityPersister | null = null;
   private initialized = false;
+  private lifecycle: PlatformStoreLifecycleState = "created";
   private lastHealthReport: PlatformStoreHealthReport | null = null;
 
   constructor(options: PostgresPlatformStoreOptions = {}) {
@@ -169,6 +171,7 @@ export class PostgresPlatformStore implements PlatformStore {
         procurementRuntime.persister,
       );
       this.initialized = true;
+      this.lifecycle = "initialized";
       this.lastHealthReport = await this.buildHealthReport("PostgreSQL platform store initialized.");
     } catch (error) {
       throw new PostgresPlatformStoreError(
@@ -211,10 +214,15 @@ export class PostgresPlatformStore implements PlatformStore {
     this.transactionManager = null;
     this.connection = null;
     this.migrationRunner = null;
+    this.lifecycle = "shutdown";
   }
 
   isInitialized(): boolean {
     return this.initialized;
+  }
+
+  getLifecycleState(): PlatformStoreLifecycleState {
+    return this.lifecycle;
   }
 
   getTransactionManager(): TransactionManager {

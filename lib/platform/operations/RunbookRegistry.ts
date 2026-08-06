@@ -26,7 +26,7 @@ const RUNBOOKS: readonly RunbookEntry[] = [
     id: "platform-startup",
     title: "Platform Startup",
     category: "startup",
-    documentPath: "docs/Platform/Operations/Operations-Runbook.md#platform-startup",
+    documentPath: "docs/Operations/Runbook-Platform-Startup.md",
     summary: "Start ORION platform with PostgreSQL persistence and health verification.",
     steps: [
       "Verify DATABASE_URL and ORION_STORE_PROVIDER environment variables",
@@ -40,7 +40,7 @@ const RUNBOOKS: readonly RunbookEntry[] = [
     id: "platform-shutdown",
     title: "Platform Shutdown",
     category: "shutdown",
-    documentPath: "docs/Platform/Operations/Operations-Runbook.md#platform-shutdown",
+    documentPath: "docs/Operations/Runbook-Platform-Shutdown.md",
     summary: "Graceful platform shutdown procedure.",
     steps: [
       "Drain active HTTP connections",
@@ -67,7 +67,7 @@ const RUNBOOKS: readonly RunbookEntry[] = [
     id: "database-recovery",
     title: "Database Recovery",
     category: "database",
-    documentPath: "docs/Platform/Operations/Backup-Recovery-Guide.md#database-recovery",
+    documentPath: "docs/Operations/Runbook-Disaster-Recovery.md",
     summary: "Restore PostgreSQL from verified backup.",
     steps: [
       "Validate latest backup via BackupService.verifyBackup",
@@ -95,7 +95,7 @@ const RUNBOOKS: readonly RunbookEntry[] = [
     id: "release-deployment",
     title: "Release Deployment",
     category: "deployment",
-    documentPath: "docs/Platform/Operations/Operations-Runbook.md#release-deployment",
+    documentPath: "docs/Operations/Runbook-Production-Deployment.md",
     summary: "Deploy release candidate to staging or production.",
     steps: [
       "Verify CI quality gate passed on release branch",
@@ -123,7 +123,7 @@ const RUNBOOKS: readonly RunbookEntry[] = [
     id: "health-verification",
     title: "Health Verification",
     category: "health",
-    documentPath: "docs/Platform/Operations/Operations-Runbook.md#health-verification",
+    documentPath: "docs/Operations/Runbook-Operational-Monitoring.md",
     summary: "Verify platform health after deploy or recovery.",
     steps: [
       "GET /api/health — liveness check",

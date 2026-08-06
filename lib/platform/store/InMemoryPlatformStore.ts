@@ -78,6 +78,10 @@ export class InMemoryPlatformStore implements PlatformStore {
     return this.lifecycle === "initialized";
   }
 
+  getLifecycleState(): PlatformStoreLifecycleState {
+    return this.lifecycle;
+  }
+
   getTransactionManager(): TransactionManager {
     return this.transactionManager;
   }

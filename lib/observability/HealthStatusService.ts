@@ -25,6 +25,13 @@ export type PlatformHealthReport = {
   readonly checks: readonly HealthCheck[];
 };
 
+export type HealthVerificationResult = {
+  readonly status: HealthCheckStatus;
+  readonly message: string;
+  readonly checks: readonly HealthCheck[];
+  readonly verifiedAt: string;
+};
+
 const startedAt = Date.now();
 
 /** Platform health status service (Mission S1D). */
@@ -74,10 +81,21 @@ export class HealthStatusService {
       message: storeHealth.message,
     });
 
-    const financeStoreHealth =
+    const inMemoryStore =
       storeConfig.provider === StoreProvider.InMemory
-        ? new InMemoryPlatformStore({ configuration: storeConfig }).getFinanceBacking()
+        ? new InMemoryPlatformStore({ configuration: storeConfig })
         : null;
+
+    const hcmStoreHealth = inMemoryStore?.getHcmBacking() ?? null;
+    checks.push({
+      name: "hcm_platform",
+      status: hcmStoreHealth ? "healthy" : "degraded",
+      message: hcmStoreHealth
+        ? "HCM store backing available via PlatformStore."
+        : "HCM backing resolves after relational platform store initialization.",
+    });
+
+    const financeStoreHealth = inMemoryStore?.getFinanceBacking() ?? null;
     checks.push({
       name: "finance_platform",
       status: financeStoreHealth ? "healthy" : "degraded",
@@ -94,10 +112,7 @@ export class HealthStatusService {
         : "Finance persistence repositories require initialized PlatformStore.",
     });
 
-    const crmStoreHealth =
-      storeConfig.provider === StoreProvider.InMemory
-        ? new InMemoryPlatformStore({ configuration: storeConfig }).getCrmBacking()
-        : null;
+    const crmStoreHealth = inMemoryStore?.getCrmBacking() ?? null;
     checks.push({
       name: "crm_platform",
       status: crmStoreHealth ? "healthy" : "degraded",
@@ -106,10 +121,7 @@ export class HealthStatusService {
         : "CRM backing resolves after relational platform store initialization.",
     });
 
-    const procurementStoreHealth =
-      storeConfig.provider === StoreProvider.InMemory
-        ? new InMemoryPlatformStore({ configuration: storeConfig }).getProcurementBacking()
-        : null;
+    const procurementStoreHealth = inMemoryStore?.getProcurementBacking() ?? null;
     checks.push({
       name: "procurement_platform",
       status: procurementStoreHealth ? "healthy" : "degraded",
@@ -134,6 +146,23 @@ export class HealthStatusService {
       timestamp: new Date().toISOString(),
       uptimeSeconds: Math.floor((Date.now() - startedAt) / 1000),
       checks,
+    };
+  }
+
+  /** Structured health verification for enterprise readiness reporting (P-011.1). */
+  verifyHealth(version = process.env.npm_package_version ?? "0.2.0"): HealthVerificationResult {
+    const report = this.getReport(version);
+
+    return {
+      status: report.status,
+      message:
+        report.status === "healthy"
+          ? "All registered health checks passed."
+          : report.status === "degraded"
+            ? "Health checks passed with degraded subsystems."
+            : "One or more health checks failed.",
+      checks: report.checks,
+      verifiedAt: report.timestamp,
     };
   }
 }

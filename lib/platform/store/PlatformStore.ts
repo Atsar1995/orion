@@ -53,6 +53,9 @@ export interface PlatformStore extends PlatformDomainStores {
   /** Returns true after successful {@link initialize}. */
   isInitialized(): boolean;
 
+  /** Current lifecycle state for startup/shutdown verification (P-011.1). */
+  getLifecycleState(): PlatformStoreLifecycleState;
+
   /** Transaction boundary for unit-of-work operations. */
   getTransactionManager(): TransactionManager;
 
