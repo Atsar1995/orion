@@ -111,7 +111,7 @@ function worstStatus(...statuses: OperationalStatus[]): OperationalStatus {
 }
 
 /** Restores injectable test connections after shutdown — simulates pool re-acquisition (P-011.2). */
-function restoreConnectionIfSupported(connection: DatabaseConnection): void {
+export function restoreConnectionIfSupported(connection: DatabaseConnection): void {
   const restorable = connection as DatabaseConnection & { setConnected?(value: boolean): void };
   restorable.setConnected?.(true);
 }

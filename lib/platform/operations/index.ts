@@ -70,6 +70,12 @@ export {
 export type {
   EnterpriseReadinessReport,
   EnterpriseReadinessSections,
+  Gate6CertificationVerdict,
+  Gate6OperationalBlocker,
+  Gate6OperationalEvidenceItem,
+  Gate6OperationalValidationReport,
+  Gate6ReadinessLevel,
+  Gate6SignoffSummary,
   PlatformVerificationResult,
   PostgresCertificationScenario,
   PostgresCertificationVerdict,
@@ -80,8 +86,10 @@ export type {
 export {
   buildReadinessSection,
   deriveCertificationVerdict,
+  deriveGate6CertificationVerdict,
   mapOperationalStatusToCertificationVerdict,
   mapOperationalStatusToReadiness,
+  mapReadinessToGate7Level,
   worstOperationalStatus,
   worstReadinessStatus,
 } from "@/lib/platform/operations/OperationalReadinessReport";

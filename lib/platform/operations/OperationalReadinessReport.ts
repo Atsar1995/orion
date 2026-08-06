@@ -149,3 +149,85 @@ export function buildReadinessSection(
     checks,
   };
 }
+
+/** Gate 6 operational validation verdict (Mission P-011.3 · P-017.1 §15.3). */
+export type Gate6CertificationVerdict = "pass" | "conditional_pass" | "fail";
+
+export type Gate6ReadinessLevel = "ready" | "partial" | "not_ready";
+
+/** Operational evidence item for Gate 6 authorization package. */
+export type Gate6OperationalEvidenceItem = {
+  readonly dimension: keyof EnterpriseReadinessSections | "recovery" | "domains" | "overall";
+  readonly status: ReadinessSectionStatus;
+  readonly message: string;
+  readonly evidence: readonly string[];
+};
+
+/** Remaining blocker tracked for Gate 7 / GA closure. */
+export type Gate6OperationalBlocker = {
+  readonly id: string;
+  readonly severity: "P0" | "P1" | "P2";
+  readonly message: string;
+  readonly owner: string;
+  readonly gateTarget: "Gate 6" | "Gate 7" | "GA";
+};
+
+/** Executive signoff summary for Gate 6 authorization. */
+export type Gate6SignoffSummary = {
+  readonly platformOps: Gate6CertificationVerdict;
+  readonly architectureReviewBoard: Gate6CertificationVerdict;
+  readonly executiveSponsor: Gate6CertificationVerdict;
+  readonly authorizationStatement: string;
+};
+
+/** Gate 6 operational validation report — evidence package for Gate 7 review (P-011.3). */
+export type Gate6OperationalValidationReport = {
+  readonly mission: "P-011.3";
+  readonly verdict: Gate6CertificationVerdict;
+  readonly message: string;
+  readonly validatedAt: string;
+  readonly evidence: readonly Gate6OperationalEvidenceItem[];
+  readonly blockers: readonly Gate6OperationalBlocker[];
+  readonly recommendations: readonly string[];
+  readonly gate7Readiness: Gate6ReadinessLevel;
+  readonly generalAvailabilityImpact: string;
+  readonly readinessReport: EnterpriseReadinessReport;
+  readonly postgresCertification: PostgresOperationalCertificationReport;
+  readonly signoff: Gate6SignoffSummary;
+};
+
+export function deriveGate6CertificationVerdict(input: {
+  readonly postgresVerdict: PostgresCertificationVerdict;
+  readonly overallReadiness: ReadinessSectionStatus;
+  readonly hasUnhealthyCriticalPath: boolean;
+  readonly liveStagingRequired: boolean;
+}): Gate6CertificationVerdict {
+  if (input.hasUnhealthyCriticalPath || input.postgresVerdict === "fail") {
+    return "fail";
+  }
+
+  if (
+    input.postgresVerdict === "pass" &&
+    input.overallReadiness === "ready" &&
+    !input.liveStagingRequired
+  ) {
+    return "pass";
+  }
+
+  return "conditional_pass";
+}
+
+export function mapReadinessToGate7Level(
+  readiness: ReadinessSectionStatus,
+  postgresVerdict: PostgresCertificationVerdict,
+): Gate6ReadinessLevel {
+  if (readiness === "not_ready" || postgresVerdict === "fail") {
+    return "not_ready";
+  }
+
+  if (readiness === "ready" && postgresVerdict === "pass") {
+    return "ready";
+  }
+
+  return "partial";
+}

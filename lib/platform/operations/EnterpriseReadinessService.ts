@@ -14,6 +14,11 @@ import { disasterRecoveryService } from "@/lib/platform/operations/DisasterRecov
 import { operationalHealthService } from "@/lib/platform/operations/OperationalHealthService";
 import type {
   EnterpriseReadinessReport,
+  Gate6CertificationVerdict,
+  Gate6OperationalBlocker,
+  Gate6OperationalEvidenceItem,
+  Gate6OperationalValidationReport,
+  Gate6SignoffSummary,
   PlatformVerificationResult,
   PostgresCertificationContext,
   PostgresCertificationScenario,
@@ -23,6 +28,8 @@ import type {
 import {
   buildReadinessSection,
   deriveCertificationVerdict,
+  deriveGate6CertificationVerdict,
+  mapReadinessToGate7Level,
   worstOperationalStatus,
   worstReadinessStatus,
 } from "@/lib/platform/operations/OperationalReadinessReport";
@@ -37,6 +44,7 @@ import { toObservabilityHealthStatus } from "@/lib/platform/store/PlatformStore"
 import {
   PlatformStoreFactory,
   createPostgresCertificationStore,
+  restoreConnectionIfSupported,
   verifyPlatformShutdown,
   verifyPlatformStartup,
   verifyPostgresColdBoot,
@@ -532,20 +540,13 @@ export class EnterpriseReadinessService {
   async generateReadinessReport(store?: PlatformStore): Promise<EnterpriseReadinessReport> {
     const platformStore = store ?? new InMemoryPlatformStore();
 
-    const [
-      persistence,
-      monitoring,
-      operations,
-      startupVerification,
-      shutdownVerification,
-    ] = await Promise.all([
+    const [persistence, monitoring, operations] = await Promise.all([
       this.verifyPersistence(platformStore),
       this.verifyMonitoring(),
       this.verifyOperations(),
-      verifyPlatformStartup(platformStore),
-      verifyPlatformShutdown(),
     ]);
 
+    const startupVerification = await verifyPlatformStartup(platformStore);
     const platform = this.verifyPlatform();
     const health = this.verifyHealth();
     const security = this.verifySecurity();
@@ -555,6 +556,7 @@ export class EnterpriseReadinessService {
     const platformStoreSection = this.verifyPlatformStore(platformStore);
     const compositionRoots = this.verifyCompositionRoots(platformStore);
     const postgresql = this.verifyPostgresql();
+    const shutdownVerification = await verifyPlatformShutdown(platformStore);
 
     const sections = {
       platform,
@@ -613,30 +615,27 @@ export class EnterpriseReadinessService {
     const evidence: string[] = [];
     const recommendations: string[] = [];
 
-    const [
-      coldBoot,
-      hydration,
-      transactionRecovery,
-      warmRestart,
-      multipleRestartCycles,
-      organizationIsolation,
-      startupVerification,
-      shutdownVerification,
-    ] = await Promise.all([
-      verifyPostgresColdBoot(store),
-      verifyPostgresHydration(store),
-      verifyPostgresTransactionRecovery(store),
-      verifyPostgresWarmRestart(context),
-      verifyPostgresMultipleRestartCycles(context, 3),
-      verifyPostgresOrganizationIsolation(store),
-      verifyPlatformStartup(store),
-      verifyPlatformShutdown(createPostgresCertificationStore(context)),
-    ]);
+    const coldBoot = await verifyPostgresColdBoot(store);
+    const hydration = await verifyPostgresHydration(store);
+    const transactionRecovery = await verifyPostgresTransactionRecovery(store);
+    const organizationIsolation = await verifyPostgresOrganizationIsolation(store);
+    const startupVerification = await verifyPlatformStartup(store);
+    const warmRestart = await verifyPostgresWarmRestart(context);
+    const multipleRestartCycles = await verifyPostgresMultipleRestartCycles(context, 3);
+    const shutdownVerification = await verifyPlatformShutdown(
+      createPostgresCertificationStore(context),
+    );
 
-    const compositionRoots = this.verifyCompositionRoots(store);
-    const canonicalEvents = this.verifyEventInfrastructureAfterWiring(store);
+    restoreConnectionIfSupported(context.connection);
+    const readinessStore = createPostgresCertificationStore(context);
+    if (!readinessStore.isInitialized()) {
+      await readinessStore.initialize();
+    }
+
+    const compositionRoots = this.verifyCompositionRoots(readinessStore);
+    const canonicalEvents = this.verifyEventInfrastructureAfterWiring(readinessStore);
     const health = this.verifyHealth();
-    const readinessReport = await this.generateReadinessReport(store);
+    const readinessReport = await this.generateReadinessReport(readinessStore);
 
     if (coldBoot.status === "healthy") {
       evidence.push("Cold boot initialization verified against PostgreSQL provider.");
@@ -706,7 +705,12 @@ export class EnterpriseReadinessService {
 
     const readinessScenario: PostgresCertificationScenario = {
       name: "readiness_report",
-      status: readinessReport.status,
+      status:
+        readinessReport.overallReadiness === "ready"
+          ? "healthy"
+          : readinessReport.overallReadiness === "partial"
+            ? "degraded"
+            : "unhealthy",
       message: readinessReport.message,
       checks: [
         {
@@ -740,6 +744,10 @@ export class EnterpriseReadinessService {
 
     const verdict = deriveCertificationVerdict(...scenarios.map((scenario) => scenario.status));
 
+    if (readinessStore.isInitialized() && readinessStore.getLifecycleState() !== "shutdown") {
+      await readinessStore.shutdown();
+    }
+
     if (store.isInitialized() && store.getLifecycleState() !== "shutdown") {
       await store.shutdown();
     }
@@ -765,6 +773,297 @@ export class EnterpriseReadinessService {
     createCrmWiring(store);
     createProcurementWiring(store);
     return this.verifyEventInfrastructure();
+  }
+
+  /** Executes Gate 6 operational validation and produces authorization evidence (P-011.3). */
+  async executeGate6Validation(
+    context: PostgresCertificationContext,
+  ): Promise<Gate6OperationalValidationReport> {
+    return this.generateGate6ValidationReport(context);
+  }
+
+  /** Generates the Gate 6 operational evidence package for ARB and Gate 7 review (P-011.3). */
+  async generateGate6ValidationReport(
+    context: PostgresCertificationContext,
+  ): Promise<Gate6OperationalValidationReport> {
+    const postgresCertification = await this.generatePostgresCertificationReport(context);
+    const readinessReport = postgresCertification.readinessReport;
+
+    const domains = this.verifyDomains(createPostgresCertificationStore(context));
+    const operations = await this.verifyOperations();
+
+    const evidence = this.collectGate6Evidence({
+      readinessReport,
+      postgresCertification,
+      domains,
+      operations,
+    });
+
+    const blockers = this.identifyGate6Blockers(readinessReport, postgresCertification);
+    const recommendations = this.buildGate6Recommendations(
+      blockers,
+      postgresCertification.recommendations,
+    );
+
+    const hasUnhealthyCriticalPath = postgresCertification.scenarios.some(
+      (scenario) => scenario.status === "unhealthy",
+    );
+    const liveStagingRequired = this.isLiveStagingEvidenceRequired();
+
+    const verdict = deriveGate6CertificationVerdict({
+      postgresVerdict: postgresCertification.verdict,
+      overallReadiness: readinessReport.overallReadiness,
+      hasUnhealthyCriticalPath,
+      liveStagingRequired,
+    });
+
+    const gate7Readiness = mapReadinessToGate7Level(
+      readinessReport.overallReadiness,
+      postgresCertification.verdict,
+    );
+
+    const signoff = this.buildGate6SignoffSummary(verdict, blockers);
+
+    return {
+      mission: "P-011.3",
+      verdict,
+      message: this.buildGate6ValidationMessage(verdict, blockers.length),
+      validatedAt: new Date().toISOString(),
+      evidence,
+      blockers,
+      recommendations,
+      gate7Readiness,
+      generalAvailabilityImpact: this.describeGeneralAvailabilityImpact(verdict, blockers),
+      readinessReport,
+      postgresCertification,
+      signoff,
+    };
+  }
+
+  private collectGate6Evidence(input: {
+    readonly readinessReport: EnterpriseReadinessReport;
+    readonly postgresCertification: PostgresOperationalCertificationReport;
+    readonly domains: ReadinessSection;
+    readonly operations: ReadinessSection;
+  }): Gate6OperationalEvidenceItem[] {
+    const { readinessReport, postgresCertification, domains, operations } = input;
+    const sections = readinessReport.sections;
+
+    const sectionEvidence = (
+      dimension: Gate6OperationalEvidenceItem["dimension"],
+      section: ReadinessSection,
+      extras: readonly string[] = [],
+    ): Gate6OperationalEvidenceItem => ({
+      dimension,
+      status: section.status,
+      message: section.message,
+      evidence: [
+        ...section.checks.map((check) => `${check.name}: ${check.message}`),
+        ...extras,
+      ],
+    });
+
+    const recoveryScenario = postgresCertification.scenarios.find(
+      (scenario) => scenario.name === "warm_restart",
+    );
+    const transactionScenario = postgresCertification.scenarios.find(
+      (scenario) => scenario.name === "transaction_recovery",
+    );
+    const recoverySection = buildReadinessSection(
+      "Recovery",
+      [
+        ...(recoveryScenario?.checks ?? []),
+        ...(transactionScenario?.checks ?? []),
+      ],
+      "Platform recovery scenarios verified.",
+      "Platform recovery verified with warnings.",
+      "Platform recovery verification failed.",
+    );
+
+    return [
+      sectionEvidence("platform", sections.platform, [
+        `startup: ${readinessReport.startupVerification.message}`,
+        `shutdown: ${readinessReport.shutdownVerification.message}`,
+      ]),
+      sectionEvidence("persistence", sections.persistence),
+      sectionEvidence("health", sections.health),
+      sectionEvidence("security", sections.security),
+      sectionEvidence("rbac", sections.rbac),
+      sectionEvidence("rest", sections.rest),
+      sectionEvidence("canonicalEvents", sections.canonicalEvents),
+      sectionEvidence("platformStore", sections.platformStore),
+      sectionEvidence("compositionRoots", sections.compositionRoots),
+      sectionEvidence("domains", domains),
+      sectionEvidence("monitoring", sections.monitoring),
+      sectionEvidence("operations", operations),
+      sectionEvidence("postgresql", sections.postgresql, postgresCertification.evidence),
+      sectionEvidence("recovery", recoverySection, [
+        recoveryScenario?.message ?? "Warm restart scenario not recorded.",
+        transactionScenario?.message ?? "Transaction recovery scenario not recorded.",
+      ]),
+      {
+        dimension: "overall",
+        status: readinessReport.overallReadiness,
+        message: readinessReport.message,
+        evidence: [
+          `PostgreSQL certification verdict: ${postgresCertification.verdict}`,
+          `Validated at: ${readinessReport.assessedAt}`,
+          ...postgresCertification.evidence,
+        ],
+      },
+    ];
+  }
+
+  private identifyGate6Blockers(
+    readinessReport: EnterpriseReadinessReport,
+    postgresCertification: PostgresOperationalCertificationReport,
+  ): Gate6OperationalBlocker[] {
+    const blockers: Gate6OperationalBlocker[] = [];
+
+    if (this.isLiveStagingEvidenceRequired()) {
+      blockers.push({
+        id: "OPS-001",
+        severity: "P0",
+        message: "Live staging PostgreSQL GA-001 evidence not yet collected.",
+        owner: "Platform Ops",
+        gateTarget: "Gate 6",
+      });
+    }
+
+    if (readinessReport.sections.postgresql.status !== "ready") {
+      blockers.push({
+        id: "ENT-R-003",
+        severity: "P0",
+        message: "PostgreSQL operational evidence incomplete for production promotion.",
+        owner: "Platform Ops",
+        gateTarget: "Gate 6",
+      });
+    }
+
+    blockers.push({
+      id: "OPS-002",
+      severity: "P1",
+      message: "72-hour continuous health green window on staging not yet recorded.",
+      owner: "Platform Ops",
+      gateTarget: "Gate 6",
+    });
+
+    blockers.push({
+      id: "OPS-003",
+      severity: "P1",
+      message: "Performance baselines (p95 latency · throughput) not established.",
+      owner: "Platform Ops",
+      gateTarget: "Gate 7",
+    });
+
+    blockers.push({
+      id: "OPS-004",
+      severity: "P1",
+      message: "Disaster recovery drill with measured RTO/RPO not exercised.",
+      owner: "Platform Ops",
+      gateTarget: "Gate 7",
+    });
+
+    if (postgresCertification.verdict === "fail") {
+      blockers.push({
+        id: "OPS-005",
+        severity: "P0",
+        message: "PostgreSQL operational certification failed — unresolved unhealthy scenarios.",
+        owner: "Platform Engineering",
+        gateTarget: "Gate 6",
+      });
+    }
+
+    return blockers;
+  }
+
+  private buildGate6Recommendations(
+    blockers: readonly Gate6OperationalBlocker[],
+    postgresRecommendations: readonly string[],
+  ): string[] {
+    const recommendations = new Set<string>(postgresRecommendations);
+
+    if (blockers.some((blocker) => blocker.id === "OPS-001")) {
+      recommendations.add(
+        "Execute Gate 6 validation replay on live staging PostgreSQL to close OPS-001.",
+      );
+    }
+
+    recommendations.add("Maintain 72-hour health monitoring window before Gate 6 sign-off.");
+    recommendations.add("Schedule Gate 7 DR drill and rollback validation on staging.");
+    recommendations.add("Preserve certification artifacts in Gate6-Evidence-Checklist.md.");
+
+    return [...recommendations];
+  }
+
+  private buildGate6SignoffSummary(
+    verdict: Gate6CertificationVerdict,
+    blockers: readonly Gate6OperationalBlocker[],
+  ): Gate6SignoffSummary {
+    const platformOps: Gate6CertificationVerdict =
+      verdict === "fail" ? "fail" : verdict === "pass" ? "pass" : "conditional_pass";
+
+    const arb: Gate6CertificationVerdict =
+      verdict === "fail"
+        ? "fail"
+        : blockers.some((blocker) => blocker.severity === "P0" && blocker.gateTarget === "Gate 6")
+          ? "conditional_pass"
+          : verdict;
+
+    const executive: Gate6CertificationVerdict = verdict === "pass" ? "conditional_pass" : arb;
+
+    return {
+      platformOps,
+      architectureReviewBoard: arb,
+      executiveSponsor: executive,
+      authorizationStatement:
+        verdict === "pass"
+          ? "Gate 6 operational evidence complete — Gate 7 authorization package ready for review."
+          : verdict === "conditional_pass"
+            ? "Gate 6 engineering evidence complete — conditional authorization pending live staging OPS-001 closure."
+            : "Gate 6 operational validation failed — remediation required before authorization.",
+    };
+  }
+
+  private buildGate6ValidationMessage(
+    verdict: Gate6CertificationVerdict,
+    blockerCount: number,
+  ): string {
+    if (verdict === "pass") {
+      return "Gate 6 operational validation passed — evidence package complete.";
+    }
+
+    if (verdict === "conditional_pass") {
+      return `Gate 6 operational validation conditionally passed — ${blockerCount} blocker(s) tracked for staging execution.`;
+    }
+
+    return "Gate 6 operational validation failed — unresolved critical operational gaps.";
+  }
+
+  private describeGeneralAvailabilityImpact(
+    verdict: Gate6CertificationVerdict,
+    blockers: readonly Gate6OperationalBlocker[],
+  ): string {
+    if (verdict === "fail") {
+      return "General Availability remains NO-GO until Gate 6 validation failures are remediated.";
+    }
+
+    const p0Blockers = blockers.filter((blocker) => blocker.severity === "P0").length;
+
+    if (verdict === "conditional_pass" || p0Blockers > 0) {
+      return "General Availability remains NO-GO — Gate 6 engineering evidence complete; live staging OPS-001 and Gate 7 operational drills required.";
+    }
+
+    return "Gate 6 operational evidence supports Gate 7 authorization review — GA remains deferred pending Gate 7 sign-off.";
+  }
+
+  private isLiveStagingEvidenceRequired(): boolean {
+    const storeConfig = loadStoreConfiguration();
+    return !(
+      storeConfig.provider === StoreProvider.PostgreSQL &&
+      storeConfig.databaseUrl &&
+      process.env.NODE_ENV === "staging"
+    );
   }
 }
 
