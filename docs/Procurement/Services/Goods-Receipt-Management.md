@@ -109,4 +109,4 @@ Partial receives and cancellations do not emit canonical events.
 
 ## Next Mission
 
-**P-010.11** — Supplier Invoice Management Services (planned).
+**P-010.11** — Supplier Invoice Management Services — **Implemented**. See [Supplier-Invoice-Management.md](./Supplier-Invoice-Management.md).

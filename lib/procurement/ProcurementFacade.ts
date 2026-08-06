@@ -22,6 +22,7 @@ import type { PurchaseOrderService } from "@/lib/procurement/services/PurchaseOr
 import type { PurchaseContractService } from "@/lib/procurement/services/PurchaseContractService";
 import type { GoodsReceiptService } from "@/lib/procurement/services/GoodsReceiptService";
 import type { ReceivingLineService } from "@/lib/procurement/services/ReceivingLineService";
+import type { SupplierInvoiceService } from "@/lib/procurement/services/SupplierInvoiceService";
 import type { ServiceContext } from "@/types/services";
 
 export const PROCUREMENT_MISSION_PLATFORM_FOUNDATION = "P-010.3";
@@ -29,6 +30,7 @@ export const PROCUREMENT_MISSION_SUPPLIER_MANAGEMENT = "P-010.7";
 export const PROCUREMENT_MISSION_REQUISITION_MANAGEMENT = "P-010.8";
 export const PROCUREMENT_MISSION_PURCHASE_ORDER_MANAGEMENT = "P-010.9";
 export const PROCUREMENT_MISSION_GOODS_RECEIPT_MANAGEMENT = "P-010.10";
+export const PROCUREMENT_MISSION_SUPPLIER_INVOICE_MANAGEMENT = "P-010.11";
 export const PROCUREMENT_MISSION_REST_API = "P-010.12";
 
 function createDefaultProcurementWiring(): ProcurementWiring {
@@ -97,6 +99,10 @@ export class ProcurementFacade {
       goodsReceipt: this.wiring.goodsReceiptService,
       lines: this.wiring.receivingLineService,
     };
+  }
+
+  get invoices(): SupplierInvoiceService {
+    return this.wiring.supplierInvoiceService;
   }
 
   getWorkspaceBootstrap(_context: ServiceContext): ProcurementWorkspaceBootstrap {

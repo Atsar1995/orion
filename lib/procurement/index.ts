@@ -11,6 +11,7 @@ export { PurchaseOrderService } from "@/lib/procurement/services/PurchaseOrderSe
 export { PurchaseContractService } from "@/lib/procurement/services/PurchaseContractService";
 export { GoodsReceiptService } from "@/lib/procurement/services/GoodsReceiptService";
 export { ReceivingLineService } from "@/lib/procurement/services/ReceivingLineService";
+export { SupplierInvoiceService } from "@/lib/procurement/services/SupplierInvoiceService";
 export type {
   VendorRecord,
   VendorStatus,
@@ -50,6 +51,13 @@ export type {
   UpdateReceivingLineInput,
   ReceiveItemsInput,
 } from "@/lib/procurement/types/goods-receipt";
+export type {
+  SupplierInvoiceRecord,
+  SupplierInvoiceStatus,
+  SupplierInvoiceLineItem,
+  CreateSupplierInvoiceInput,
+  UpdateSupplierInvoiceInput,
+} from "@/lib/procurement/types/supplier-invoice";
 export const procurementSupplierService = procurementFacade.suppliers.vendor;
 export const procurementVendorContactService = procurementFacade.suppliers.contacts;
 export const procurementVendorScorecardService = procurementFacade.suppliers.scorecards;
@@ -59,6 +67,7 @@ export const procurementPurchaseOrderService = procurementFacade.orders.purchase
 export const procurementPurchaseContractService = procurementFacade.orders.contracts;
 export const procurementGoodsReceiptService = procurementFacade.receiving.goodsReceipt;
 export const procurementReceivingLineService = procurementFacade.receiving.lines;
+export const procurementSupplierInvoiceService = procurementFacade.invoices;
 export {
   procurementOk,
   procurementCreated,

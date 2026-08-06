@@ -17,6 +17,7 @@ import type {
   GoodsReceiptRecord,
   ReceivingLineRecord,
 } from "@/lib/procurement/types/goods-receipt";
+import type { SupplierInvoiceRecord } from "@/lib/procurement/types/supplier-invoice";
 import type { ServiceContext } from "@/types/services";
 
 export function nowIso(): string {
@@ -224,6 +225,22 @@ export function assertUniqueGoodsReceiptNumber(
   if (duplicate) {
     throw new Error("DUPLICATE_GOODS_RECEIPT_NUMBER");
   }
+}
+
+export function asSupplierInvoiceRecord(record: ProcurementAggregateRecord): SupplierInvoiceRecord {
+  return record as SupplierInvoiceRecord;
+}
+
+export function getSupplierInvoiceOrThrow(
+  repository: ProcurementPersistenceRepository,
+  invoiceId: string,
+  context: ServiceContext,
+): SupplierInvoiceRecord {
+  const record = repository.getById(context.organizationId, "supplierInvoices", invoiceId);
+  if (!record) {
+    throw new Error("SUPPLIER_INVOICE_NOT_FOUND");
+  }
+  return asSupplierInvoiceRecord(record);
 }
 
 export function getVendorOrThrow(

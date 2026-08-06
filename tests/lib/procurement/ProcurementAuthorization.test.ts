@@ -34,7 +34,7 @@ describe("Procurement Authorization (P-010.5)", () => {
     expect(PROCUREMENT_PERMISSIONS.admin).toBe("procurement:admin:manage");
     expect(PROCUREMENT_PERMISSIONS.requisitionCreate).toBe("procurement:requisition:create");
     expect(PROCUREMENT_PERMISSIONS.eventReplay).toBe("procurement:event:replay");
-    expect(Object.keys(PROCUREMENT_PERMISSIONS)).toHaveLength(24);
+    expect(Object.keys(PROCUREMENT_PERMISSIONS)).toHaveLength(26);
   });
 
   it("maps Procurement API routes to permissions", () => {
