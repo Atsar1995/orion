@@ -1,14 +1,20 @@
 import {
   buildCrmFinanceIdempotencyKey,
   buildHcmFinanceIdempotencyKey,
+  buildProcurementFinanceIdempotencyKey,
   mapCrmEventToJournalDraft,
   mapCrmEventToPostingContext,
   mapHcmEventToJournalDraft,
   mapHcmEventToPostingContext,
+  mapProcurementEventToJournalDraft,
+  mapProcurementEventToPostingContext,
   validateCrmContractPayload,
   validateHcmContractPayload,
+  validateProcurementContractPayload,
+  type CrmFinanceEventType,
   type FinanceInboundEventType,
   type HcmFinanceEventType,
+  type ProcurementFinancePostableEventType,
 } from "@/lib/finance/integration/FinanceEventMapper";
 import type { FinanceEventResult } from "@/lib/finance/integration/FinanceEventResult";
 import type { EventLineageRepository } from "@/lib/finance/repositories/EventLineageRepository";
@@ -17,7 +23,7 @@ import type { JournalPostingService } from "@/lib/finance/services/JournalPostin
 import type { IntelligenceEvent } from "@/types/intelligence-integration";
 import type { ServiceContext } from "@/types/services";
 
-/** Executes governed inbound posting pipelines for HCM and CRM (P-009.9 · P-009.19). */
+/** Executes governed inbound posting pipelines for HCM, CRM, and Procurement (P-009.9 · P-009.19 · P-010.19). */
 export class FinanceInboundProcessor {
   constructor(
     private readonly journalRepository: JournalRepository,
@@ -112,7 +118,11 @@ export class FinanceInboundProcessor {
       return validateHcmContractPayload(event, eventType);
     }
 
-    return validateCrmContractPayload(event, eventType);
+    if (this.isCrmEventType(eventType)) {
+      return validateCrmContractPayload(event, eventType);
+    }
+
+    return validateProcurementContractPayload(event, eventType);
   }
 
   private buildIdempotencyKey(
@@ -123,7 +133,11 @@ export class FinanceInboundProcessor {
       return buildHcmFinanceIdempotencyKey(event, eventType);
     }
 
-    return buildCrmFinanceIdempotencyKey(event, eventType);
+    if (this.isCrmEventType(eventType)) {
+      return buildCrmFinanceIdempotencyKey(event, eventType);
+    }
+
+    return buildProcurementFinanceIdempotencyKey(event, eventType);
   }
 
   private mapJournalDraft(
@@ -134,7 +148,14 @@ export class FinanceInboundProcessor {
       return mapHcmEventToJournalDraft(event, eventType);
     }
 
-    return mapCrmEventToJournalDraft(event, eventType);
+    if (this.isCrmEventType(eventType)) {
+      return mapCrmEventToJournalDraft(event, eventType);
+    }
+
+    return mapProcurementEventToJournalDraft(
+      event,
+      eventType as ProcurementFinancePostableEventType,
+    );
   }
 
   private mapPostingContext(
@@ -147,11 +168,24 @@ export class FinanceInboundProcessor {
       return mapHcmEventToPostingContext(journalId, event, eventType, serviceContext);
     }
 
-    return mapCrmEventToPostingContext(journalId, event, eventType, serviceContext);
+    if (this.isCrmEventType(eventType)) {
+      return mapCrmEventToPostingContext(journalId, event, eventType, serviceContext);
+    }
+
+    return mapProcurementEventToPostingContext(
+      journalId,
+      event,
+      eventType as ProcurementFinancePostableEventType,
+      serviceContext,
+    );
   }
 
   private isHcmEventType(eventType: FinanceInboundEventType): eventType is HcmFinanceEventType {
     return eventType.startsWith("hcm.");
+  }
+
+  private isCrmEventType(eventType: FinanceInboundEventType): eventType is CrmFinanceEventType {
+    return eventType.startsWith("crm.");
   }
 
   private resolveServiceContext(

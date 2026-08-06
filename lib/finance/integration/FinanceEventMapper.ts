@@ -1,5 +1,12 @@
 import { CRM_IIL_SERVICE_ID } from "@/lib/crm/constants";
 import { HCM_IIL_SERVICE_ID } from "@/lib/hcm/constants";
+import { PROCUREMENT_IIL_SERVICE_ID } from "@/lib/procurement/constants";
+import {
+  isProcurementFutureFinanceEventType,
+  PROCUREMENT_FINANCE_EVENT_TYPES,
+  type ProcurementFinanceEventType,
+  type ProcurementFinancePostableEventType,
+} from "@/lib/finance/integration/FinanceProcurementSupportedEvents";
 import type { PostingContext } from "@/lib/finance/services/PostingContext";
 import type { JournalDraftInput } from "@/types/finance-ledger";
 import type { IntelligenceEvent } from "@/types/intelligence-integration";
@@ -21,7 +28,10 @@ export const CRM_FINANCE_EVENT_TYPES = [
 
 export type CrmFinanceEventType = (typeof CRM_FINANCE_EVENT_TYPES)[number];
 
-export type FinanceInboundEventType = HcmFinanceEventType | CrmFinanceEventType;
+export type FinanceInboundEventType =
+  | HcmFinanceEventType
+  | CrmFinanceEventType
+  | ProcurementFinanceEventType;
 
 /** When true, `crm.salesorder.confirmed` maps to deferred revenue (Cr 3100) instead of operational (Cr 4200). */
 export const CRM_DEFERRED_JOURNAL_ENABLED = false;
@@ -52,7 +62,23 @@ export function resolveCrmCanonicalEventType(event: IntelligenceEvent): CrmFinan
 export function resolveFinanceInboundEventType(
   event: IntelligenceEvent,
 ): FinanceInboundEventType | null {
-  return resolveCanonicalEventType(event) ?? resolveCrmCanonicalEventType(event);
+  return (
+    resolveCanonicalEventType(event) ??
+    resolveCrmCanonicalEventType(event) ??
+    resolveProcurementCanonicalEventType(event)
+  );
+}
+
+/** Resolves the ADR-014 canonical Procurement event type from an IIL envelope. */
+export function resolveProcurementCanonicalEventType(
+  event: IntelligenceEvent,
+): ProcurementFinanceEventType | null {
+  const canonical = event.payload.canonicalEventType ?? event.payload.eventType;
+  if ((PROCUREMENT_FINANCE_EVENT_TYPES as readonly string[]).includes(canonical)) {
+    return canonical as ProcurementFinanceEventType;
+  }
+
+  return null;
 }
 
 /** Returns true when the envelope declares a supported contract version. */
@@ -359,6 +385,143 @@ export function validateCrmContractPayload(
   const amount = parseAmount(event.payload.amount ?? event.payload.orderValue);
   if (!amount) {
     return "ORDER_VALUE_REQUIRED";
+  }
+
+  return null;
+}
+
+/** Builds the ES-FIN-002 idempotency key for an inbound Procurement event. */
+export function buildProcurementFinanceIdempotencyKey(
+  event: IntelligenceEvent,
+  eventType: ProcurementFinanceEventType,
+): string {
+  if (event.payload.idempotencyKey?.trim()) {
+    return event.payload.idempotencyKey.trim();
+  }
+
+  const organizationId = event.organizationId;
+
+  if (eventType === "procurement.goods.received") {
+    const goodsReceiptId = event.payload.goodsReceiptId ?? event.entityId;
+    return `${organizationId}:${PROCUREMENT_IIL_SERVICE_ID}:procurement-goods-${goodsReceiptId}-received-v1`;
+  }
+
+  if (eventType === "procurement.purchaseorder.approved") {
+    const purchaseOrderId = event.payload.purchaseOrderId ?? event.entityId;
+    return `${organizationId}:${PROCUREMENT_IIL_SERVICE_ID}:procurement-purchaseorder-${purchaseOrderId}-approved-v1`;
+  }
+
+  const invoiceId = event.payload.invoiceId ?? event.entityId;
+  return `${organizationId}:${PROCUREMENT_IIL_SERVICE_ID}:procurement-invoice-${invoiceId}-approved-v1`;
+}
+
+/** Maps a canonical Procurement event to a journal draft — no business calculations. */
+export function mapProcurementEventToJournalDraft(
+  event: IntelligenceEvent,
+  eventType: ProcurementFinancePostableEventType,
+): JournalDraftInput {
+  const amount = parseAmount(event.payload.amount ?? event.payload.totalAmount);
+  const currency = event.payload.currencyCode ?? "ZAR";
+  const periodId = event.payload.period ?? event.payload.periodId ?? "period-2026-07";
+  const journalId = `journal-procurement-${event.eventId}`;
+
+  return {
+    entry: {
+      id: journalId,
+      organizationId: event.organizationId,
+      periodId,
+      status: "draft",
+      correlationId: event.correlationId,
+      idempotencyKey: buildProcurementFinanceIdempotencyKey(event, eventType),
+    },
+    lines: [
+      {
+        id: `${journalId}-line-debit`,
+        journalId,
+        accountId: "coa-5100",
+        debitAmount: amount,
+        creditAmount: 0,
+        currency,
+      },
+      {
+        id: `${journalId}-line-credit`,
+        journalId,
+        accountId: "coa-2100",
+        debitAmount: 0,
+        creditAmount: amount,
+        currency,
+      },
+    ],
+  };
+}
+
+/** Maps a posted journal request from an inbound Procurement event. */
+export function mapProcurementEventToPostingContext(
+  journalId: string,
+  event: IntelligenceEvent,
+  eventType: ProcurementFinancePostableEventType,
+  serviceContext: ServiceContext,
+): PostingContext {
+  const journalDate =
+    event.payload.transactionDate ??
+    event.payload.journalDate ??
+    resolveDefaultJournalDate(event.payload.period ?? event.payload.periodId);
+
+  const costCentreId = event.payload.costCentreId ?? "cc-procurement-default";
+
+  return {
+    organizationId: event.organizationId,
+    journalId,
+    correlationId: event.correlationId,
+    idempotencyKey: buildProcurementFinanceIdempotencyKey(event, eventType),
+    eventId: event.eventId,
+    serviceContext,
+    requestMetadata: {
+      journalDate,
+      postedBy: event.actorId,
+      sourceService: event.sourceService,
+      canonicalEventType: eventType,
+      costCentre: costCentreId,
+      ...(event.payload.invoiceId ? { invoiceId: event.payload.invoiceId } : {}),
+      ...(event.payload.purchaseOrderId ? { purchaseOrderId: event.payload.purchaseOrderId } : {}),
+      ...(event.payload.vendorId ?? event.payload.supplierId
+        ? { supplierId: event.payload.vendorId ?? event.payload.supplierId }
+        : {}),
+      ...(event.payload.approvedBy ? { approvedBy: event.payload.approvedBy } : {}),
+    },
+  };
+}
+
+/** Validates required contract payload fields per Procurement event type. */
+export function validateProcurementContractPayload(
+  event: IntelligenceEvent,
+  eventType: ProcurementFinanceEventType,
+): string | null {
+  if (isProcurementFutureFinanceEventType(eventType)) {
+    return "NOT_IMPLEMENTED";
+  }
+
+  if (eventType === "procurement.invoice.approved") {
+    const invoiceId = event.payload.invoiceId ?? event.entityId;
+    if (!invoiceId) {
+      return "INVOICE_ID_REQUIRED";
+    }
+    if (!parseAmount(event.payload.amount ?? event.payload.totalAmount)) {
+      return "AMOUNT_REQUIRED";
+    }
+    if (!event.payload.currencyCode?.trim()) {
+      return "CURRENCY_CODE_REQUIRED";
+    }
+    return null;
+  }
+
+  const purchaseOrderId = event.payload.purchaseOrderId ?? event.entityId;
+  if (!purchaseOrderId) {
+    return "PURCHASE_ORDER_ID_REQUIRED";
+  }
+
+  if (!parseAmount(event.payload.amount ?? event.payload.totalAmount)) {
+    return "AMOUNT_REQUIRED";
   }
 
   return null;

@@ -146,8 +146,11 @@ export {
   FinanceEventDispatcher,
   FinanceInboundProcessor,
   HCM_FINANCE_EVENT_TYPES,
+  PROCUREMENT_FINANCE_EVENT_TYPES,
   buildHcmFinanceIdempotencyKey,
+  buildProcurementFinanceIdempotencyKey,
   resolveCanonicalEventType,
+  resolveProcurementCanonicalEventType,
   resetFinanceEventConsumerForTests,
   resetFinanceIntegrationForTests,
 } from "@/lib/finance/integration";
@@ -155,6 +158,7 @@ export type {
   FinanceEventResult,
   FinanceEventProcessingStatus,
   HcmFinanceEventType,
+  ProcurementFinanceEventType,
 } from "@/lib/finance/integration";
 
 export type { BudgetService } from "@/lib/finance/services/BudgetService";

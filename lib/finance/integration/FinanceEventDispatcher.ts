@@ -1,16 +1,18 @@
 import type { FinanceInboundProcessor } from "@/lib/finance/integration/FinanceInboundProcessor";
 import {
-  resolveCrmCanonicalEventType,
   resolveCanonicalEventType,
+  resolveCrmCanonicalEventType,
+  resolveProcurementCanonicalEventType,
   type CrmFinanceEventType,
   type FinanceInboundEventType,
   type HcmFinanceEventType,
 } from "@/lib/finance/integration/FinanceEventMapper";
+import type { ProcurementFinanceEventType } from "@/lib/finance/integration/FinanceProcurementSupportedEvents";
 import type { FinanceEventResult } from "@/lib/finance/integration/FinanceEventResult";
 import type { IntelligenceEvent } from "@/types/intelligence-integration";
 import type { ServiceContext } from "@/types/services";
 
-/** Routes inbound HCM and CRM events to the Finance inbound processor (P-009.9 · P-009.19). */
+/** Routes inbound HCM, CRM, and Procurement events to the Finance inbound processor (P-009.9 · P-009.19 · P-010.19). */
 export class FinanceEventDispatcher {
   constructor(private readonly processor: FinanceInboundProcessor) {}
 
@@ -25,6 +27,9 @@ export class FinanceEventDispatcher {
       case "hcm.expense.approved":
       case "crm.revenue.recognized":
       case "crm.salesorder.confirmed":
+      case "procurement.invoice.approved":
+      case "procurement.purchaseorder.approved":
+      case "procurement.goods.received":
         return this.processor.process(event, context, eventType);
       default: {
         const unsupported: never = eventType;
@@ -64,6 +69,24 @@ export class FinanceEventDispatcher {
 
     return this.dispatch(event, context, eventType);
   }
+
+  /** Resolves and dispatches when the envelope carries a supported Procurement canonical type. */
+  async dispatchProcurementIfSupported(
+    event: IntelligenceEvent,
+    context: ServiceContext,
+  ): Promise<FinanceEventResult | null> {
+    const eventType = resolveProcurementCanonicalEventType(event);
+    if (!eventType) {
+      return null;
+    }
+
+    return this.dispatch(event, context, eventType);
+  }
 }
 
-export type { CrmFinanceEventType, FinanceInboundEventType, HcmFinanceEventType };
+export type {
+  CrmFinanceEventType,
+  FinanceInboundEventType,
+  HcmFinanceEventType,
+  ProcurementFinanceEventType,
+};

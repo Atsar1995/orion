@@ -1,6 +1,7 @@
 import { FINANCE_IIL_SERVICE_ID } from "@/lib/finance/constants";
 import { FINANCE_BUSINESS_EVENT_SUBSCRIPTIONS } from "@/lib/finance/events/subscriptions";
 import { isSupportedCrmFinanceEventType } from "@/lib/finance/integration/FinanceSupportedEvents";
+import { isSupportedProcurementFinanceEventType } from "@/lib/finance/integration/FinanceProcurementSupportedEvents";
 import { getFinanceEventConsumer } from "@/lib/finance/integration/financeIntegrationRegistry";
 import { defaultEventService } from "@/lib/finance/services/DefaultEventService";
 import { getFinanceEventPipelineService } from "@/lib/finance/services/financeEventPipelineRegistry";
@@ -60,6 +61,10 @@ export function registerFinanceEventSubscriptions(service: IntelligenceIntegrati
       }
 
       if (isSupportedCrmFinanceEventType(event.payload.canonicalEventType)) {
+        return;
+      }
+
+      if (isSupportedProcurementFinanceEventType(event.payload.canonicalEventType)) {
         return;
       }
 
