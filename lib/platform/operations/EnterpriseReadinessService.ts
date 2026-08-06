@@ -15,11 +15,14 @@ import { operationalHealthService } from "@/lib/platform/operations/OperationalH
 import type {
   EnterpriseReadinessReport,
   PlatformVerificationResult,
+  PostgresCertificationContext,
+  PostgresCertificationScenario,
+  PostgresOperationalCertificationReport,
   ReadinessSection,
 } from "@/lib/platform/operations/OperationalReadinessReport";
 import {
   buildReadinessSection,
-  mapOperationalStatusToReadiness,
+  deriveCertificationVerdict,
   worstOperationalStatus,
   worstReadinessStatus,
 } from "@/lib/platform/operations/OperationalReadinessReport";
@@ -33,8 +36,15 @@ import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 import { toObservabilityHealthStatus } from "@/lib/platform/store/PlatformStore";
 import {
   PlatformStoreFactory,
+  createPostgresCertificationStore,
   verifyPlatformShutdown,
   verifyPlatformStartup,
+  verifyPostgresColdBoot,
+  verifyPostgresHydration,
+  verifyPostgresMultipleRestartCycles,
+  verifyPostgresOrganizationIsolation,
+  verifyPostgresTransactionRecovery,
+  verifyPostgresWarmRestart,
 } from "@/lib/platform/store/PlatformStoreFactory";
 import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
 import { loadStoreConfiguration, StoreProvider } from "@/lib/platform/store/StoreConfiguration";
@@ -586,6 +596,175 @@ export class EnterpriseReadinessService {
       startupVerification,
       shutdownVerification,
     };
+  }
+
+  /** Runs PostgreSQL operational certification scenarios for OPS-001 / Gate 7 (P-011.2). */
+  async certifyPostgresqlOperational(
+    context: PostgresCertificationContext,
+  ): Promise<PostgresOperationalCertificationReport> {
+    return this.generatePostgresCertificationReport(context);
+  }
+
+  /** Generates engineering evidence report for PostgreSQL operational certification (P-011.2). */
+  async generatePostgresCertificationReport(
+    context: PostgresCertificationContext,
+  ): Promise<PostgresOperationalCertificationReport> {
+    const store = createPostgresCertificationStore(context);
+    const evidence: string[] = [];
+    const recommendations: string[] = [];
+
+    const [
+      coldBoot,
+      hydration,
+      transactionRecovery,
+      warmRestart,
+      multipleRestartCycles,
+      organizationIsolation,
+      startupVerification,
+      shutdownVerification,
+    ] = await Promise.all([
+      verifyPostgresColdBoot(store),
+      verifyPostgresHydration(store),
+      verifyPostgresTransactionRecovery(store),
+      verifyPostgresWarmRestart(context),
+      verifyPostgresMultipleRestartCycles(context, 3),
+      verifyPostgresOrganizationIsolation(store),
+      verifyPlatformStartup(store),
+      verifyPlatformShutdown(createPostgresCertificationStore(context)),
+    ]);
+
+    const compositionRoots = this.verifyCompositionRoots(store);
+    const canonicalEvents = this.verifyEventInfrastructureAfterWiring(store);
+    const health = this.verifyHealth();
+    const readinessReport = await this.generateReadinessReport(store);
+
+    if (coldBoot.status === "healthy") {
+      evidence.push("Cold boot initialization verified against PostgreSQL provider.");
+    }
+    if (warmRestart.status === "healthy") {
+      evidence.push("Warm restart preserved repository hydration across shutdown cycle.");
+    }
+    if (transactionRecovery.status === "healthy") {
+      evidence.push("Transaction begin/rollback recovery verified without store corruption.");
+    }
+    if (organizationIsolation.status === "healthy") {
+      evidence.push("Organization isolation verified on HCM and Finance seed repositories.");
+    }
+    if (compositionRoots.status === "ready") {
+      evidence.push("Finance, CRM, and Procurement composition roots restored after hydration.");
+    }
+
+    if (health.status === "degraded") {
+      recommendations.push(
+        "Execute certification against live staging PostgreSQL for OPS-001 closure evidence.",
+      );
+    }
+    if (canonicalEvents.status !== "ready") {
+      recommendations.push("Initialize all domain event pipeline registries before production traffic.");
+    }
+    if (readinessReport.overallReadiness !== "ready") {
+      recommendations.push("Address degraded readiness sections before Gate 7 sign-off.");
+    }
+    if (evidence.length === 0) {
+      recommendations.push("Re-run certification after resolving unhealthy scenario checks.");
+    }
+
+    const compositionScenario: PostgresCertificationScenario = {
+      name: "composition_root_restoration",
+      status:
+        compositionRoots.status === "ready"
+          ? "healthy"
+          : compositionRoots.status === "partial"
+            ? "degraded"
+            : "unhealthy",
+      message: compositionRoots.message,
+      checks: compositionRoots.checks,
+      verifiedAt: new Date().toISOString(),
+    };
+
+    const canonicalScenario: PostgresCertificationScenario = {
+      name: "canonical_event_infrastructure",
+      status:
+        canonicalEvents.status === "ready"
+          ? "healthy"
+          : canonicalEvents.status === "partial"
+            ? "degraded"
+            : "unhealthy",
+      message: canonicalEvents.message,
+      checks: canonicalEvents.checks,
+      verifiedAt: new Date().toISOString(),
+    };
+
+    const healthScenario: PostgresCertificationScenario = {
+      name: "health_verification",
+      status:
+        health.status === "ready" ? "healthy" : health.status === "partial" ? "degraded" : "unhealthy",
+      message: health.message,
+      checks: health.checks,
+      verifiedAt: new Date().toISOString(),
+    };
+
+    const readinessScenario: PostgresCertificationScenario = {
+      name: "readiness_report",
+      status: readinessReport.status,
+      message: readinessReport.message,
+      checks: [
+        {
+          name: "overall_readiness",
+          status:
+            readinessReport.overallReadiness === "ready"
+              ? "healthy"
+              : readinessReport.overallReadiness === "partial"
+                ? "degraded"
+                : "unhealthy",
+          message: `Overall readiness: ${readinessReport.overallReadiness}.`,
+        },
+      ],
+      verifiedAt: readinessReport.assessedAt,
+    };
+
+    const scenarios: PostgresCertificationScenario[] = [
+      coldBoot,
+      startupVerification,
+      shutdownVerification,
+      warmRestart,
+      multipleRestartCycles,
+      hydration,
+      transactionRecovery,
+      organizationIsolation,
+      compositionScenario,
+      canonicalScenario,
+      healthScenario,
+      readinessScenario,
+    ];
+
+    const verdict = deriveCertificationVerdict(...scenarios.map((scenario) => scenario.status));
+
+    if (store.isInitialized() && store.getLifecycleState() !== "shutdown") {
+      await store.shutdown();
+    }
+
+    return {
+      verdict,
+      message:
+        verdict === "pass"
+          ? "PostgreSQL operational certification passed — engineering evidence complete for Gate 7 execution."
+          : verdict === "conditional"
+            ? "PostgreSQL operational certification conditional — address recommendations before GA."
+            : "PostgreSQL operational certification failed — unresolved unhealthy scenarios.",
+      certifiedAt: new Date().toISOString(),
+      scenarios,
+      evidence,
+      recommendations,
+      readinessReport,
+    };
+  }
+
+  private verifyEventInfrastructureAfterWiring(store: PlatformStore): ReadinessSection {
+    createFinanceWiring(store);
+    createCrmWiring(store);
+    createProcurementWiring(store);
+    return this.verifyEventInfrastructure();
   }
 }
 

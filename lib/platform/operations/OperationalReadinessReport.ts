@@ -48,6 +48,42 @@ export type EnterpriseReadinessReport = {
   readonly shutdownVerification: PlatformVerificationResult;
 };
 
+/** PostgreSQL operational certification verdict (Mission P-011.2 · OPS-001). */
+export type PostgresCertificationVerdict = "pass" | "conditional" | "fail";
+
+export type PostgresCertificationScenario = PlatformVerificationResult;
+
+/** Engineering evidence report for Gate 7 PostgreSQL operational certification. */
+export type PostgresOperationalCertificationReport = {
+  readonly verdict: PostgresCertificationVerdict;
+  readonly message: string;
+  readonly certifiedAt: string;
+  readonly scenarios: readonly PostgresCertificationScenario[];
+  readonly evidence: readonly string[];
+  readonly recommendations: readonly string[];
+  readonly readinessReport: EnterpriseReadinessReport;
+};
+
+export function mapOperationalStatusToCertificationVerdict(
+  status: OperationalStatus,
+): PostgresCertificationVerdict {
+  if (status === "healthy") {
+    return "pass";
+  }
+
+  if (status === "degraded") {
+    return "conditional";
+  }
+
+  return "fail";
+}
+
+export function deriveCertificationVerdict(
+  ...statuses: OperationalStatus[]
+): PostgresCertificationVerdict {
+  return mapOperationalStatusToCertificationVerdict(worstOperationalStatus(...statuses));
+}
+
 export function mapOperationalStatusToReadiness(
   status: OperationalStatus,
 ): ReadinessSectionStatus {

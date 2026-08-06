@@ -35,7 +35,17 @@ export {
 
 export {
   PlatformStoreFactory,
+  createPostgresCertificationStore,
   getDefaultPlatformStore,
   ensureDefaultPlatformStoreInitialized,
   resetDefaultPlatformStoreForTests,
+  verifyPlatformShutdown,
+  verifyPlatformStartup,
+  verifyPostgresColdBoot,
+  verifyPostgresHydration,
+  verifyPostgresMultipleRestartCycles,
+  verifyPostgresOrganizationIsolation,
+  verifyPostgresTransactionRecovery,
+  verifyPostgresWarmRestart,
 } from "@/lib/platform/store/PlatformStoreFactory";
+export type { PostgresCertificationContext } from "@/lib/platform/store/PlatformStoreFactory";

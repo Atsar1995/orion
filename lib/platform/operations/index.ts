@@ -71,11 +71,16 @@ export type {
   EnterpriseReadinessReport,
   EnterpriseReadinessSections,
   PlatformVerificationResult,
+  PostgresCertificationScenario,
+  PostgresCertificationVerdict,
+  PostgresOperationalCertificationReport,
   ReadinessSection,
   ReadinessSectionStatus,
 } from "@/lib/platform/operations/OperationalReadinessReport";
 export {
   buildReadinessSection,
+  deriveCertificationVerdict,
+  mapOperationalStatusToCertificationVerdict,
   mapOperationalStatusToReadiness,
   worstOperationalStatus,
   worstReadinessStatus,
