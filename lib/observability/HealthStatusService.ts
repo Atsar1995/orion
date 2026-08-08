@@ -130,6 +130,15 @@ export class HealthStatusService {
         : "Procurement backing resolves after relational platform store initialization.",
     });
 
+    const auroraStoreHealth = inMemoryStore?.getAuroraBacking() ?? null;
+    checks.push({
+      name: "aurora_platform",
+      status: auroraStoreHealth ? "healthy" : "degraded",
+      message: auroraStoreHealth
+        ? "Aurora store backing available via PlatformStore."
+        : "Aurora backing resolves after relational platform store initialization.",
+    });
+
     const securityHealth = securityHealthService.getReport();
     checks.push({
       name: "platform_security",

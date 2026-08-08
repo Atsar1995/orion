@@ -10,6 +10,8 @@ import { createCrmStore } from "@/lib/crm/persistence/createCrmStore";
 import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import { createProcurementStore } from "@/lib/procurement/persistence/createProcurementStore";
 import type { ProcurementStoreBacking } from "@/lib/procurement/persistence/ProcurementStoreBacking";
+import { createAuroraStore } from "@/lib/aurora/persistence/createAuroraStore";
+import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
 import { createFinanceStore } from "@/lib/finance/persistence/createFinanceStore";
 import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
@@ -36,6 +38,7 @@ export type InMemoryPlatformStoreOptions = {
   readonly financeStore?: FinanceStoreBacking;
   readonly crmStore?: CrmStoreBacking;
   readonly procurementStore?: ProcurementStoreBacking;
+  readonly auroraStore?: AuroraStoreBacking;
   readonly transactionManager?: TransactionManager;
 };
 
@@ -48,6 +51,7 @@ export class InMemoryPlatformStore implements PlatformStore {
   private readonly financeStore: FinanceStoreBacking;
   private readonly crmStore: CrmStoreBacking;
   private readonly procurementStore: ProcurementStoreBacking;
+  private readonly auroraStore: AuroraStoreBacking;
   private readonly transactionManager: TransactionManager;
   private lifecycle: PlatformStoreLifecycleState = "created";
 
@@ -57,6 +61,7 @@ export class InMemoryPlatformStore implements PlatformStore {
     this.financeStore = options.financeStore ?? createFinanceStore();
     this.crmStore = options.crmStore ?? createCrmStore();
     this.procurementStore = options.procurementStore ?? createProcurementStore();
+    this.auroraStore = options.auroraStore ?? createAuroraStore();
     this.transactionManager = options.transactionManager ?? new NoOpTransactionManager();
     this.lifecycle = "initialized";
   }
@@ -102,6 +107,10 @@ export class InMemoryPlatformStore implements PlatformStore {
     return this.procurementStore;
   }
 
+  getAuroraBacking(): AuroraStoreBacking {
+    return this.auroraStore;
+  }
+
   getHealth(): PlatformStoreHealthReport {
     if (this.lifecycle === "shutdown") {
       return createPlatformStoreHealthReport({
@@ -134,6 +143,7 @@ export class InMemoryPlatformStore implements PlatformStore {
         financeBacking: "FinanceStoreBacking",
         crmBacking: "CrmStoreBacking",
         procurementBacking: "ProcurementStoreBacking",
+        auroraBacking: "AuroraStoreBacking",
       },
     });
   }

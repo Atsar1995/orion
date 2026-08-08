@@ -11,6 +11,7 @@ import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import type { ProcurementStoreBacking } from "@/lib/procurement/persistence/ProcurementStoreBacking";
+import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
 import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConnection";
 import type {
   PersistenceTransaction,
@@ -34,6 +35,8 @@ export interface PlatformDomainStores {
   getCrmBacking(): CrmStoreBacking;
   /** Procurement persistence backing (Mission P-010.3). */
   getProcurementBacking(): ProcurementStoreBacking;
+  /** Aurora persistence backing (Mission A-007). */
+  getAuroraBacking(): AuroraStoreBacking;
 }
 
 /**
