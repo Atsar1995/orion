@@ -17,11 +17,11 @@ import { AuroraLoggingService } from "@/lib/aurora/platform/services/AuroraLoggi
 import { AuroraMetricsCollector } from "@/lib/aurora/platform/services/AuroraMetricsCollector";
 import { AuroraTracingService } from "@/lib/aurora/platform/services/AuroraTracingService";
 import { AuroraModuleRegistry } from "@/lib/aurora/runtime/AuroraModuleRegistry";
-import { AuroraRuntime } from "@/lib/aurora/runtime/AuroraRuntime";
 import {
   AuroraRuntimeConfiguration,
   type AuroraWiringConfig,
 } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
+import type { AuroraRuntimeLike } from "@/lib/aurora/runtime/AuroraRuntimeLike";
 import type { PlatformLifecycleState } from "@/lib/aurora/runtime/PlatformLifecycleState";
 import type { AuroraWiring } from "@/lib/aurora/wiring/AuroraWiring";
 import { EventBus } from "@/lib/platform/events/EventBus";
@@ -38,10 +38,20 @@ function resolvePlatformStore(config: AuroraWiringConfig) {
   return getDefaultPlatformStore();
 }
 
+function resolveInitialLifecycle(config: AuroraWiringConfig): PlatformLifecycleState {
+  if (config.initialLifecycle) {
+    return config.initialLifecycle;
+  }
+  if (config.enabled || config.environment === "test") {
+    return "initializing";
+  }
+  return "shutdown";
+}
+
 /** Authoritative Aurora composition root (ES-AURORA-005 §4.1). */
 export function createAuroraWiring(
   config: AuroraWiringConfig = AuroraRuntimeConfiguration.fromEnvironment(),
-  runtime?: AuroraRuntime,
+  runtime: AuroraRuntimeLike,
 ): AuroraWiring {
   const platformStore = resolvePlatformStore(config);
   const backing = ensureAuroraPlatformBacking(platformStore);
@@ -59,14 +69,8 @@ export function createAuroraWiring(
   const moduleRegistry = new AuroraModuleRegistry();
   moduleRegistry.register(new AdminModuleRuntime());
 
-  const lifecycleHolder = {
-    value:
-      config.enabled || config.environment === "test"
-        ? ("ready" as PlatformLifecycleState)
-        : ("shutdown" as PlatformLifecycleState),
-  };
+  const lifecycleHolder = { value: resolveInitialLifecycle(config) };
   const degradedReasons: string[] = [];
-  const auroraRuntime = runtime ?? new AuroraRuntime(config);
   const metricsCollector = new AuroraMetricsCollector();
   const loggingService = new AuroraLoggingService(config);
   const tracingService = new AuroraTracingService(config);
@@ -90,7 +94,7 @@ export function createAuroraWiring(
   });
 
   const wiring = {
-    runtime: auroraRuntime,
+    runtime,
     facade,
     platformStore,
     backing,
@@ -109,24 +113,31 @@ export function createAuroraWiring(
     loggingService,
     tracingService,
     moduleRegistry,
+    degradedReasons,
     get lifecycle() {
       return lifecycleHolder.value;
     },
     set lifecycle(value: PlatformLifecycleState) {
       lifecycleHolder.value = value;
     },
-    shutdown: async () => auroraRuntime.shutdown({ reason: "admin" }),
+    shutdown: async () => runtime.shutdown({ reason: "admin" }),
     healthCheck: async () => healthService.getPlatformHealth(),
+    startBackgroundWorkers: async () => {
+      await scheduler.start();
+      await queueManager.startWorkers({});
+    },
   } as AuroraWiring;
 
   registerAuroraReadinessProbe(healthService);
 
-  if (config.skipWorkers !== true && lifecycleHolder.value === "ready") {
-    void scheduler.start();
-    void queueManager.startWorkers({});
+  if (
+    config.skipWorkers !== true &&
+    lifecycleHolder.value === "ready"
+  ) {
+    void wiring.startBackgroundWorkers();
   }
 
-  auroraRuntime.attachWiring(wiring);
+  runtime.attachWiring(wiring);
   return wiring;
 }
 

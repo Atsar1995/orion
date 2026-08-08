@@ -1,3 +1,4 @@
+import { assertTenantAccess } from "@/lib/aurora/admin/tenantAuthorization";
 import type { BrandRepository } from "@/lib/aurora/admin/repositories/TenantRepository";
 import type { TenantService } from "@/lib/aurora/admin/services/TenantService";
 import type { AuroraEventPublisher } from "@/lib/aurora/events/AuroraEventPublisher";
@@ -38,6 +39,7 @@ export class BrandService {
 
   async createBrand(ctx: AuroraRuntimeContext, input: CreateBrandInput): Promise<Brand> {
     this.assertMutable(ctx);
+    assertTenantAccess(ctx, input.tenantId);
     const tenant = await this.tenantService.getTenant(ctx, input.tenantId);
     if (!tenant) {
       throw new AuroraError(AURORA_ERR_0404, "Tenant not found.", 404);
@@ -85,6 +87,7 @@ export class BrandService {
   }
 
   async listBrands(ctx: AuroraRuntimeContext, tenantId: string): Promise<readonly Brand[]> {
+    assertTenantAccess(ctx, tenantId);
     return this.brandRepository.listByTenant(tenantId);
   }
 

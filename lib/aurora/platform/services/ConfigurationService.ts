@@ -1,5 +1,5 @@
 import type { AuroraRuntimeContext } from "@/lib/aurora/runtime/AuroraRuntimeContext";
-import type { AuroraRuntimeConfiguration } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
+import type { AuroraRuntimeConfiguration, AuroraWiringConfig } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
 import {
   AURORA_MAX_BRANDS_PROFESSIONAL,
   AURORA_MAX_BRANDS_STARTER,
@@ -78,6 +78,10 @@ export class DefaultConfigurationService implements ConfigurationService {
   }
 
   validateConfig(): ConfigValidationResult {
+    const wiringConfig = this.config as AuroraWiringConfig;
+    if (wiringConfig.forceConfigValidationFailure) {
+      return { valid: false, errors: ["Forced configuration validation failure."] };
+    }
     return validateAuroraConfig(this.config);
   }
 }

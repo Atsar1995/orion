@@ -8,7 +8,7 @@ import type {
 import type { PlatformLifecycleState } from "@/lib/aurora/runtime/PlatformLifecycleState";
 import { isActiveLifecycleState } from "@/lib/aurora/runtime/PlatformLifecycleState";
 import type { AuroraWiring } from "@/lib/aurora/wiring/AuroraWiring";
-import type { BootResult, ShutdownResult } from "@/types/aurora-platform";
+import type { BootResult, AuroraHealthReport, ShutdownResult } from "@/types/aurora-platform";
 
 export type ShutdownOptions = {
   readonly reason: "sigterm" | "admin" | "orion_shutdown" | "restart";
@@ -34,6 +34,13 @@ export class AuroraRuntime {
       throw new AuroraError(AURORA_ERR_0503, "Platform not ready.", 503);
     }
     return this.wiring;
+  }
+
+  async getHealthReport(): Promise<AuroraHealthReport | null> {
+    if (!this.wiring) {
+      return null;
+    }
+    return this.wiring.healthCheck();
   }
 
   attachWiring(wiring: AuroraWiring): void {

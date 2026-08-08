@@ -1,5 +1,6 @@
 import { AuroraRuntime } from "@/lib/aurora/runtime/AuroraRuntime";
 import { AuroraRuntimeConfiguration } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
+import type { AuroraHealthReport } from "@/types/aurora-platform";
 
 let auroraRuntime: AuroraRuntime | null = null;
 
@@ -19,6 +20,21 @@ export async function initializeAuroraModule(): Promise<AuroraRuntime> {
   }
 
   return auroraRuntime;
+}
+
+export function getAuroraRuntime(): AuroraRuntime | null {
+  return auroraRuntime;
+}
+
+export async function getAuroraHealthReport(): Promise<AuroraHealthReport | null> {
+  if (!auroraRuntime) {
+    return null;
+  }
+  return auroraRuntime.getHealthReport();
+}
+
+export function setAuroraRuntimeForTests(runtime: AuroraRuntime | null): void {
+  auroraRuntime = runtime;
 }
 
 export function resetAuroraModuleForTests(): void {

@@ -36,6 +36,7 @@ import type { OperationalCheck, OperationalStatus } from "@/lib/platform/operati
 import { runbookRegistry } from "@/lib/platform/operations/RunbookRegistry";
 import { createProcurementWiring } from "@/lib/procurement/createProcurementWiring";
 import { createAuroraWiring } from "@/lib/aurora/createAuroraWiring";
+import { AuroraRuntime } from "@/lib/aurora/runtime/AuroraRuntime";
 import { AuroraRuntimeConfiguration } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
 import { getProcurementEventPipelineRegistry } from "@/lib/procurement/services/procurementEventPipelineRegistry";
 import { securityHealthService } from "@/lib/platform/security/SecurityHealthService";
@@ -401,13 +402,17 @@ export class EnterpriseReadinessService {
       { name: "procurement_composition_root", create: () => createProcurementWiring(platformStore) },
       {
         name: "aurora_composition_root",
-        create: () =>
-          createAuroraWiring({
+        create: () => {
+          const config = {
             ...AuroraRuntimeConfiguration.forTest(),
             platformStore,
             skipWorkers: true,
             skipExternalConnections: true,
-          }),
+            initialLifecycle: "ready" as const,
+          };
+          const runtime = new AuroraRuntime(config);
+          return createAuroraWiring(config, runtime);
+        },
       },
     ] as const;
 

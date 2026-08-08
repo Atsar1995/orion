@@ -1,4 +1,8 @@
 import type { TenantRepository } from "@/lib/aurora/admin/repositories/TenantRepository";
+import {
+  assertPlatformAdminContext,
+  assertTenantAccess,
+} from "@/lib/aurora/admin/tenantAuthorization";
 import type { AuroraEventPublisher } from "@/lib/aurora/events/AuroraEventPublisher";
 import {
   AURORA_EVENT_TENANT_CREATED,
@@ -34,6 +38,7 @@ export class TenantService {
 
   async createTenant(ctx: AuroraRuntimeContext, input: CreateTenantInput): Promise<Tenant> {
     this.assertMutable(ctx);
+    assertPlatformAdminContext(ctx);
     const tenantId = crypto.randomUUID();
     const tenant = await this.tenantRepository.create(tenantId, input);
     await this.eventPublisher.publish({
@@ -49,7 +54,8 @@ export class TenantService {
     return tenant;
   }
 
-  async getTenant(_ctx: AuroraRuntimeContext, tenantId: string): Promise<Tenant | null> {
+  async getTenant(ctx: AuroraRuntimeContext, tenantId: string): Promise<Tenant | null> {
+    assertTenantAccess(ctx, tenantId);
     return this.tenantRepository.getById(tenantId);
   }
 
@@ -59,6 +65,7 @@ export class TenantService {
     input: UpdateTenantInput,
   ): Promise<Tenant> {
     this.assertMutable(ctx);
+    assertTenantAccess(ctx, tenantId);
     const tenant = await this.tenantRepository.update(tenantId, input);
     await this.eventPublisher.publish({
       name: AURORA_EVENT_TENANT_UPDATED,
@@ -74,7 +81,7 @@ export class TenantService {
   }
 
   async listTenants(ctx: AuroraRuntimeContext): Promise<readonly Tenant[]> {
-    void ctx;
+    assertPlatformAdminContext(ctx);
     return this.tenantRepository.list();
   }
 }

@@ -15,13 +15,13 @@ import type { AuroraLoggingService } from "@/lib/aurora/platform/services/Aurora
 import type { AuroraMetricsCollector } from "@/lib/aurora/platform/services/AuroraMetricsCollector";
 import type { AuroraTracingService } from "@/lib/aurora/platform/services/AuroraTracingService";
 import type { AuroraModuleRegistry } from "@/lib/aurora/runtime/AuroraModuleRegistry";
-import type { AuroraRuntime } from "@/lib/aurora/runtime/AuroraRuntime";
+import type { AuroraRuntimeLike } from "@/lib/aurora/runtime/AuroraRuntimeLike";
 import type { PlatformLifecycleState } from "@/lib/aurora/runtime/PlatformLifecycleState";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
 import type { AuroraHealthReport, ShutdownResult } from "@/types/aurora-platform";
 
 export type AuroraWiring = {
-  readonly runtime: AuroraRuntime;
+  readonly runtime: AuroraRuntimeLike;
   readonly facade: AuroraFacade;
   readonly platformStore: PlatformStore;
   readonly backing: AuroraStoreBacking;
@@ -40,9 +40,11 @@ export type AuroraWiring = {
   readonly loggingService: AuroraLoggingService;
   readonly tracingService: AuroraTracingService;
   readonly moduleRegistry: AuroraModuleRegistry;
+  readonly degradedReasons: string[];
   lifecycle: PlatformLifecycleState;
   shutdown: () => Promise<ShutdownResult>;
   healthCheck: () => Promise<AuroraHealthReport>;
+  startBackgroundWorkers: () => Promise<void>;
 };
 
 export type { AuroraWiringConfig } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";

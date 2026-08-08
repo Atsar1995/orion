@@ -4,6 +4,7 @@ import {
   AURORA_SHUTDOWN_DRAIN_MS,
 } from "@/lib/aurora/constants";
 import type { BootPhase } from "@/types/aurora-platform";
+import type { PlatformLifecycleState } from "@/lib/aurora/runtime/PlatformLifecycleState";
 import type { ConfigValidationResult } from "@/types/aurora-platform";
 import type { EventBus } from "@/lib/platform/events/EventBus";
 import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
@@ -35,6 +36,12 @@ export interface AuroraWiringConfig extends AuroraRuntimeConfiguration {
   readonly eventBus?: EventBus;
   readonly skipWorkers?: boolean;
   readonly skipExternalConnections?: boolean;
+  /** Lifecycle assigned at wiring creation — defaults to `initializing` when enabled. */
+  readonly initialLifecycle?: PlatformLifecycleState;
+  /** Test hook — forces admin module initialization failure. */
+  readonly forceAdminInitFailure?: boolean;
+  /** Test hook — forces configuration validation failure during bootstrap phase 5. */
+  readonly forceConfigValidationFailure?: boolean;
 }
 
 function readBoolean(value: string | undefined, defaultValue: boolean): boolean {
