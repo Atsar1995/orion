@@ -9,19 +9,30 @@ export function assertTenantScope(ctx: AuroraRuntimeContext, tenantId: string): 
   }
 }
 
+/**
+ * Platform catalog operations require the system tenant context (OQ-1).
+ * Organization sessions always use organizationId as tenantId for tenant-scoped ops.
+ */
 export function assertPlatformAdminContext(ctx: AuroraRuntimeContext): void {
   if (ctx.tenantId !== AURORA_PLATFORM_SYSTEM_TENANT_ID) {
     throw new AuroraError(AURORA_ERR_0403, "Platform admin context required.", 403);
   }
-  if (!ctx.roles.includes("aurora.admin")) {
-    throw new AuroraError(AURORA_ERR_0403, "Admin role required.", 403);
+  if (!ctx.auroraPermissions.includes("aurora.admin.tenant")) {
+    throw new AuroraError(AURORA_ERR_0403, "Platform admin permission required.", 403);
+  }
+  if (ctx.contextSource !== "test-manual" && !ctx.sessionId) {
+    throw new AuroraError(
+      AURORA_ERR_0403,
+      "Session-bound context required for platform admin operations.",
+      403,
+    );
   }
 }
 
 export function assertTenantAccess(ctx: AuroraRuntimeContext, tenantId: string): void {
   if (
     ctx.tenantId === AURORA_PLATFORM_SYSTEM_TENANT_ID &&
-    ctx.roles.includes("aurora.admin")
+    ctx.auroraPermissions.includes("aurora.admin.tenant")
   ) {
     return;
   }

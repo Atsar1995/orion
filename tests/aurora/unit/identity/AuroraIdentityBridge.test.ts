@@ -35,6 +35,17 @@ describe("DefaultAuroraIdentityBridge", () => {
     expect(identity.auroraPermissions.has("aurora.approval.override")).toBe(true);
   });
 
+  it("extends role permissions with ORION session grants", async () => {
+    const { bridge } = createBridge();
+    const session = createTestSession("read_only", {
+      permissions: [{ module: "aurora", action: "content.write" }],
+    });
+
+    const identity = await bridge.resolveUserIdentity(session);
+    expect(identity.auroraPermissions.has("aurora.content.read")).toBe(true);
+    expect(identity.auroraPermissions.has("aurora.content.write")).toBe(true);
+  });
+
   it("buildContext returns runtime context scoped to tenant and workspace", async () => {
     const { bridge, repositories } = createBridge();
     await repositories.tenant.create(TEST_ORG_ID, { name: "Acme", slug: "acme" });

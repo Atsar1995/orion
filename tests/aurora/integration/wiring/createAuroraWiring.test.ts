@@ -4,7 +4,10 @@ import { isAuroraError } from "@/lib/aurora/errors/AuroraError";
 import { createAuroraWiring } from "@/lib/aurora/createAuroraWiring";
 import { AuroraRuntime } from "@/lib/aurora/runtime/AuroraRuntime";
 import { AuroraRuntimeConfiguration } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
-import { createAuroraRuntimeContext } from "@/lib/aurora/runtime/AuroraContextFactory";
+import {
+  createAuroraRuntimeContext,
+  createTestAuroraRuntimeContext,
+} from "@/lib/aurora/runtime/AuroraContextFactory";
 import { resetAuroraModuleForTests } from "@/lib/aurora/runtime/initializeAuroraModule";
 import { createTestAuroraWiring } from "@/lib/aurora/wiring/createTestAuroraWiring";
 import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
@@ -41,7 +44,7 @@ describe("createAuroraWiring", () => {
 
   it("exposes admin operations through facade", async () => {
     const wiring = createTestAuroraWiring();
-    const ctx = createAuroraRuntimeContext({
+    const ctx = createTestAuroraRuntimeContext({
       tenantId: AURORA_PLATFORM_SYSTEM_TENANT_ID,
       userId: "user-test",
     });
@@ -159,7 +162,7 @@ describe("connector registry foundation", () => {
 describe("event publisher foundation", () => {
   it("publishes tenant events through wiring", async () => {
     const wiring = createTestAuroraWiring();
-    const ctx = createAuroraRuntimeContext({
+    const ctx = createTestAuroraRuntimeContext({
       tenantId: AURORA_PLATFORM_SYSTEM_TENANT_ID,
       userId: "user-events",
     });
@@ -176,7 +179,7 @@ describe("event publisher foundation", () => {
 describe("tenant authorization", () => {
   it("rejects cross-tenant reads", async () => {
     const wiring = createTestAuroraWiring();
-    const adminCtx = createAuroraRuntimeContext({
+    const adminCtx = createTestAuroraRuntimeContext({
       tenantId: AURORA_PLATFORM_SYSTEM_TENANT_ID,
       userId: "admin",
     });

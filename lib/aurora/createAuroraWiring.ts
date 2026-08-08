@@ -66,15 +66,27 @@ export function createAuroraWiring(
   const queueManager = new InMemoryQueueManager(retryManager);
   const scheduler = new DefaultSchedulerService(queueManager, repositories.schedule);
   const configurationService = new DefaultConfigurationService(config, backing);
-  const tenantService = new TenantService(repositories.tenant, eventPublisher);
-  const brandService = new BrandService(repositories.brand, tenantService, eventPublisher);
+  const loggingService = new AuroraLoggingService(config);
+  const authorizationService = new DefaultAuroraAuthorizationService({
+    logger: loggingService.createLogger({ component: "aurora.authorization" }),
+  });
+  const tenantService = new TenantService(
+    repositories.tenant,
+    eventPublisher,
+    authorizationService,
+  );
+  const brandService = new BrandService(
+    repositories.brand,
+    tenantService,
+    eventPublisher,
+    authorizationService,
+  );
   const moduleRegistry = new AuroraModuleRegistry();
   moduleRegistry.register(new AdminModuleRuntime());
 
   const lifecycleHolder = { value: resolveInitialLifecycle(config) };
   const degradedReasons: string[] = [];
   const metricsCollector = new AuroraMetricsCollector();
-  const loggingService = new AuroraLoggingService(config);
   const tracingService = new AuroraTracingService(config);
 
   const healthService = new DefaultAuroraHealthStatusService(
@@ -93,7 +105,6 @@ export function createAuroraWiring(
     getLifecycleState: () => lifecycleHolder.value,
     configurationService,
   });
-  const authorizationService = new DefaultAuroraAuthorizationService();
 
   const facade = new AuroraFacade({
     tenantService,

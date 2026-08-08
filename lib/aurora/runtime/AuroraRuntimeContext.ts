@@ -2,6 +2,9 @@ import type { AuroraPermission } from "@/lib/aurora/identity/aurora-permission-c
 import type { AuroraRole } from "@/lib/aurora/identity/aurora-role-permissions";
 import type { PlatformLifecycleState } from "@/lib/aurora/runtime/PlatformLifecycleState";
 
+/** Distinguishes ORION session-bound contexts from explicit test/manual contexts. */
+export type AuroraContextSource = "orion-session" | "test-manual";
+
 export interface AuroraRuntimeContext {
   readonly tenantId: string;
   readonly userId: string;
@@ -16,6 +19,7 @@ export interface AuroraRuntimeContext {
   readonly requestId: string;
   readonly correlationId: string;
   readonly sessionId?: string;
+  readonly contextSource: AuroraContextSource;
   readonly platformState: PlatformLifecycleState;
   readonly featureFlags: Readonly<Record<string, boolean>>;
 }

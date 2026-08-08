@@ -1,15 +1,11 @@
 import type { TenantRepository } from "@/lib/aurora/admin/repositories/TenantRepository";
-import {
-  assertPlatformAdminContext,
-  assertTenantAccess,
-} from "@/lib/aurora/admin/tenantAuthorization";
+import type { AuroraAuthorizationService } from "@/lib/aurora/identity/AuroraAuthorizationService";
 import type { AuroraEventPublisher } from "@/lib/aurora/events/AuroraEventPublisher";
 import {
   AURORA_EVENT_TENANT_CREATED,
   AURORA_EVENT_TENANT_UPDATED,
 } from "@/lib/aurora/events/aurora-event-catalog";
 import {
-  AURORA_ERR_0403,
   AURORA_ERR_0503,
   AuroraError,
 } from "@/lib/aurora/errors/AuroraError";
@@ -25,20 +21,21 @@ export class TenantService {
   constructor(
     private readonly tenantRepository: TenantRepository,
     private readonly eventPublisher: AuroraEventPublisher,
+    private readonly authorizationService: AuroraAuthorizationService,
   ) {}
 
   private assertMutable(ctx: AuroraRuntimeContext): void {
     if (!isActiveLifecycleState(ctx.platformState)) {
       throw new AuroraError(AURORA_ERR_0503, "Platform not ready.", 503);
     }
-    if (!ctx.roles.includes("aurora.admin")) {
-      throw new AuroraError(AURORA_ERR_0403, "Admin role required.", 403);
-    }
   }
 
   async createTenant(ctx: AuroraRuntimeContext, input: CreateTenantInput): Promise<Tenant> {
     this.assertMutable(ctx);
-    assertPlatformAdminContext(ctx);
+    this.authorizationService.assertPlatformAdmin(ctx, { operation: "createTenant" });
+    this.authorizationService.assertPermission(ctx, "aurora.admin.tenant", {
+      operation: "createTenant",
+    });
     const tenantId = crypto.randomUUID();
     const tenant = await this.tenantRepository.create(tenantId, input);
     await this.eventPublisher.publish({
@@ -55,7 +52,14 @@ export class TenantService {
   }
 
   async getTenant(ctx: AuroraRuntimeContext, tenantId: string): Promise<Tenant | null> {
-    assertTenantAccess(ctx, tenantId);
+    this.authorizationService.assertTenantAccess(ctx, tenantId, {
+      operation: "getTenant",
+      resource: tenantId,
+    });
+    this.authorizationService.assertPermission(ctx, "aurora.content.read", {
+      operation: "getTenant",
+      resource: tenantId,
+    });
     return this.tenantRepository.getById(tenantId);
   }
 
@@ -65,7 +69,14 @@ export class TenantService {
     input: UpdateTenantInput,
   ): Promise<Tenant> {
     this.assertMutable(ctx);
-    assertTenantAccess(ctx, tenantId);
+    this.authorizationService.assertTenantAccess(ctx, tenantId, {
+      operation: "updateTenant",
+      resource: tenantId,
+    });
+    this.authorizationService.assertPermission(ctx, "aurora.admin.config", {
+      operation: "updateTenant",
+      resource: tenantId,
+    });
     const tenant = await this.tenantRepository.update(tenantId, input);
     await this.eventPublisher.publish({
       name: AURORA_EVENT_TENANT_UPDATED,
@@ -81,7 +92,10 @@ export class TenantService {
   }
 
   async listTenants(ctx: AuroraRuntimeContext): Promise<readonly Tenant[]> {
-    assertPlatformAdminContext(ctx);
+    this.authorizationService.assertPlatformAdmin(ctx, { operation: "listTenants" });
+    this.authorizationService.assertPermission(ctx, "aurora.admin.tenant", {
+      operation: "listTenants",
+    });
     return this.tenantRepository.list();
   }
 }

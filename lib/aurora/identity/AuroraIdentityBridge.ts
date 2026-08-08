@@ -3,13 +3,14 @@ import {
   AURORA_DEFAULT_TIMEZONE,
 } from "@/lib/aurora/constants";
 import type { BrandRepository, TenantRepository } from "@/lib/aurora/admin/repositories/TenantRepository";
-import { AURORA_ERR_0403, AURORA_ERR_0404, AuroraError } from "@/lib/aurora/errors/AuroraError";
+import { AURORA_ERR_0404, AuroraError } from "@/lib/aurora/errors/AuroraError";
 import { createAuroraRuntimeContext } from "@/lib/aurora/identity/AuroraContextFactory";
 import type { AuroraUserIdentity } from "@/lib/aurora/identity/AuroraUserIdentity";
 import {
-  resolveAuroraPermissions,
   resolveAuroraRolesFromOrionRole,
 } from "@/lib/aurora/identity/aurora-role-permissions";
+import { resolveEffectiveAuroraPermissions } from "@/lib/aurora/identity/orion-permission-mapping";
+import { assertOperationalTenant } from "@/lib/aurora/identity/tenant-status";
 import type { ConfigurationService } from "@/lib/aurora/platform/services/ConfigurationService";
 import type { AuroraRuntimeContext } from "@/lib/aurora/runtime/AuroraRuntimeContext";
 import type { PlatformLifecycleState } from "@/lib/aurora/runtime/PlatformLifecycleState";
@@ -37,7 +38,10 @@ export class DefaultAuroraIdentityBridge implements AuroraIdentityBridge {
 
   async resolveUserIdentity(session: OrionSession): Promise<AuroraUserIdentity> {
     const auroraRoles = resolveAuroraRolesFromOrionRole(session.user.role);
-    const auroraPermissions = resolveAuroraPermissions(auroraRoles);
+    const auroraPermissions = resolveEffectiveAuroraPermissions(
+      auroraRoles,
+      session.user.permissions,
+    );
 
     return {
       userId: session.user.id,
@@ -58,6 +62,7 @@ export class DefaultAuroraIdentityBridge implements AuroraIdentityBridge {
     if (!tenant) {
       throw new AuroraError(AURORA_ERR_0404, "Tenant not found for ORION organization.", 404);
     }
+    assertOperationalTenant(tenant);
 
     const identity = await this.resolveUserIdentity(session);
     const resolvedBrandId = brandId ?? "";
@@ -84,6 +89,7 @@ export class DefaultAuroraIdentityBridge implements AuroraIdentityBridge {
         locale: identity.locale,
         timezone: identity.timezone,
         sessionId: session.user.id,
+        contextSource: "orion-session",
         platformState,
       },
       platformState,
@@ -98,6 +104,11 @@ export class DefaultAuroraIdentityBridge implements AuroraIdentityBridge {
   }
 
   async resolveTenant(orionOrganizationId: string): Promise<Tenant | null> {
-    return this.deps.tenantRepository.getById(orionOrganizationId);
+    const tenant = await this.deps.tenantRepository.getById(orionOrganizationId);
+    if (!tenant) {
+      return null;
+    }
+    assertOperationalTenant(tenant);
+    return tenant;
   }
 }

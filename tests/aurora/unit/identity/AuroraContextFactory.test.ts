@@ -1,5 +1,6 @@
 import {
   createAuroraRuntimeContext,
+  createTestAuroraRuntimeContext,
   permissionsToArray,
   withBrandContext,
 } from "@/lib/aurora/identity/AuroraContextFactory";
@@ -37,6 +38,16 @@ describe("createAuroraRuntimeContext", () => {
     });
 
     expect(ctx.auroraPermissions).toEqual(["aurora.content.write"]);
+  });
+
+  it("marks explicit test contexts for WP-A001 regression helpers", () => {
+    const ctx = createTestAuroraRuntimeContext({
+      tenantId: "tenant-a",
+      userId: "user-a",
+    });
+
+    expect(ctx.roles).toEqual(["aurora.admin"]);
+    expect(ctx.contextSource).toBe("test-manual");
   });
 });
 

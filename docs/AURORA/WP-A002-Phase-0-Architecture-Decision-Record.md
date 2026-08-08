@@ -524,6 +524,64 @@ ADR-005 (compatibility) constrains all:
 
 ---
 
+## Phase 1.1 Hardening Decisions (WP-A002)
+
+**Status:** Implemented on `feature/wp-a002` after Phase 1 review (`e2777f6`).
+
+### ORION permission merge (ADR-002 completion)
+
+Effective Aurora permissions are computed as:
+
+```text
+role-derived Aurora permissions UNION ORION session grants mapped from module "aurora"
+```
+
+ORION grants use `{ module: "aurora", action: "<permission>" }` where `<permission>` is either a full Aurora slug (e.g. `aurora.content.write`) or a short suffix (e.g. `content.write`). Role-derived permissions are never removed.
+
+### Active tenant rule
+
+`DefaultAuroraIdentityBridge.resolveTenant()` and `buildContext()` reject tenant records whose `status !== "active"`. Suspended tenants return `AURORA_ERR_0403`. Missing tenants preserve the existing `AURORA_ERR_0404` contract.
+
+Authoritative tenant statuses (WP-A001 model): `active` | `suspended`.
+
+### Authorization service adoption
+
+`TenantService` and `BrandService` now depend on `AuroraAuthorizationService` for all authorization decisions. WP-A001 tenant scope helpers remain the isolation layer inside the authorization service.
+
+| Operation | Permission |
+|-----------|------------|
+| `createTenant` / `listTenants` | `aurora.admin.tenant` + platform admin context |
+| `getTenant` / `listBrands` | `aurora.content.read` + tenant access |
+| `updateTenant` | `aurora.admin.config` + tenant access |
+| `createBrand` / `updateBrand` | `aurora.admin.brand` (+ tenant access on create) |
+| `switchBrand` | brand scope validation |
+
+### API context rule
+
+Production authenticated Aurora routes must obtain context via `getAuroraApiContext()` → ORION `getServerSession()` → `identityBridge.buildContext()`.
+
+**Exception:** `GET /api/aurora/health` is infrastructure-only and intentionally does not require Aurora identity.
+
+### Denial audit logging
+
+`DefaultAuroraAuthorizationService` emits WARN-level structured logs (via `AuroraLoggingService`) on permission/tenant/brand denials with `userId`, `tenantId`, `permission`, and operation/resource metadata. Secrets and tokens are redacted by the logging sanitizer.
+
+### Production vs test context
+
+| Source | `contextSource` | Default role | Platform admin |
+|--------|-----------------|--------------|----------------|
+| ORION session (`buildContext`) | `orion-session` | mapped from ORION role | requires `tenantId = system` + `aurora.admin.tenant` + bound `sessionId` |
+| Manual factory (`createAuroraRuntimeContext`) | `test-manual` | `aurora.viewer` | blocked unless explicit test helper used |
+| Test helper (`createTestAuroraRuntimeContext`) | `test-manual` | `aurora.admin` | allowed for WP-A001 regression tests |
+
+### Platform admin model (OQ-1 resolved)
+
+- **Platform catalog operations** (`createTenant`, `listTenants`) require `AuroraRuntimeContext.tenantId === AURORA_PLATFORM_SYSTEM_TENANT_ID` (`system`) and `aurora.admin.tenant`.
+- **Organization admin sessions** use `session.user.organizationId` as `tenantId` for tenant-scoped operations; they do **not** automatically receive platform catalog authority.
+- Client-supplied `tenantId` cannot grant platform admin; catalog authority requires the system tenant context derived from authenticated platform operators only.
+
+---
+
 ## Final Gate
 
 **READY FOR WP-A002 IMPLEMENTATION**

@@ -21,7 +21,7 @@ function notInitializedReport(): AuroraHealthReport {
   };
 }
 
-/** Aurora platform health endpoint (ES-AURORA-005 §2.8). */
+/** Aurora platform health endpoint (ES-AURORA-005 §2.8). Infrastructure-only — no Aurora identity context. */
 export async function GET() {
   let runtime = getAuroraRuntime();
 

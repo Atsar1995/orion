@@ -1,7 +1,7 @@
 import { AURORA_PLATFORM_SYSTEM_TENANT_ID } from "@/lib/aurora/admin/tenantAuthorization";
 import { AuroraRecovery } from "@/lib/aurora/runtime/AuroraRecovery";
 import { AuroraRuntimeConfiguration } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
-import { createAuroraRuntimeContext } from "@/lib/aurora/runtime/AuroraContextFactory";
+import { createTestAuroraRuntimeContext } from "@/lib/aurora/runtime/AuroraContextFactory";
 import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
 import { describe, expect, it } from "vitest";
 
@@ -19,7 +19,7 @@ describe("Warm Restart (P-011.2 pattern)", () => {
     await AuroraRecovery.verifyWarmRestart(
       config,
       async (wiring) => {
-        const ctx = createAuroraRuntimeContext({
+        const ctx = createTestAuroraRuntimeContext({
           tenantId: AURORA_PLATFORM_SYSTEM_TENANT_ID,
           userId: "user-restart",
         });
@@ -30,7 +30,7 @@ describe("Warm Restart (P-011.2 pattern)", () => {
         tenantId = tenant.id;
       },
       async (wiring) => {
-        const ctx = createAuroraRuntimeContext({
+        const ctx = createTestAuroraRuntimeContext({
           tenantId: AURORA_PLATFORM_SYSTEM_TENANT_ID,
           userId: "user-restart",
         });
