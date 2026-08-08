@@ -23,6 +23,8 @@ import type { FinanceEntityPersister } from "@/lib/platform/persistence/finance/
 import type { FinanceStoreBacking } from "@/lib/finance/persistence/FinanceStoreBacking";
 import type { CrmStoreBacking } from "@/lib/crm/persistence/CrmStoreBacking";
 import type { ProcurementStoreBacking } from "@/lib/procurement/persistence/ProcurementStoreBacking";
+import { createAuroraStore } from "@/lib/aurora/persistence/createAuroraStore";
+import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
 import type { HcmStoreBacking } from "@/lib/platform/store/HcmStoreBacking";
 import type {
   PlatformStore,
@@ -97,6 +99,7 @@ export class PostgresPlatformStore implements PlatformStore {
   private financeStore: FinanceStoreBacking | null = null;
   private crmStore: CrmStoreBacking | null = null;
   private procurementStore: ProcurementStoreBacking | null = null;
+  private auroraStore: AuroraStoreBacking | null = null;
   private hcmPersister: HcmEntityPersister | null = null;
   private financePersister: FinanceEntityPersister | null = null;
   private crmPersister: CrmEntityPersister | null = null;
@@ -164,6 +167,7 @@ export class PostgresPlatformStore implements PlatformStore {
       this.crmPersister = crmRuntime.persister;
       this.procurementStore = procurementRuntime.store;
       this.procurementPersister = procurementRuntime.persister;
+      this.auroraStore = createAuroraStore();
       this.transactionManager = runtime.createTransactionManager(
         persister,
         financeRuntime.persister,
@@ -207,6 +211,7 @@ export class PostgresPlatformStore implements PlatformStore {
     this.financeStore = null;
     this.crmStore = null;
     this.procurementStore = null;
+    this.auroraStore = null;
     this.hcmPersister = null;
     this.financePersister = null;
     this.crmPersister = null;
@@ -255,6 +260,14 @@ export class PostgresPlatformStore implements PlatformStore {
     }
 
     return this.procurementStore;
+  }
+
+  getAuroraBacking(): AuroraStoreBacking {
+    if (!this.auroraStore) {
+      throw new PostgresPlatformStoreError("Platform store is not initialized.");
+    }
+
+    return this.auroraStore;
   }
 
   getDatabaseConnection(): DatabaseConnection | null {

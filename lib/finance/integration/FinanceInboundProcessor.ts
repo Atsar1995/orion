@@ -14,8 +14,8 @@ import {
   type CrmFinanceEventType,
   type FinanceInboundEventType,
   type HcmFinanceEventType,
-  type ProcurementFinancePostableEventType,
 } from "@/lib/finance/integration/FinanceEventMapper";
+import type { ProcurementFinancePostableEventType } from "@/lib/finance/integration/FinanceProcurementSupportedEvents";
 import type { FinanceEventResult } from "@/lib/finance/integration/FinanceEventResult";
 import type { EventLineageRepository } from "@/lib/finance/repositories/EventLineageRepository";
 import type { JournalRepository } from "@/lib/finance/repositories/JournalRepository";

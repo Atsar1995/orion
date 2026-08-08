@@ -20,7 +20,6 @@ import type {
   Gate6OperationalValidationReport,
   Gate6SignoffSummary,
   PlatformVerificationResult,
-  PostgresCertificationContext,
   PostgresCertificationScenario,
   PostgresOperationalCertificationReport,
   ReadinessSection,
@@ -36,6 +35,8 @@ import {
 import type { OperationalCheck, OperationalStatus } from "@/lib/platform/operations/OperationalTypes";
 import { runbookRegistry } from "@/lib/platform/operations/RunbookRegistry";
 import { createProcurementWiring } from "@/lib/procurement/createProcurementWiring";
+import { createAuroraWiring } from "@/lib/aurora/createAuroraWiring";
+import { AuroraRuntimeConfiguration } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
 import { getProcurementEventPipelineRegistry } from "@/lib/procurement/services/procurementEventPipelineRegistry";
 import { securityHealthService } from "@/lib/platform/security/SecurityHealthService";
 import { isFailClosedEnabled } from "@/lib/platform/security/AuthenticationContext";
@@ -45,6 +46,7 @@ import {
   PlatformStoreFactory,
   createPostgresCertificationStore,
   restoreConnectionIfSupported,
+  type PostgresCertificationContext,
   verifyPlatformShutdown,
   verifyPlatformStartup,
   verifyPostgresColdBoot,
@@ -397,6 +399,16 @@ export class EnterpriseReadinessService {
       { name: "finance_composition_root", create: () => createFinanceWiring(platformStore) },
       { name: "crm_composition_root", create: () => createCrmWiring(platformStore) },
       { name: "procurement_composition_root", create: () => createProcurementWiring(platformStore) },
+      {
+        name: "aurora_composition_root",
+        create: () =>
+          createAuroraWiring({
+            ...AuroraRuntimeConfiguration.forTest(),
+            platformStore,
+            skipWorkers: true,
+            skipExternalConnections: true,
+          }),
+      },
     ] as const;
 
     for (const root of roots) {
@@ -653,7 +665,7 @@ export class EnterpriseReadinessService {
       evidence.push("Finance, CRM, and Procurement composition roots restored after hydration.");
     }
 
-    if (health.status === "degraded") {
+    if (health.status === "partial") {
       recommendations.push(
         "Execute certification against live staging PostgreSQL for OPS-001 closure evidence.",
       );
@@ -1062,7 +1074,7 @@ export class EnterpriseReadinessService {
     return !(
       storeConfig.provider === StoreProvider.PostgreSQL &&
       storeConfig.databaseUrl &&
-      process.env.NODE_ENV === "staging"
+      process.env.ORION_ENVIRONMENT === "staging"
     );
   }
 }

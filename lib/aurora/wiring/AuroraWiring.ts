@@ -1,0 +1,48 @@
+import type { BrandService } from "@/lib/aurora/admin/services/BrandService";
+import type { TenantService } from "@/lib/aurora/admin/services/TenantService";
+import type { AuroraRepositories } from "@/lib/aurora/persistence/createAuroraRepositories";
+import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
+import type { AuroraFacade } from "@/lib/aurora/AuroraFacade";
+import type { AuroraEventPublisher } from "@/lib/aurora/events/AuroraEventPublisher";
+import type { CircuitBreakerRegistry } from "@/lib/aurora/infrastructure/CircuitBreakerRegistry";
+import type { QueueManager } from "@/lib/aurora/infrastructure/QueueManager";
+import type { RetryManager } from "@/lib/aurora/infrastructure/RetryManager";
+import type { SchedulerService } from "@/lib/aurora/infrastructure/SchedulerService";
+import type { ConnectorRegistry } from "@/lib/aurora/integrations/registry/ConnectorRegistry";
+import type { ConfigurationService } from "@/lib/aurora/platform/services/ConfigurationService";
+import type { AuroraHealthStatusService } from "@/lib/aurora/platform/services/AuroraHealthStatusService";
+import type { AuroraLoggingService } from "@/lib/aurora/platform/services/AuroraLoggingService";
+import type { AuroraMetricsCollector } from "@/lib/aurora/platform/services/AuroraMetricsCollector";
+import type { AuroraTracingService } from "@/lib/aurora/platform/services/AuroraTracingService";
+import type { AuroraModuleRegistry } from "@/lib/aurora/runtime/AuroraModuleRegistry";
+import type { AuroraRuntime } from "@/lib/aurora/runtime/AuroraRuntime";
+import type { PlatformLifecycleState } from "@/lib/aurora/runtime/PlatformLifecycleState";
+import type { PlatformStore } from "@/lib/platform/store/PlatformStore";
+import type { AuroraHealthReport, ShutdownResult } from "@/types/aurora-platform";
+
+export type AuroraWiring = {
+  readonly runtime: AuroraRuntime;
+  readonly facade: AuroraFacade;
+  readonly platformStore: PlatformStore;
+  readonly backing: AuroraStoreBacking;
+  readonly repositories: AuroraRepositories;
+  readonly tenantService: TenantService;
+  readonly brandService: BrandService;
+  readonly configurationService: ConfigurationService;
+  readonly eventPublisher: AuroraEventPublisher;
+  readonly connectorRegistry: ConnectorRegistry;
+  readonly scheduler: SchedulerService;
+  readonly queueManager: QueueManager;
+  readonly retryManager: RetryManager;
+  readonly circuitBreakerRegistry: CircuitBreakerRegistry;
+  readonly healthService: AuroraHealthStatusService;
+  readonly metricsCollector: AuroraMetricsCollector;
+  readonly loggingService: AuroraLoggingService;
+  readonly tracingService: AuroraTracingService;
+  readonly moduleRegistry: AuroraModuleRegistry;
+  lifecycle: PlatformLifecycleState;
+  shutdown: () => Promise<ShutdownResult>;
+  healthCheck: () => Promise<AuroraHealthReport>;
+};
+
+export type { AuroraWiringConfig } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";

@@ -28,7 +28,6 @@ export type {
   FinanceInboundEventType,
   HcmFinanceEventType,
 } from "@/lib/finance/integration/FinanceEventMapper";
-export type { ProcurementFinancePostableEventType } from "@/lib/finance/integration/FinanceEventMapper";
 export {
   FINANCE_INBOUND_EVENT_TYPES,
   isSupportedCrmFinanceEventType,
