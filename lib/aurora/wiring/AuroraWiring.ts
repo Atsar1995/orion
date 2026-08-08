@@ -1,5 +1,7 @@
 import type { BrandService } from "@/lib/aurora/admin/services/BrandService";
 import type { TenantService } from "@/lib/aurora/admin/services/TenantService";
+import type { AuroraAuthorizationService } from "@/lib/aurora/identity/AuroraAuthorizationService";
+import type { AuroraIdentityBridge } from "@/lib/aurora/identity/AuroraIdentityBridge";
 import type { AuroraRepositories } from "@/lib/aurora/persistence/createAuroraRepositories";
 import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
 import type { AuroraFacade } from "@/lib/aurora/AuroraFacade";
@@ -40,6 +42,8 @@ export type AuroraWiring = {
   readonly loggingService: AuroraLoggingService;
   readonly tracingService: AuroraTracingService;
   readonly moduleRegistry: AuroraModuleRegistry;
+  readonly identityBridge: AuroraIdentityBridge;
+  readonly authorizationService: AuroraAuthorizationService;
   readonly degradedReasons: string[];
   lifecycle: PlatformLifecycleState;
   shutdown: () => Promise<ShutdownResult>;

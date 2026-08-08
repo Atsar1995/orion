@@ -7,6 +7,8 @@ import { DefaultCircuitBreakerRegistry } from "@/lib/aurora/infrastructure/Circu
 import { InMemoryQueueManager } from "@/lib/aurora/infrastructure/QueueManager";
 import { DefaultRetryManager } from "@/lib/aurora/infrastructure/RetryManager";
 import { DefaultSchedulerService } from "@/lib/aurora/infrastructure/SchedulerService";
+import { DefaultAuroraAuthorizationService } from "@/lib/aurora/identity/AuroraAuthorizationService";
+import { DefaultAuroraIdentityBridge } from "@/lib/aurora/identity/AuroraIdentityBridge";
 import { DefaultConnectorRegistry } from "@/lib/aurora/integrations/registry/ConnectorRegistry";
 import { ensureAuroraPlatformBacking } from "@/lib/aurora/persistence/AuroraPlatformBacking";
 import { createAuroraRepositories } from "@/lib/aurora/persistence/createAuroraRepositories";
@@ -85,6 +87,14 @@ export function createAuroraWiring(
     platformStore,
   );
 
+  const identityBridge = new DefaultAuroraIdentityBridge({
+    tenantRepository: repositories.tenant,
+    brandRepository: repositories.brand,
+    getLifecycleState: () => lifecycleHolder.value,
+    configurationService,
+  });
+  const authorizationService = new DefaultAuroraAuthorizationService();
+
   const facade = new AuroraFacade({
     tenantService,
     brandService,
@@ -113,6 +123,8 @@ export function createAuroraWiring(
     loggingService,
     tracingService,
     moduleRegistry,
+    identityBridge,
+    authorizationService,
     degradedReasons,
     get lifecycle() {
       return lifecycleHolder.value;

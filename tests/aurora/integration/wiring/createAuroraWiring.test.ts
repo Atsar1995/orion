@@ -26,6 +26,8 @@ describe("createAuroraWiring", () => {
     expect(wiring.platformStore).toBeDefined();
     expect(wiring.backing).toBe(wiring.platformStore.getAuroraBacking());
     expect(wiring.tenantService).toBeDefined();
+    expect(wiring.identityBridge).toBeDefined();
+    expect(wiring.authorizationService).toBeDefined();
     expect(wiring.facade.admin).toBeDefined();
     expect(wiring.lifecycle).toBe("ready");
   });
