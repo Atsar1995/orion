@@ -3,6 +3,7 @@ import { AURORA_ERR_0403 } from "@/lib/aurora/errors/AuroraError";
 import { AuroraRecovery } from "@/lib/aurora/runtime/AuroraRecovery";
 import { AuroraRuntimeConfiguration } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
 import { createAuroraRuntimeContext, createTestAuroraRuntimeContext } from "@/lib/aurora/runtime/AuroraContextFactory";
+import { createTestBusiness } from "@/tests/aurora/helpers/adminTestHelpers";
 import { InMemoryPlatformStore } from "@/lib/platform/store/InMemoryPlatformStore";
 import { describe, expect, it } from "vitest";
 
@@ -105,6 +106,7 @@ describe("tenant isolation", () => {
       name: "Brand Target",
       slug: "brand-target",
     });
+    const business = await createTestBusiness(wiring.repositories, tenant.id);
 
     const tenantACtx = createAuroraRuntimeContext({
       tenantId: "tenant-a",
@@ -115,6 +117,7 @@ describe("tenant isolation", () => {
     await expect(
       wiring.brandService.createBrand(tenantACtx, {
         tenantId: tenant.id,
+        businessId: business.id,
         name: "Sneaky Brand",
         slug: "sneaky",
       }),

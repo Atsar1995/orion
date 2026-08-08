@@ -1,6 +1,9 @@
 import { AdminModuleRuntime } from "@/lib/aurora/admin/AdminModuleRuntime";
 import { BrandService } from "@/lib/aurora/admin/services/BrandService";
+import { BusinessEntityService } from "@/lib/aurora/admin/services/BusinessEntityService";
+import { TenantProvisioningService } from "@/lib/aurora/admin/services/TenantProvisioningService";
 import { TenantService } from "@/lib/aurora/admin/services/TenantService";
+import { TierLimitService } from "@/lib/aurora/admin/services/TierLimitService";
 import { AuroraFacade } from "@/lib/aurora/AuroraFacade";
 import { DefaultAuroraEventPublisher } from "@/lib/aurora/events/AuroraEventPublisher";
 import { DefaultCircuitBreakerRegistry } from "@/lib/aurora/infrastructure/CircuitBreakerRegistry";
@@ -75,11 +78,31 @@ export function createAuroraWiring(
     eventPublisher,
     authorizationService,
   );
+  const tierLimitService = new TierLimitService(
+    repositories.tenant,
+    repositories.brand,
+    configurationService,
+  );
   const brandService = new BrandService(
     repositories.brand,
+    repositories.business,
     tenantService,
+    tierLimitService,
     eventPublisher,
     authorizationService,
+  );
+  const businessEntityService = new BusinessEntityService(
+    repositories.business,
+    authorizationService,
+  );
+  const tenantProvisioningService = new TenantProvisioningService(
+    repositories.tenant,
+    repositories.business,
+    repositories.brand,
+    tierLimitService,
+    configurationService,
+    authorizationService,
+    eventPublisher,
   );
   const moduleRegistry = new AuroraModuleRegistry();
   moduleRegistry.register(new AdminModuleRuntime());
@@ -122,6 +145,9 @@ export function createAuroraWiring(
     repositories,
     tenantService,
     brandService,
+    businessEntityService,
+    tenantProvisioningService,
+    tierLimitService,
     configurationService,
     eventPublisher,
     connectorRegistry,

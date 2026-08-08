@@ -83,8 +83,14 @@ describe("DefaultAuroraIdentityBridge", () => {
   it("buildContext accepts an existing brand id", async () => {
     const { bridge, repositories } = createBridge();
     await repositories.tenant.create(TEST_ORG_ID, { name: "Acme", slug: "acme" });
+    const business = await repositories.business.create("business-primary", {
+      tenantId: TEST_ORG_ID,
+      name: "Default",
+      slug: "default",
+    });
     const brand = await repositories.brand.create("brand-primary", {
       tenantId: TEST_ORG_ID,
+      businessId: business.id,
       name: "Primary",
       slug: "primary",
     });
@@ -92,6 +98,7 @@ describe("DefaultAuroraIdentityBridge", () => {
 
     const ctx = await bridge.buildContext(session, brand.id);
     expect(ctx.brandId).toBe(brand.id);
+    expect(ctx.businessId).toBe(business.id);
   });
 
   it("resolveTenant reads from tenant repository", async () => {

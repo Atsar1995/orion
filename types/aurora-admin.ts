@@ -1,8 +1,10 @@
-/** Aurora admin domain types (WP-A001 · ES-AURORA-005). */
+/** Aurora admin domain types (WP-A001 · ES-AURORA-005 · WP-A002). */
 
 export type CommercialTier = "starter" | "professional" | "agency" | "enterprise";
 
-export type TenantStatus = "active" | "suspended";
+export type TenantStatus = "provisioning" | "active" | "suspended";
+
+export type BusinessEntityStatus = "active" | "archived";
 
 export type BrandStatus = "active" | "archived";
 
@@ -16,9 +18,20 @@ export type Tenant = {
   readonly updatedAt: string;
 };
 
+export type BusinessEntity = {
+  readonly id: string;
+  readonly tenantId: string;
+  readonly name: string;
+  readonly slug: string;
+  readonly status: BusinessEntityStatus;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+};
+
 export type Brand = {
   readonly id: string;
   readonly tenantId: string;
+  readonly businessId: string;
   readonly name: string;
   readonly slug: string;
   readonly locale: string;
@@ -32,6 +45,7 @@ export type CreateTenantInput = {
   readonly name: string;
   readonly slug: string;
   readonly tier?: CommercialTier;
+  readonly status?: TenantStatus;
 };
 
 export type UpdateTenantInput = {
@@ -41,8 +55,21 @@ export type UpdateTenantInput = {
   readonly status?: TenantStatus;
 };
 
+export type CreateBusinessEntityInput = {
+  readonly tenantId: string;
+  readonly name: string;
+  readonly slug: string;
+};
+
+export type UpdateBusinessEntityInput = {
+  readonly name?: string;
+  readonly slug?: string;
+  readonly status?: BusinessEntityStatus;
+};
+
 export type CreateBrandInput = {
   readonly tenantId: string;
+  readonly businessId: string;
   readonly name: string;
   readonly slug: string;
   readonly locale?: string;
@@ -55,6 +82,21 @@ export type UpdateBrandInput = {
   readonly locale?: string;
   readonly timezone?: string;
   readonly status?: BrandStatus;
+};
+
+export type ProvisionTenantInput = {
+  readonly orionOrganizationId: string;
+  readonly name: string;
+  readonly tier: CommercialTier;
+  readonly defaultBrandName: string;
+  readonly slug?: string;
+  readonly adminUserId?: string;
+};
+
+export type TenantProvisionResult = {
+  readonly tenant: Tenant;
+  readonly defaultBusiness: BusinessEntity;
+  readonly defaultBrand: Brand;
 };
 
 export type TenantConfig = {

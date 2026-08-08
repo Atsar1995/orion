@@ -8,13 +8,17 @@ import type {
   ScheduleRepository,
   TenantRepository,
 } from "@/lib/aurora/admin/repositories/TenantRepository";
+import type { BusinessEntityRepository } from "@/lib/aurora/admin/repositories/BusinessEntityRepository";
 import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
 import type {
   Brand,
+  BusinessEntity,
   CreateBrandInput,
+  CreateBusinessEntityInput,
   CreateTenantInput,
   Tenant,
   UpdateBrandInput,
+  UpdateBusinessEntityInput,
   UpdateTenantInput,
 } from "@/types/aurora-admin";
 import type { ScheduleEntryRecord } from "@/lib/aurora/persistence/AuroraStoreBacking";
@@ -44,7 +48,7 @@ export class InMemoryTenantRepository implements TenantRepository {
       name: input.name,
       slug: input.slug,
       tier: input.tier ?? "starter",
-      status: "active",
+      status: input.status ?? "active",
       createdAt: now,
       updatedAt: now,
     };
@@ -84,6 +88,89 @@ export class InMemoryTenantRepository implements TenantRepository {
   async list(): Promise<readonly Tenant[]> {
     return [...this.backing.tenants.values()];
   }
+
+  async delete(tenantId: string): Promise<void> {
+    this.backing.tenants.delete(tenantId);
+  }
+}
+
+export class InMemoryBusinessEntityRepository implements BusinessEntityRepository {
+  constructor(private readonly backing: AuroraStoreBacking) {}
+
+  async create(businessId: string, input: CreateBusinessEntityInput): Promise<BusinessEntity> {
+    const tenant = this.backing.tenants.get(input.tenantId);
+    if (!tenant) {
+      throw new AuroraError(AURORA_ERR_0404, "Tenant not found.", 404);
+    }
+
+    const existingSlug = await this.getBySlug(input.tenantId, input.slug);
+    if (existingSlug) {
+      throw new AuroraError("AURORA_ERR_0409", "Business slug already exists.", 409);
+    }
+
+    const now = new Date().toISOString();
+    const business: BusinessEntity = {
+      id: businessId,
+      tenantId: input.tenantId,
+      name: input.name,
+      slug: input.slug,
+      status: "active",
+      createdAt: now,
+      updatedAt: now,
+    };
+
+    this.backing.businesses.set(businessId, business);
+    return business;
+  }
+
+  async getById(tenantId: string, businessId: string): Promise<BusinessEntity | null> {
+    const business = this.backing.businesses.get(businessId);
+    if (!business) {
+      return null;
+    }
+    assertTenantScope(business.tenantId, tenantId);
+    return business;
+  }
+
+  async getBySlug(tenantId: string, slug: string): Promise<BusinessEntity | null> {
+    for (const business of this.backing.businesses.values()) {
+      if (business.tenantId === tenantId && business.slug === slug) {
+        return business;
+      }
+    }
+    return null;
+  }
+
+  async update(
+    tenantId: string,
+    businessId: string,
+    input: UpdateBusinessEntityInput,
+  ): Promise<BusinessEntity> {
+    const existing = await this.getById(tenantId, businessId);
+    if (!existing) {
+      throw new AuroraError(AURORA_ERR_0404, "Business entity not found.", 404);
+    }
+
+    const updated: BusinessEntity = {
+      ...existing,
+      ...input,
+      updatedAt: new Date().toISOString(),
+    };
+    this.backing.businesses.set(businessId, updated);
+    return updated;
+  }
+
+  async listByTenant(tenantId: string): Promise<readonly BusinessEntity[]> {
+    return [...this.backing.businesses.values()].filter((business) => business.tenantId === tenantId);
+  }
+
+  async delete(tenantId: string, businessId: string): Promise<void> {
+    const existing = await this.getById(tenantId, businessId);
+    if (!existing) {
+      return;
+    }
+    this.backing.businesses.delete(businessId);
+  }
 }
 
 export class InMemoryBrandRepository implements BrandRepository {
@@ -95,10 +182,20 @@ export class InMemoryBrandRepository implements BrandRepository {
       throw new AuroraError(AURORA_ERR_0404, "Tenant not found.", 404);
     }
 
+    const business = this.backing.businesses.get(input.businessId);
+    if (!business) {
+      throw new AuroraError(AURORA_ERR_0404, "Business entity not found.", 404);
+    }
+    assertTenantScope(business.tenantId, input.tenantId);
+    if (business.status !== "active") {
+      throw new AuroraError(AURORA_ERR_0403, "Business entity is not active.", 403);
+    }
+
     const now = new Date().toISOString();
     const brand: Brand = {
       id: brandId,
       tenantId: input.tenantId,
+      businessId: input.businessId,
       name: input.name,
       slug: input.slug,
       locale: input.locale ?? "en-US",
@@ -131,6 +228,11 @@ export class InMemoryBrandRepository implements BrandRepository {
       throw new AuroraError(AURORA_ERR_0404, "Brand not found.", 404);
     }
 
+    const business = this.backing.businesses.get(existing.businessId);
+    if (!business || business.status !== "active") {
+      throw new AuroraError(AURORA_ERR_0403, "Business entity is not active.", 403);
+    }
+
     const updated: Brand = {
       ...existing,
       ...input,
@@ -142,6 +244,14 @@ export class InMemoryBrandRepository implements BrandRepository {
 
   async listByTenant(tenantId: string): Promise<readonly Brand[]> {
     return [...this.backing.brands.values()].filter((brand) => brand.tenantId === tenantId);
+  }
+
+  async delete(tenantId: string, brandId: string): Promise<void> {
+    const existing = await this.getById(tenantId, brandId);
+    if (!existing) {
+      return;
+    }
+    this.backing.brands.delete(brandId);
   }
 }
 

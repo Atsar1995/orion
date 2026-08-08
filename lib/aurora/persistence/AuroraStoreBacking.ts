@@ -1,6 +1,6 @@
 /** Shared Aurora persistence collections (ES-AURORA-005). */
 
-import type { Brand, Tenant, TenantConfig } from "@/types/aurora-admin";
+import type { Brand, BusinessEntity, Tenant, TenantConfig } from "@/types/aurora-admin";
 
 export type ScheduleEntryRecord = {
   readonly id: string;
@@ -14,6 +14,7 @@ export type ScheduleEntryRecord = {
 
 export type AuroraStoreBacking = {
   readonly tenants: Map<string, Tenant>;
+  readonly businesses: Map<string, BusinessEntity>;
   readonly brands: Map<string, Brand>;
   readonly tenantConfigs: Map<string, TenantConfig>;
   readonly schedules: Map<string, ScheduleEntryRecord>;

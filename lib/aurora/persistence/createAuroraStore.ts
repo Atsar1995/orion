@@ -7,6 +7,7 @@ export const AURORA_SEED_TENANT_ID = "tenant-orania";
 export function createAuroraStore(): AuroraStoreBacking {
   return {
     tenants: new Map(),
+    businesses: new Map(),
     brands: new Map(),
     tenantConfigs: new Map(),
     schedules: new Map(),

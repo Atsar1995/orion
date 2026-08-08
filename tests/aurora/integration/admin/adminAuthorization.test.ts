@@ -5,6 +5,7 @@ import {
   createTestAuroraRuntimeContext,
 } from "@/lib/aurora/identity/AuroraContextFactory";
 import { createTestAuroraWiring } from "@/lib/aurora/wiring/createTestAuroraWiring";
+import { createTestBusiness } from "@/tests/aurora/helpers/adminTestHelpers";
 import { describe, expect, it } from "vitest";
 
 describe("admin authorization unification", () => {
@@ -71,6 +72,7 @@ describe("admin authorization unification", () => {
       name: "Brand Tenant",
       slug: "brand-tenant-auth",
     });
+    const business = await createTestBusiness(wiring.repositories, tenant.id);
 
     const editorCtx = createAuroraRuntimeContext({
       tenantId: tenant.id,
@@ -81,6 +83,7 @@ describe("admin authorization unification", () => {
     await expect(
       wiring.brandService.createBrand(editorCtx, {
         tenantId: tenant.id,
+        businessId: business.id,
         name: "Primary",
         slug: "primary",
       }),
@@ -97,6 +100,7 @@ describe("admin authorization unification", () => {
       name: "Brand Allowed",
       slug: "brand-allowed",
     });
+    const business = await createTestBusiness(wiring.repositories, tenant.id);
 
     const tenantAdminCtx = createAuroraRuntimeContext({
       tenantId: tenant.id,
@@ -106,6 +110,7 @@ describe("admin authorization unification", () => {
 
     const brand = await wiring.brandService.createBrand(tenantAdminCtx, {
       tenantId: tenant.id,
+      businessId: business.id,
       name: "Primary",
       slug: "primary",
     });

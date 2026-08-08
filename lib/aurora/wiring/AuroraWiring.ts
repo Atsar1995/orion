@@ -1,5 +1,8 @@
 import type { BrandService } from "@/lib/aurora/admin/services/BrandService";
+import type { BusinessEntityService } from "@/lib/aurora/admin/services/BusinessEntityService";
+import type { TenantProvisioningService } from "@/lib/aurora/admin/services/TenantProvisioningService";
 import type { TenantService } from "@/lib/aurora/admin/services/TenantService";
+import type { TierLimitService } from "@/lib/aurora/admin/services/TierLimitService";
 import type { AuroraAuthorizationService } from "@/lib/aurora/identity/AuroraAuthorizationService";
 import type { AuroraIdentityBridge } from "@/lib/aurora/identity/AuroraIdentityBridge";
 import type { AuroraRepositories } from "@/lib/aurora/persistence/createAuroraRepositories";
@@ -30,6 +33,9 @@ export type AuroraWiring = {
   readonly repositories: AuroraRepositories;
   readonly tenantService: TenantService;
   readonly brandService: BrandService;
+  readonly businessEntityService: BusinessEntityService;
+  readonly tenantProvisioningService: TenantProvisioningService;
+  readonly tierLimitService: TierLimitService;
   readonly configurationService: ConfigurationService;
   readonly eventPublisher: AuroraEventPublisher;
   readonly connectorRegistry: ConnectorRegistry;

@@ -2,6 +2,7 @@
 
 export const AURORA_ERR_0403 = "AURORA_ERR_0403";
 export const AURORA_ERR_0404 = "AURORA_ERR_0404";
+export const AURORA_ERR_0429 = "AURORA_ERR_0429";
 export const AURORA_ERR_0501 = "AURORA_ERR_0501";
 export const AURORA_ERR_0503 = "AURORA_ERR_0503";
 export const AURORA_ERR_0509 = "AURORA_ERR_0509";

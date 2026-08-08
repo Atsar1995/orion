@@ -55,8 +55,14 @@ describe("getAuroraApiContext", () => {
     const backing = ensureAuroraPlatformBacking(new InMemoryPlatformStore());
     const repositories = createAuroraRepositories(backing);
     await repositories.tenant.create(TEST_ORG_ID, { name: "Acme", slug: "acme" });
+    const business = await repositories.business.create("business-primary", {
+      tenantId: TEST_ORG_ID,
+      name: "Default",
+      slug: "default",
+    });
     const brand = await repositories.brand.create("brand-primary", {
       tenantId: TEST_ORG_ID,
+      businessId: business.id,
       name: "Primary",
       slug: "primary",
     });

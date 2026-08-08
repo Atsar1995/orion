@@ -6,6 +6,7 @@ import type {
   UpdateBrandInput,
   UpdateTenantInput,
 } from "@/types/aurora-admin";
+import type { BusinessEntityRepository } from "@/lib/aurora/admin/repositories/BusinessEntityRepository";
 import type { ScheduleEntryRecord } from "@/lib/aurora/persistence/AuroraStoreBacking";
 
 export interface TenantRepository {
@@ -14,6 +15,7 @@ export interface TenantRepository {
   getBySlug(slug: string): Promise<Tenant | null>;
   update(tenantId: string, input: UpdateTenantInput): Promise<Tenant>;
   list(): Promise<readonly Tenant[]>;
+  delete(tenantId: string): Promise<void>;
 }
 
 export interface BrandRepository {
@@ -21,6 +23,7 @@ export interface BrandRepository {
   getById(tenantId: string, brandId: string): Promise<Brand | null>;
   update(tenantId: string, brandId: string, input: UpdateBrandInput): Promise<Brand>;
   listByTenant(tenantId: string): Promise<readonly Brand[]>;
+  delete(tenantId: string, brandId: string): Promise<void>;
 }
 
 export interface ScheduleRepository {
@@ -33,6 +36,7 @@ export interface ScheduleRepository {
 
 export type AuroraRepositories = {
   readonly tenant: TenantRepository;
+  readonly business: BusinessEntityRepository;
   readonly brand: BrandRepository;
   readonly schedule: ScheduleRepository;
 };

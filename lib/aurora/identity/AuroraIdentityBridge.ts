@@ -67,12 +67,14 @@ export class DefaultAuroraIdentityBridge implements AuroraIdentityBridge {
     const identity = await this.resolveUserIdentity(session);
     const resolvedBrandId = brandId ?? "";
     const tenantId = session.user.organizationId;
+    let resolvedBusinessId = "";
 
     if (resolvedBrandId) {
       const brand = await this.deps.brandRepository.getById(tenantId, resolvedBrandId);
       if (!brand) {
         throw new AuroraError(AURORA_ERR_0404, "Brand not found.", 404);
       }
+      resolvedBusinessId = brand.businessId;
     }
 
     const platformState = this.deps.getLifecycleState();
@@ -85,7 +87,7 @@ export class DefaultAuroraIdentityBridge implements AuroraIdentityBridge {
         roles: identity.auroraRoles,
         auroraPermissions: [...identity.auroraPermissions],
         brandId: resolvedBrandId,
-        businessId: tenantId,
+        businessId: resolvedBusinessId,
         locale: identity.locale,
         timezone: identity.timezone,
         sessionId: session.user.id,
