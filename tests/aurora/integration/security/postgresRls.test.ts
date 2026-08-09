@@ -131,7 +131,7 @@ describe.skipIf(!AURORA_LIVE_POSTGRES)("PostgreSQL Aurora RLS security", () => {
       expect(scoped).toBe(harness!.tenantAId);
     });
 
-    const client = await harness!.connection.acquireClient();
+    const client = await harness!.appConnection.acquireClient();
     try {
       await client.query("BEGIN");
       const unset = await readAuroraTenantSetting(client);
@@ -144,7 +144,7 @@ describe.skipIf(!AURORA_LIVE_POSTGRES)("PostgreSQL Aurora RLS security", () => {
       expect(Number(denied.rows[0]?.count ?? 0)).toBe(0);
       await client.query("ROLLBACK");
     } finally {
-      harness!.connection.releaseClient(client);
+      harness!.appConnection.releaseClient(client);
     }
   });
 });
@@ -155,6 +155,7 @@ describe("PostgreSQL Aurora RLS availability marker", () => {
       expect(process.env.AURORA_LIVE_POSTGRES).not.toBe("1");
     } else {
       expect(process.env.ORION_DATABASE_URL).toBeTruthy();
+      expect(process.env.AURORA_APP_DATABASE_URL).toBeTruthy();
     }
   });
 });

@@ -5,11 +5,18 @@ import { AuroraTenantDbScope } from "@/lib/aurora/persistence/AuroraTenantDbScop
 import type { DatabaseConnection } from "@/lib/platform/persistence/DatabaseConnection";
 import { PostgresDatabaseConnection } from "@/lib/platform/persistence/PostgresDatabaseConnection";
 
+const LIVE_POSTGRES_FLAG = process.env.AURORA_LIVE_POSTGRES === "1";
+
 export const AURORA_LIVE_POSTGRES =
-  process.env.AURORA_LIVE_POSTGRES === "1" && Boolean(process.env.ORION_DATABASE_URL);
+  LIVE_POSTGRES_FLAG &&
+  Boolean(process.env.ORION_DATABASE_URL) &&
+  Boolean(process.env.AURORA_APP_DATABASE_URL);
 
 export type PostgresTestHarness = {
-  readonly connection: DatabaseConnection;
+  /** Privileged connection (`orion`) for migrations and system scope. */
+  readonly privilegedConnection: DatabaseConnection;
+  /** Restricted application connection (`aurora_app`) for tenant-scoped RLS tests. */
+  readonly appConnection: DatabaseConnection;
   readonly tenantDbScope: AuroraTenantDbScope;
   readonly systemDbScope: AuroraSystemDbScope;
   readonly tenantAId: string;
@@ -24,12 +31,7 @@ export type PostgresTestHarness = {
   shutdown(): Promise<void>;
 };
 
-export async function createPostgresDatabaseConnection(): Promise<PostgresDatabaseConnection> {
-  const databaseUrl = process.env.ORION_DATABASE_URL;
-  if (!databaseUrl) {
-    throw new Error("ORION_DATABASE_URL is required for PostgreSQL Aurora tests.");
-  }
-
+function buildPostgresDatabaseConnection(databaseUrl: string): PostgresDatabaseConnection {
   return new PostgresDatabaseConnection(
     databaseUrl,
     {
@@ -43,15 +45,67 @@ export async function createPostgresDatabaseConnection(): Promise<PostgresDataba
   );
 }
 
+function requireDatabaseUrl(
+  envVar: "ORION_DATABASE_URL" | "AURORA_APP_DATABASE_URL",
+): string {
+  const databaseUrl = process.env[envVar];
+  if (!databaseUrl) {
+    if (envVar === "AURORA_APP_DATABASE_URL") {
+      throw new Error(
+        "AURORA_APP_DATABASE_URL is required for live Aurora RLS testing when AURORA_LIVE_POSTGRES=1. " +
+          "Create the aurora_app role using docs/AURORA/operator/create-aurora-app-role.sql and set a separate restricted connection URL.",
+      );
+    }
+    throw new Error(`${envVar} is required for PostgreSQL Aurora tests.`);
+  }
+  return databaseUrl;
+}
+
+async function assertRestrictedAppDatabaseRole(connection: DatabaseConnection): Promise<void> {
+  const result = await connection.query<{ rolsuper: boolean; rolbypassrls: boolean }>(
+    "SELECT rolsuper, rolbypassrls FROM pg_roles WHERE rolname = current_user",
+  );
+  const role = result.rows[0];
+  if (!role || role.rolsuper || role.rolbypassrls) {
+    throw new Error(
+      "AURORA_APP_DATABASE_URL must connect as aurora_app (NOSUPERUSER, NOBYPASSRLS). " +
+        "Privileged roles bypass RLS and invalidate the live certification suite.",
+    );
+  }
+}
+
+export async function createPrivilegedPostgresDatabaseConnection(): Promise<PostgresDatabaseConnection> {
+  return buildPostgresDatabaseConnection(requireDatabaseUrl("ORION_DATABASE_URL"));
+}
+
+export async function createAppPostgresDatabaseConnection(): Promise<PostgresDatabaseConnection> {
+  const connection = buildPostgresDatabaseConnection(requireDatabaseUrl("AURORA_APP_DATABASE_URL"));
+  await assertRestrictedAppDatabaseRole(connection);
+  return connection;
+}
+
+/** @deprecated Use createPrivilegedPostgresDatabaseConnection for explicit privileged access. */
+export async function createPostgresDatabaseConnection(): Promise<PostgresDatabaseConnection> {
+  return createPrivilegedPostgresDatabaseConnection();
+}
+
 export async function setupPostgresTestHarness(): Promise<PostgresTestHarness> {
-  const connection = await createPostgresDatabaseConnection();
-  const reachable = await connection.ping();
-  if (!reachable) {
-    await connection.shutdown();
-    throw new Error("PostgreSQL is unreachable for Aurora integration tests.");
+  const privilegedConnection = await createPrivilegedPostgresDatabaseConnection();
+  const privilegedReachable = await privilegedConnection.ping();
+  if (!privilegedReachable) {
+    await privilegedConnection.shutdown();
+    throw new Error("Privileged PostgreSQL connection is unreachable for Aurora integration tests.");
   }
 
-  const migrationRunner = new AuroraMigrationRunner(connection);
+  const appConnection = await createAppPostgresDatabaseConnection();
+  const appReachable = await appConnection.ping();
+  if (!appReachable) {
+    await appConnection.shutdown();
+    await privilegedConnection.shutdown();
+    throw new Error("Restricted aurora_app PostgreSQL connection is unreachable for Aurora RLS tests.");
+  }
+
+  const migrationRunner = new AuroraMigrationRunner(privilegedConnection);
   await migrationRunner.runPending();
 
   const tenantAId = randomUUID();
@@ -63,7 +117,7 @@ export async function setupPostgresTestHarness(): Promise<PostgresTestHarness> {
   const userAId = randomUUID();
   const userBId = randomUUID();
   const scheduleBId = randomUUID();
-  const systemDbScope = new AuroraSystemDbScope(connection);
+  const systemDbScope = new AuroraSystemDbScope(privilegedConnection);
 
   await systemDbScope.run(async (client) => {
     await client.query(
@@ -111,8 +165,9 @@ export async function setupPostgresTestHarness(): Promise<PostgresTestHarness> {
   });
 
   return {
-    connection,
-    tenantDbScope: new AuroraTenantDbScope(connection),
+    privilegedConnection,
+    appConnection,
+    tenantDbScope: new AuroraTenantDbScope(appConnection),
     systemDbScope,
     tenantAId,
     tenantBId,
@@ -123,7 +178,10 @@ export async function setupPostgresTestHarness(): Promise<PostgresTestHarness> {
     userAId,
     userBId,
     scheduleBId,
-    shutdown: () => connection.shutdown(),
+    shutdown: async () => {
+      await appConnection.shutdown();
+      await privilegedConnection.shutdown();
+    },
   };
 }
 
