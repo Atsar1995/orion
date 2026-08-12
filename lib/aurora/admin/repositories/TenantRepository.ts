@@ -7,7 +7,7 @@ import type {
   UpdateTenantInput,
 } from "@/types/aurora-admin";
 import type { BusinessEntityRepository } from "@/lib/aurora/admin/repositories/BusinessEntityRepository";
-import type { ScheduleEntryRecord } from "@/lib/aurora/persistence/AuroraStoreBacking";
+import type { ScheduleEntryRecord, WorkspaceConfigRecord } from "@/lib/aurora/persistence/AuroraStoreBacking";
 
 export interface TenantRepository {
   create(tenantId: string, input: CreateTenantInput): Promise<Tenant>;
@@ -34,9 +34,23 @@ export interface ScheduleRepository {
   delete(tenantId: string, scheduleId: string): Promise<void>;
 }
 
+export interface WorkspaceConfigRepository {
+  get(tenantId: string, userId: string): Promise<WorkspaceConfigRecord | null>;
+  upsert(input: WorkspaceConfigUpsertInput): Promise<WorkspaceConfigRecord>;
+}
+
+export type WorkspaceConfigUpsertInput = {
+  readonly tenantId: string;
+  readonly userId: string;
+  readonly activeBrandId?: string | null;
+  readonly dashboardLayout?: Readonly<Record<string, unknown>>;
+  readonly notificationPreferences?: Readonly<Record<string, unknown>>;
+};
+
 export type AuroraRepositories = {
   readonly tenant: TenantRepository;
   readonly business: BusinessEntityRepository;
   readonly brand: BrandRepository;
   readonly schedule: ScheduleRepository;
+  readonly workspaceConfig: WorkspaceConfigRepository;
 };

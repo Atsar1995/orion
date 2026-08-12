@@ -12,11 +12,20 @@ export type ScheduleEntryRecord = {
   readonly createdAt: string;
 };
 
+export type WorkspaceConfigRecord = {
+  readonly tenantId: string;
+  readonly userId: string;
+  readonly activeBrandId: string | null;
+  readonly dashboardLayout: Readonly<Record<string, unknown>>;
+  readonly notificationPreferences: Readonly<Record<string, unknown>>;
+};
+
 export type AuroraStoreBacking = {
   readonly tenants: Map<string, Tenant>;
   readonly businesses: Map<string, BusinessEntity>;
   readonly brands: Map<string, Brand>;
   readonly tenantConfigs: Map<string, TenantConfig>;
+  readonly workspaceConfigs: Map<string, WorkspaceConfigRecord>;
   readonly schedules: Map<string, ScheduleEntryRecord>;
   readonly idempotencyKeys: Map<string, string>;
 };

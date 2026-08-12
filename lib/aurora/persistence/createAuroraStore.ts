@@ -10,6 +10,7 @@ export function createAuroraStore(): AuroraStoreBacking {
     businesses: new Map(),
     brands: new Map(),
     tenantConfigs: new Map(),
+    workspaceConfigs: new Map(),
     schedules: new Map(),
     idempotencyKeys: new Map(),
   };

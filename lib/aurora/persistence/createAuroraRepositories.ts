@@ -4,6 +4,7 @@ import {
   InMemoryBusinessEntityRepository,
   InMemoryScheduleRepository,
   InMemoryTenantRepository,
+  InMemoryWorkspaceConfigRepository,
 } from "@/lib/aurora/persistence/InMemoryAuroraRepository";
 import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
 
@@ -14,6 +15,7 @@ export function createAuroraRepositories(backing: AuroraStoreBacking): AuroraRep
     business: new InMemoryBusinessEntityRepository(backing),
     brand: new InMemoryBrandRepository(backing),
     schedule: new InMemoryScheduleRepository(backing),
+    workspaceConfig: new InMemoryWorkspaceConfigRepository(backing),
   };
 }
 

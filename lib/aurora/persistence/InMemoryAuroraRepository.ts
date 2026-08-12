@@ -7,9 +7,11 @@ import type {
   BrandRepository,
   ScheduleRepository,
   TenantRepository,
+  WorkspaceConfigRepository,
+  WorkspaceConfigUpsertInput,
 } from "@/lib/aurora/admin/repositories/TenantRepository";
 import type { BusinessEntityRepository } from "@/lib/aurora/admin/repositories/BusinessEntityRepository";
-import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
+import type { AuroraStoreBacking, WorkspaceConfigRecord } from "@/lib/aurora/persistence/AuroraStoreBacking";
 import type {
   Brand,
   BusinessEntity,
@@ -289,5 +291,47 @@ export class InMemoryScheduleRepository implements ScheduleRepository {
       throw new AuroraError(AURORA_ERR_0404, "Schedule not found.", 404);
     }
     this.backing.schedules.delete(scheduleId);
+  }
+}
+
+export class InMemoryWorkspaceConfigRepository implements WorkspaceConfigRepository {
+  constructor(private readonly backing: AuroraStoreBacking) {}
+
+  private key(tenantId: string, userId: string): string {
+    return `${tenantId}:${userId}`;
+  }
+
+  async get(
+    tenantId: string,
+    userId: string,
+  ): Promise<WorkspaceConfigRecord | null> {
+    return this.backing.workspaceConfigs.get(this.key(tenantId, userId)) ?? null;
+  }
+
+  async upsert(
+    input: WorkspaceConfigUpsertInput,
+  ): Promise<WorkspaceConfigRecord> {
+    const key = this.key(input.tenantId, input.userId);
+    const existing = this.backing.workspaceConfigs.get(key);
+
+    const record: WorkspaceConfigRecord = {
+      tenantId: input.tenantId,
+      userId: input.userId,
+      activeBrandId:
+        input.activeBrandId !== undefined
+          ? input.activeBrandId
+          : existing?.activeBrandId ?? null,
+      dashboardLayout:
+        input.dashboardLayout !== undefined
+          ? input.dashboardLayout
+          : existing?.dashboardLayout ?? {},
+      notificationPreferences:
+        input.notificationPreferences !== undefined
+          ? input.notificationPreferences
+          : existing?.notificationPreferences ?? {},
+    };
+
+    this.backing.workspaceConfigs.set(key, record);
+    return record;
   }
 }
