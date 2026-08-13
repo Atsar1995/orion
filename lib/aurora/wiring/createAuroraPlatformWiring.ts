@@ -4,6 +4,7 @@ import { DefaultRetryManager } from "@/lib/aurora/infrastructure/RetryManager";
 import { DefaultSchedulerService } from "@/lib/aurora/infrastructure/SchedulerService";
 import { DefaultConnectorRegistry } from "@/lib/aurora/integrations/registry/ConnectorRegistry";
 import { DefaultConfigurationService } from "@/lib/aurora/platform/services/ConfigurationService";
+import { InMemoryConfigurationCache } from "@/lib/aurora/platform/cache/InMemoryConfigurationCache";
 import type { AuroraWiringConfig } from "@/lib/aurora/wiring/AuroraWiring";
 import { createAuroraPersistenceWiring } from "@/lib/aurora/wiring/createAuroraPersistenceWiring";
 import { EventBus } from "@/lib/platform/events/EventBus";
@@ -17,7 +18,12 @@ export function createAuroraPlatformWiring(config: AuroraWiringConfig) {
   const connectorRegistry = new DefaultConnectorRegistry();
   const queueManager = new InMemoryQueueManager(retryManager);
   const scheduler = new DefaultSchedulerService(queueManager, persistence.repositories.schedule);
-  const configurationService = new DefaultConfigurationService(config, persistence.backing);
+  const configurationCache = new InMemoryConfigurationCache();
+  const configurationService = new DefaultConfigurationService(
+    config,
+    persistence.backing,
+    configurationCache,
+  );
 
   return {
     ...persistence,

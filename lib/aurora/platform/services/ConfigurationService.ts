@@ -8,6 +8,7 @@ import type { CommercialTier, TenantConfig, TierLimits } from "@/types/aurora-ad
 import type { ConfigValidationResult } from "@/types/aurora-platform";
 import { validateAuroraConfig } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
 import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
+import type { ConfigurationCache } from "@/lib/aurora/platform/cache/ConfigurationCache";
 
 export interface ConfigurationService {
   getTenantConfig(ctx: AuroraRuntimeContext): Promise<TenantConfig>;
@@ -43,11 +44,18 @@ export class DefaultConfigurationService implements ConfigurationService {
   constructor(
     private readonly config: AuroraRuntimeConfiguration,
     private readonly backing: AuroraStoreBacking,
+    private readonly cache: ConfigurationCache,
   ) {}
 
   async getTenantConfig(ctx: AuroraRuntimeContext): Promise<TenantConfig> {
+    const cached = this.cache.get(ctx.tenantId);
+    if (cached) {
+      return cached;
+    }
+
     const existing = this.backing.tenantConfigs.get(ctx.tenantId);
     if (existing) {
+      this.cache.set(ctx.tenantId, existing);
       return existing;
     }
 
@@ -62,6 +70,7 @@ export class DefaultConfigurationService implements ConfigurationService {
       limits: this.getTierLimits(tier),
     };
     this.backing.tenantConfigs.set(ctx.tenantId, fallback);
+    this.cache.set(ctx.tenantId, fallback);
     return fallback;
   }
 

@@ -17,6 +17,7 @@ import { ensureAuroraPlatformBacking } from "@/lib/aurora/persistence/AuroraPlat
 import { createAuroraRepositories } from "@/lib/aurora/persistence/createAuroraRepositories";
 import { registerAuroraReadinessProbe } from "@/lib/aurora/platform/registerAuroraReadinessProbe";
 import { DefaultConfigurationService } from "@/lib/aurora/platform/services/ConfigurationService";
+import { InMemoryConfigurationCache } from "@/lib/aurora/platform/cache/InMemoryConfigurationCache";
 import { DefaultAuroraHealthStatusService } from "@/lib/aurora/platform/services/AuroraHealthStatusService";
 import { AuroraLoggingService } from "@/lib/aurora/platform/services/AuroraLoggingService";
 import { AuroraMetricsCollector } from "@/lib/aurora/platform/services/AuroraMetricsCollector";
@@ -68,7 +69,12 @@ export function createAuroraWiring(
   const connectorRegistry = new DefaultConnectorRegistry();
   const queueManager = new InMemoryQueueManager(retryManager);
   const scheduler = new DefaultSchedulerService(queueManager, repositories.schedule);
-  const configurationService = new DefaultConfigurationService(config, backing);
+  const configurationCache = new InMemoryConfigurationCache();
+  const configurationService = new DefaultConfigurationService(
+    config,
+    backing,
+    configurationCache,
+  );
   const loggingService = new AuroraLoggingService(config);
   const authorizationService = new DefaultAuroraAuthorizationService({
     logger: loggingService.createLogger({ component: "aurora.authorization" }),
