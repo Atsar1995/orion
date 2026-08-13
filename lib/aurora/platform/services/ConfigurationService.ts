@@ -40,6 +40,16 @@ const TIER_LIMITS: Record<CommercialTier, TierLimits> = {
   },
 };
 
+const CONFIG_CACHE_TTL_SECONDS = 300;
+
+function isTenantConfig(value: unknown): value is TenantConfig {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const candidate = value as Partial<TenantConfig>;
+  return typeof candidate.tenantId === "string" && typeof candidate.tier === "string";
+}
+
 export class DefaultConfigurationService implements ConfigurationService {
   constructor(
     private readonly config: AuroraRuntimeConfiguration,
@@ -48,14 +58,15 @@ export class DefaultConfigurationService implements ConfigurationService {
   ) {}
 
   async getTenantConfig(ctx: AuroraRuntimeContext): Promise<TenantConfig> {
-    const cached = this.cache.get(ctx.tenantId);
-    if (cached) {
+    const cacheKey = `tenant:${ctx.tenantId}:config`;
+    const cached = await this.cache.get(cacheKey);
+    if (isTenantConfig(cached)) {
       return cached;
     }
 
     const existing = this.backing.tenantConfigs.get(ctx.tenantId);
     if (existing) {
-      this.cache.set(ctx.tenantId, existing);
+      await this.cache.set(cacheKey, existing, CONFIG_CACHE_TTL_SECONDS);
       return existing;
     }
 
@@ -70,7 +81,7 @@ export class DefaultConfigurationService implements ConfigurationService {
       limits: this.getTierLimits(tier),
     };
     this.backing.tenantConfigs.set(ctx.tenantId, fallback);
-    this.cache.set(ctx.tenantId, fallback);
+    await this.cache.set(cacheKey, fallback, CONFIG_CACHE_TTL_SECONDS);
     return fallback;
   }
 

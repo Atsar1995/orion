@@ -1,22 +1,59 @@
-import type { TenantConfig } from "@/types/aurora-admin";
 import type { ConfigurationCache } from "@/lib/aurora/platform/cache/ConfigurationCache";
 
+type CacheEntry = {
+  readonly value: unknown;
+  readonly expiresAt: number;
+};
+
 export class InMemoryConfigurationCache implements ConfigurationCache {
-  private readonly entries = new Map<string, TenantConfig>();
+  private readonly entries = new Map<string, CacheEntry>();
 
-  get(tenantId: string): TenantConfig | null {
-    return this.entries.get(tenantId) ?? null;
+  async get(cacheKey: string): Promise<unknown | undefined> {
+    const entry = this.entries.get(cacheKey);
+
+    if (!entry) {
+      return undefined;
+    }
+
+    if (entry.expiresAt <= Date.now()) {
+      this.entries.delete(cacheKey);
+      return undefined;
+    }
+
+    return entry.value;
   }
 
-  set(tenantId: string, config: TenantConfig): void {
-    this.entries.set(tenantId, config);
+  async set(
+    cacheKey: string,
+    value: unknown,
+    ttlSeconds: number,
+  ): Promise<void> {
+    this.entries.set(cacheKey, {
+      value,
+      expiresAt: Date.now() + ttlSeconds * 1000,
+    });
   }
 
-  invalidate(tenantId: string): void {
-    this.entries.delete(tenantId);
+  async invalidate(pattern: string): Promise<number> {
+    const regex = this.patternToRegex(pattern);
+    let removed = 0;
+
+    for (const key of this.entries.keys()) {
+      if (regex.test(key)) {
+        this.entries.delete(key);
+        removed += 1;
+      }
+    }
+
+    return removed;
   }
 
-  clear(): void {
-    this.entries.clear();
+  async invalidateTenant(tenantId: string): Promise<void> {
+    await this.invalidate(`tenant:${tenantId}:*`);
+  }
+
+  private patternToRegex(pattern: string): RegExp {
+    const escaped = pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`^${escaped.replace(/\\\*/g, ".*")}$`);
   }
 }

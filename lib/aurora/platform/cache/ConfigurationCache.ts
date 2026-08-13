@@ -1,8 +1,6 @@
-import type { TenantConfig } from "@/types/aurora-admin";
-
 export interface ConfigurationCache {
-  get(tenantId: string): TenantConfig | null;
-  set(tenantId: string, config: TenantConfig): void;
-  invalidate(tenantId: string): void;
-  clear(): void;
+  get(cacheKey: string): Promise<unknown | undefined>;
+  set(cacheKey: string, value: unknown, ttlSeconds: number): Promise<void>;
+  invalidate(pattern: string): Promise<number>;
+  invalidateTenant(tenantId: string): Promise<void>;
 }

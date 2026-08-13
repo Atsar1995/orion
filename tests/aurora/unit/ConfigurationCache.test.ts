@@ -1,75 +1,58 @@
 import { describe, expect, it } from "vitest";
 import { InMemoryConfigurationCache } from "@/lib/aurora/platform/cache/InMemoryConfigurationCache";
-import type { TenantConfig } from "@/types/aurora-admin";
-
-function createConfig(tenantId: string): TenantConfig {
-  return {
-    tenantId,
-    tier: "professional",
-    approvalPolicy: {},
-    tokenBudget: 50_000,
-    featureOverrides: {},
-    limits: {
-      maxBrands: 5,
-      maxStorageMb: 1024,
-      dailyAgentTokens: 50_000,
-    },
-  };
-}
 
 describe("InMemoryConfigurationCache", () => {
-  it("returns null for a tenant that is not cached", () => {
+  it("returns undefined for a missing key", async () => {
     const cache = new InMemoryConfigurationCache();
 
-    expect(cache.get("tenant-a")).toBeNull();
+    expect(await cache.get("tenant:tenant-a:config")).toBeUndefined();
   });
 
-  it("stores and retrieves tenant configuration", () => {
+  it("stores and retrieves a value", async () => {
     const cache = new InMemoryConfigurationCache();
-    const config = createConfig("tenant-a");
+    const config = { tenantId: "tenant-a", tier: "professional" };
 
-    cache.set("tenant-a", config);
+    await cache.set("tenant:tenant-a:config", config, 300);
 
-    expect(cache.get("tenant-a")).toEqual(config);
+    expect(await cache.get("tenant:tenant-a:config")).toEqual(config);
   });
 
-  it("invalidates one tenant without affecting another", () => {
+  it("expires values after the TTL", async () => {
     const cache = new InMemoryConfigurationCache();
-    const configA = createConfig("tenant-a");
-    const configB = createConfig("tenant-b");
 
-    cache.set("tenant-a", configA);
-    cache.set("tenant-b", configB);
+    await cache.set("tenant:tenant-a:config", { value: true }, 0);
 
-    cache.invalidate("tenant-a");
-
-    expect(cache.get("tenant-a")).toBeNull();
-    expect(cache.get("tenant-b")).toEqual(configB);
+    expect(await cache.get("tenant:tenant-a:config")).toBeUndefined();
   });
 
-  it("clears all cached configuration", () => {
+  it("invalidates matching wildcard keys", async () => {
     const cache = new InMemoryConfigurationCache();
 
-    cache.set("tenant-a", createConfig("tenant-a"));
-    cache.set("tenant-b", createConfig("tenant-b"));
+    await cache.set("tenant:tenant-a:config", { value: 1 }, 300);
+    await cache.set("tenant:tenant-a:flags", { value: 2 }, 300);
+    await cache.set("tenant:tenant-b:config", { value: 3 }, 300);
 
-    cache.clear();
+    const removed = await cache.invalidate("tenant:tenant-a:*");
 
-    expect(cache.get("tenant-a")).toBeNull();
-    expect(cache.get("tenant-b")).toBeNull();
+    expect(removed).toBe(2);
+    expect(await cache.get("tenant:tenant-a:config")).toBeUndefined();
+    expect(await cache.get("tenant:tenant-a:flags")).toBeUndefined();
+    expect(await cache.get("tenant:tenant-b:config")).toEqual({ value: 3 });
   });
 
-  it("replaces an existing tenant configuration", () => {
+  it("invalidates only one tenant", async () => {
     const cache = new InMemoryConfigurationCache();
-    const first = createConfig("tenant-a");
-    const second = {
-      ...createConfig("tenant-a"),
-      tokenBudget: 75_000,
-    };
 
-    cache.set("tenant-a", first);
-    cache.set("tenant-a", second);
+    await cache.set("tenant:tenant-a:config", { tenantId: "tenant-a" }, 300);
+    await cache.set("tenant:tenant-a:flags", { tenantId: "tenant-a" }, 300);
+    await cache.set("tenant:tenant-b:config", { tenantId: "tenant-b" }, 300);
 
-    expect(cache.get("tenant-a")).toEqual(second);
+    await cache.invalidateTenant("tenant-a");
+
+    expect(await cache.get("tenant:tenant-a:config")).toBeUndefined();
+    expect(await cache.get("tenant:tenant-a:flags")).toBeUndefined();
+    expect(await cache.get("tenant:tenant-b:config")).toEqual({
+      tenantId: "tenant-b",
+    });
   });
 });
