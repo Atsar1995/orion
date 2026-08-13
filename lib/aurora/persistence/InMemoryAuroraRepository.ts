@@ -5,6 +5,7 @@ import {
 } from "@/lib/aurora/errors/AuroraError";
 import type {
   BrandRepository,
+  ConfigurationRepository,
   ScheduleRepository,
   TenantRepository,
   WorkspaceConfigRepository,
@@ -22,6 +23,7 @@ import type {
   UpdateBrandInput,
   UpdateBusinessEntityInput,
   UpdateTenantInput,
+  TenantConfig,
 } from "@/types/aurora-admin";
 import type { ScheduleEntryRecord } from "@/lib/aurora/persistence/AuroraStoreBacking";
 
@@ -291,6 +293,19 @@ export class InMemoryScheduleRepository implements ScheduleRepository {
       throw new AuroraError(AURORA_ERR_0404, "Schedule not found.", 404);
     }
     this.backing.schedules.delete(scheduleId);
+  }
+}
+
+export class InMemoryConfigurationRepository implements ConfigurationRepository {
+  constructor(private readonly backing: AuroraStoreBacking) {}
+
+  async get(tenantId: string): Promise<TenantConfig | null> {
+    return this.backing.tenantConfigs.get(tenantId) ?? null;
+  }
+
+  async upsert(config: TenantConfig): Promise<TenantConfig> {
+    this.backing.tenantConfigs.set(config.tenantId, config);
+    return config;
   }
 }
 

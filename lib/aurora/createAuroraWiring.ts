@@ -72,7 +72,8 @@ export function createAuroraWiring(
   const configurationCache = new InMemoryConfigurationCache();
   const configurationService = new DefaultConfigurationService(
     config,
-    backing,
+    repositories.tenant,
+    repositories.configuration,
     configurationCache,
   );
   const loggingService = new AuroraLoggingService(config);

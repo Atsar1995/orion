@@ -3,6 +3,7 @@ import type {
   CreateBrandInput,
   CreateTenantInput,
   Tenant,
+  TenantConfig,
   UpdateBrandInput,
   UpdateTenantInput,
 } from "@/types/aurora-admin";
@@ -34,6 +35,11 @@ export interface ScheduleRepository {
   delete(tenantId: string, scheduleId: string): Promise<void>;
 }
 
+export interface ConfigurationRepository {
+  get(tenantId: string): Promise<TenantConfig | null>;
+  upsert(config: TenantConfig): Promise<TenantConfig>;
+}
+
 export interface WorkspaceConfigRepository {
   get(tenantId: string, userId: string): Promise<WorkspaceConfigRecord | null>;
   upsert(input: WorkspaceConfigUpsertInput): Promise<WorkspaceConfigRecord>;
@@ -53,4 +59,5 @@ export type AuroraRepositories = {
   readonly brand: BrandRepository;
   readonly schedule: ScheduleRepository;
   readonly workspaceConfig: WorkspaceConfigRepository;
+  readonly configuration: ConfigurationRepository;
 };

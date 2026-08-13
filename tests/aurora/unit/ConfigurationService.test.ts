@@ -3,6 +3,7 @@ import { DefaultConfigurationService } from "@/lib/aurora/platform/services/Conf
 import { InMemoryConfigurationCache } from "@/lib/aurora/platform/cache/InMemoryConfigurationCache";
 import { AuroraRuntimeConfiguration } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
 import { createAuroraStore } from "@/lib/aurora/persistence/createAuroraStore";
+import { createAuroraRepositories } from "@/lib/aurora/persistence/createAuroraRepositories";
 import type { AuroraRuntimeContext } from "@/lib/aurora/runtime/AuroraRuntimeContext";
 
 function createContext(tenantId: string): AuroraRuntimeContext {
@@ -15,6 +16,7 @@ describe("DefaultConfigurationService", () => {
   function createService() {
     const backing = createAuroraStore();
     const cache = new InMemoryConfigurationCache();
+    const repositories = createAuroraRepositories(backing);
     const config = {
       ...AuroraRuntimeConfiguration.forTest(),
       featureFlags: {
@@ -25,7 +27,12 @@ describe("DefaultConfigurationService", () => {
     };
 
     return {
-      service: new DefaultConfigurationService(config, backing, cache),
+      service: new DefaultConfigurationService(
+        config,
+        repositories.tenant,
+        repositories.configuration,
+        cache,
+      ),
       backing,
       cache,
       config,

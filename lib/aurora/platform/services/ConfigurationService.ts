@@ -7,7 +7,10 @@ import {
 import type { CommercialTier, TenantConfig, TierLimits } from "@/types/aurora-admin";
 import type { ConfigValidationResult } from "@/types/aurora-platform";
 import { validateAuroraConfig } from "@/lib/aurora/runtime/AuroraRuntimeConfiguration";
-import type { AuroraStoreBacking } from "@/lib/aurora/persistence/AuroraStoreBacking";
+import type {
+  ConfigurationRepository,
+  TenantRepository,
+} from "@/lib/aurora/admin/repositories/TenantRepository";
 import type { ConfigurationCache } from "@/lib/aurora/platform/cache/ConfigurationCache";
 
 export interface ConfigurationService {
@@ -53,7 +56,8 @@ function isTenantConfig(value: unknown): value is TenantConfig {
 export class DefaultConfigurationService implements ConfigurationService {
   constructor(
     private readonly config: AuroraRuntimeConfiguration,
-    private readonly backing: AuroraStoreBacking,
+    private readonly tenantRepository: TenantRepository,
+    private readonly repository: ConfigurationRepository,
     private readonly cache: ConfigurationCache,
   ) {}
 
@@ -64,13 +68,13 @@ export class DefaultConfigurationService implements ConfigurationService {
       return cached;
     }
 
-    const existing = this.backing.tenantConfigs.get(ctx.tenantId);
+    const existing = await this.repository.get(ctx.tenantId);
     if (existing) {
       await this.cache.set(cacheKey, existing, CONFIG_CACHE_TTL_SECONDS);
       return existing;
     }
 
-    const tenant = this.backing.tenants.get(ctx.tenantId);
+    const tenant = await this.tenantRepository.getById(ctx.tenantId);
     const tier = tenant?.tier ?? "starter";
     const fallback: TenantConfig = {
       tenantId: ctx.tenantId,
@@ -80,7 +84,7 @@ export class DefaultConfigurationService implements ConfigurationService {
       featureOverrides: {},
       limits: this.getTierLimits(tier),
     };
-    this.backing.tenantConfigs.set(ctx.tenantId, fallback);
+    await this.repository.upsert(fallback);
     await this.cache.set(cacheKey, fallback, CONFIG_CACHE_TTL_SECONDS);
     return fallback;
   }

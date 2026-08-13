@@ -21,7 +21,8 @@ export function createAuroraPlatformWiring(config: AuroraWiringConfig) {
   const configurationCache = new InMemoryConfigurationCache();
   const configurationService = new DefaultConfigurationService(
     config,
-    persistence.backing,
+    persistence.repositories.tenant,
+    persistence.repositories.configuration,
     configurationCache,
   );
 

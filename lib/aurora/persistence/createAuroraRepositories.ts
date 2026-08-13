@@ -1,6 +1,7 @@
 import type { AuroraRepositories } from "@/lib/aurora/admin/repositories/TenantRepository";
 import {
   InMemoryBrandRepository,
+  InMemoryConfigurationRepository,
   InMemoryBusinessEntityRepository,
   InMemoryScheduleRepository,
   InMemoryTenantRepository,
@@ -14,6 +15,7 @@ export function createAuroraRepositories(backing: AuroraStoreBacking): AuroraRep
     tenant: new InMemoryTenantRepository(backing),
     business: new InMemoryBusinessEntityRepository(backing),
     brand: new InMemoryBrandRepository(backing),
+    configuration: new InMemoryConfigurationRepository(backing),
     schedule: new InMemoryScheduleRepository(backing),
     workspaceConfig: new InMemoryWorkspaceConfigRepository(backing),
   };
