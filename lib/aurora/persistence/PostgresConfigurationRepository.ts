@@ -103,3 +103,50 @@ export class PostgresConfigurationRepository implements ConfigurationRepository 
     });
   }
 }
+
+/** RLS regression helper — intentionally skips app-layer tenant param validation. */
+export class PostgresConfigurationRepositoryUnsafe {
+  constructor(private readonly dbScope: AuroraTenantDbScope) {}
+
+  async getWithoutAssert(
+    tenantScopeId: string,
+    tenantId: string,
+  ): Promise<TenantConfig | null> {
+    return this.dbScope.run(tenantScopeId, async (client) => {
+      const result = await client.query<{
+        tenant_id: string;
+        tier: string;
+        approval_policy: Record<string, unknown>;
+        token_budget: number;
+        feature_overrides: Record<string, boolean>;
+        limits: Record<string, number>;
+      }>(
+        `SELECT
+           tenant_id,
+           tier,
+           approval_policy,
+           token_budget,
+           feature_overrides,
+           limits
+         FROM aurora_tenant_config
+         WHERE tenant_id = $1`,
+        [tenantId],
+      );
+
+      const row = result.rows[0];
+
+      if (!row) {
+        return null;
+      }
+
+      return {
+        tenantId: row.tenant_id,
+        tier: row.tier as TenantConfig["tier"],
+        approvalPolicy: row.approval_policy,
+        tokenBudget: row.token_budget,
+        featureOverrides: row.feature_overrides,
+        limits: row.limits,
+      };
+    });
+  }
+}

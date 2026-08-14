@@ -1,6 +1,6 @@
 import type { PoolClient } from "pg";
 import type { AuroraTenantDbScope } from "@/lib/aurora/persistence/AuroraTenantDbScope";
-import { assertRepositoryTenantParam } from "@/lib/aurora/persistence/postgresRepositoryUtils";
+import { assertAuroraTenantDbScopeId } from "@/lib/aurora/persistence/AuroraTenantDbScope";
 
 export type WorkspaceConfigRecord = {
   readonly tenantId: string;
@@ -20,14 +20,11 @@ export type UpsertWorkspaceConfigInput = {
 
 /** Minimal workspace config persistence for RLS verification (Phase 2B only). */
 export class PostgresWorkspaceConfigRepository {
-  constructor(
-    private readonly dbScope: AuroraTenantDbScope,
-    private readonly scopeTenantId: string,
-  ) {}
+  constructor(private readonly dbScope: AuroraTenantDbScope) {}
 
   async get(tenantId: string, userId: string): Promise<WorkspaceConfigRecord | null> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(tenantId);
+    return this.dbScope.run(tenantId, async (client) => {
       const result = await client.query<{
         tenant_id: string;
         user_id: string;
@@ -55,8 +52,8 @@ export class PostgresWorkspaceConfigRepository {
   }
 
   async upsert(input: UpsertWorkspaceConfigInput): Promise<WorkspaceConfigRecord> {
-    assertRepositoryTenantParam(this.scopeTenantId, input.tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(input.tenantId);
+    return this.dbScope.run(input.tenantId, async (client) => {
       const result = await client.query<{
         tenant_id: string;
         user_id: string;

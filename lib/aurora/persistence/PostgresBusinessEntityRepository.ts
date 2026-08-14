@@ -1,8 +1,6 @@
 import type { BusinessEntityRepository } from "@/lib/aurora/admin/repositories/BusinessEntityRepository";
-import type { AuroraTenantDbScope } from "@/lib/aurora/persistence/AuroraTenantDbScope";
-import {
-  assertRepositoryTenantParam,
-  mapNotFound,
+import { assertAuroraTenantDbScopeId, type AuroraTenantDbScope } from "@/lib/aurora/persistence/AuroraTenantDbScope";
+import {mapNotFound,
   toIsoString,
   type SqlClient,
 } from "@/lib/aurora/persistence/postgresRepositoryUtils";
@@ -37,14 +35,11 @@ function mapBusinessRow(row: BusinessRow): BusinessEntity {
 
 /** PostgreSQL business repository with tenant scope + RLS (ES-AURORA-006 REP-1–REP-4). */
 export class PostgresBusinessEntityRepository implements BusinessEntityRepository {
-  constructor(
-    private readonly dbScope: AuroraTenantDbScope,
-    private readonly scopeTenantId: string,
-  ) {}
+  constructor(private readonly dbScope: AuroraTenantDbScope) {}
 
   async create(businessId: string, input: CreateBusinessEntityInput): Promise<BusinessEntity> {
-    assertRepositoryTenantParam(this.scopeTenantId, input.tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(input.tenantId);
+    return this.dbScope.run(input.tenantId, async (client) => {
       const existingSlug = await this.getBySlugWithClient(client, input.tenantId, input.slug);
       if (existingSlug) {
         throw new AuroraError("AURORA_ERR_0409", "Business slug already exists.", 409);
@@ -61,8 +56,8 @@ export class PostgresBusinessEntityRepository implements BusinessEntityRepositor
   }
 
   async getById(tenantId: string, businessId: string): Promise<BusinessEntity | null> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(tenantId);
+    return this.dbScope.run(tenantId, async (client) => {
       const result = await client.query<BusinessRow>(
         `SELECT id, tenant_id, name, slug, status, created_at, updated_at
          FROM aurora_business_entity
@@ -74,8 +69,8 @@ export class PostgresBusinessEntityRepository implements BusinessEntityRepositor
   }
 
   async getBySlug(tenantId: string, slug: string): Promise<BusinessEntity | null> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) =>
+    assertAuroraTenantDbScopeId(tenantId);
+    return this.dbScope.run(tenantId, async (client) =>
       this.getBySlugWithClient(client, tenantId, slug),
     );
   }
@@ -85,8 +80,8 @@ export class PostgresBusinessEntityRepository implements BusinessEntityRepositor
     businessId: string,
     input: UpdateBusinessEntityInput,
   ): Promise<BusinessEntity> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(tenantId);
+    return this.dbScope.run(tenantId, async (client) => {
       const result = await client.query<BusinessRow>(
         `UPDATE aurora_business_entity
          SET
@@ -106,8 +101,8 @@ export class PostgresBusinessEntityRepository implements BusinessEntityRepositor
   }
 
   async listByTenant(tenantId: string): Promise<readonly BusinessEntity[]> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(tenantId);
+    return this.dbScope.run(tenantId, async (client) => {
       const result = await client.query<BusinessRow>(
         `SELECT id, tenant_id, name, slug, status, created_at, updated_at
          FROM aurora_business_entity
@@ -120,8 +115,8 @@ export class PostgresBusinessEntityRepository implements BusinessEntityRepositor
   }
 
   async delete(tenantId: string, businessId: string): Promise<void> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    await this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(tenantId);
+    await this.dbScope.run(tenantId, async (client) => {
       await client.query(`DELETE FROM aurora_business_entity WHERE tenant_id = $1 AND id = $2`, [
         tenantId,
         businessId,

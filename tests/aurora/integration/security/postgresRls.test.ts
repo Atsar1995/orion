@@ -12,7 +12,10 @@ import {
   PostgresWorkspaceConfigRepository,
   PostgresWorkspaceConfigRepositoryUnsafe,
 } from "@/lib/aurora/persistence/PostgresWorkspaceConfigRepository";
-import { PostgresConfigurationRepository } from "@/lib/aurora/persistence/PostgresConfigurationRepository";
+import {
+  PostgresConfigurationRepository,
+  PostgresConfigurationRepositoryUnsafe,
+} from "@/lib/aurora/persistence/PostgresConfigurationRepository";
 import {
   AURORA_LIVE_POSTGRES,
   cleanupPostgresTestHarness,
@@ -48,14 +51,13 @@ describe.skipIf(!AURORA_LIVE_POSTGRES)("PostgreSQL Aurora RLS security", () => {
   it("blocks cross-tenant business reads", async () => {
     const businessRepo = new PostgresBusinessEntityRepository(
       harness!.tenantDbScope,
-      harness!.tenantAId,
     );
     const foreign = await businessRepo.getById(harness!.tenantAId, harness!.businessBId);
     expect(foreign).toBeNull();
   });
 
   it("blocks cross-tenant brand reads", async () => {
-    const brandRepo = new PostgresBrandRepository(harness!.tenantDbScope, harness!.tenantAId);
+    const brandRepo = new PostgresBrandRepository(harness!.tenantDbScope);
     const foreign = await brandRepo.getById(harness!.tenantAId, harness!.brandBId);
     expect(foreign).toBeNull();
   });
@@ -63,7 +65,6 @@ describe.skipIf(!AURORA_LIVE_POSTGRES)("PostgreSQL Aurora RLS security", () => {
   it("blocks cross-tenant business writes", async () => {
     const businessRepo = new PostgresBusinessEntityRepository(
       harness!.tenantDbScope,
-      harness!.tenantAId,
     );
     await expect(
       businessRepo.update(harness!.tenantAId, harness!.businessBId, { name: "Hacked" }),
@@ -71,7 +72,7 @@ describe.skipIf(!AURORA_LIVE_POSTGRES)("PostgreSQL Aurora RLS security", () => {
   });
 
   it("blocks cross-tenant brand writes", async () => {
-    const brandRepo = new PostgresBrandRepository(harness!.tenantDbScope, harness!.tenantAId);
+    const brandRepo = new PostgresBrandRepository(harness!.tenantDbScope);
     await expect(
       brandRepo.update(harness!.tenantAId, harness!.brandBId, { name: "Hacked Brand" }),
     ).rejects.toMatchObject({ code: "AURORA_ERR_0404" });
@@ -93,9 +94,14 @@ describe.skipIf(!AURORA_LIVE_POSTGRES)("PostgreSQL Aurora RLS security", () => {
   });
 
   it("blocks cross-tenant configuration access", async () => {
-    const configurationRepo = new PostgresConfigurationRepository(harness!.tenantDbScope);
+    const configurationRepo = new PostgresConfigurationRepositoryUnsafe(
+      harness!.tenantDbScope,
+    );
 
-    const foreign = await configurationRepo.get(harness!.tenantBId);
+    const foreign = await configurationRepo.getWithoutAssert(
+      harness!.tenantAId,
+      harness!.tenantBId,
+    );
 
     expect(foreign).toBeNull();
   });
@@ -141,7 +147,6 @@ describe.skipIf(!AURORA_LIVE_POSTGRES)("PostgreSQL Aurora RLS security", () => {
   it("blocks cross-tenant workspace config access", async () => {
     const workspaceRepo = new PostgresWorkspaceConfigRepository(
       harness!.tenantDbScope,
-      harness!.tenantAId,
     );
     const foreign = await workspaceRepo.get(harness!.tenantAId, harness!.userBId);
     expect(foreign).toBeNull();
@@ -166,7 +171,7 @@ describe.skipIf(!AURORA_LIVE_POSTGRES)("PostgreSQL Aurora RLS security", () => {
       ),
     ).rejects.toThrow(/business_id must belong to the same tenant/i);
 
-    const brandRepo = new PostgresBrandRepository(harness!.tenantDbScope, harness!.tenantAId);
+    const brandRepo = new PostgresBrandRepository(harness!.tenantDbScope);
     const brand = await brandRepo.getById(harness!.tenantAId, harness!.brandAId);
     expect(brand?.businessId).toBe(harness!.businessAId);
   });

@@ -21,10 +21,10 @@ export function createAuroraPostgresRepositories(
 ): AuroraRepositories {
   return {
     tenant: new PostgresTenantRepository(systemDbScope),
-    business: new PostgresBusinessEntityRepository(tenantDbScope, tenantId),
-    brand: new PostgresBrandRepository(tenantDbScope, tenantId),
+    business: new PostgresBusinessEntityRepository(tenantDbScope),
+    brand: new PostgresBrandRepository(tenantDbScope),
     configuration: new PostgresConfigurationRepository(tenantDbScope),
-    schedule: new PostgresScheduleRepository(tenantDbScope, tenantId),
-    workspaceConfig: new PostgresWorkspaceConfigRepository(tenantDbScope, tenantId),
+    schedule: new PostgresScheduleRepository(tenantDbScope),
+    workspaceConfig: new PostgresWorkspaceConfigRepository(tenantDbScope),
   };
 }

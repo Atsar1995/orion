@@ -1,7 +1,6 @@
 import type { ScheduleRepository } from "@/lib/aurora/admin/repositories/TenantRepository";
-import type { AuroraTenantDbScope } from "@/lib/aurora/persistence/AuroraTenantDbScope";
+import { assertAuroraTenantDbScopeId, type AuroraTenantDbScope } from "@/lib/aurora/persistence/AuroraTenantDbScope";
 import {
-  assertRepositoryTenantParam,
   toIsoString,
 } from "@/lib/aurora/persistence/postgresRepositoryUtils";
 import { AURORA_ERR_0404, AuroraError } from "@/lib/aurora/errors/AuroraError";
@@ -33,15 +32,12 @@ function mapScheduleRow(row: ScheduleRow): ScheduleEntryRecord {
  * PostgreSQL schedule repository with tenant scope + RLS (Phase 2C).
  */
 export class PostgresScheduleRepository implements ScheduleRepository {
-  constructor(
-    private readonly dbScope: AuroraTenantDbScope,
-    private readonly scopeTenantId: string,
-  ) {}
+  constructor(private readonly dbScope: AuroraTenantDbScope) {}
 
   async create(entry: ScheduleEntryRecord): Promise<ScheduleEntryRecord> {
-    assertRepositoryTenantParam(this.scopeTenantId, entry.tenantId);
+    assertAuroraTenantDbScopeId(entry.tenantId);
 
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    return this.dbScope.run(entry.tenantId, async (client) => {
       const result = await client.query<ScheduleRow>(
         `INSERT INTO aurora_schedule
           (id, tenant_id, brand_id, scheduled_at, payload, status)
@@ -65,9 +61,9 @@ export class PostgresScheduleRepository implements ScheduleRepository {
     tenantId: string,
     scheduleId: string,
   ): Promise<ScheduleEntryRecord | null> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
+    assertAuroraTenantDbScopeId(tenantId);
 
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    return this.dbScope.run(tenantId, async (client) => {
       const result = await client.query<ScheduleRow>(
         `SELECT id, tenant_id, brand_id, scheduled_at, payload, status, created_at
          FROM aurora_schedule
@@ -82,9 +78,9 @@ export class PostgresScheduleRepository implements ScheduleRepository {
   async listPending(
     tenantId: string,
   ): Promise<readonly ScheduleEntryRecord[]> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
+    assertAuroraTenantDbScopeId(tenantId);
 
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    return this.dbScope.run(tenantId, async (client) => {
       const result = await client.query<ScheduleRow>(
         `SELECT id, tenant_id, brand_id, scheduled_at, payload, status, created_at
          FROM aurora_schedule
@@ -100,9 +96,9 @@ export class PostgresScheduleRepository implements ScheduleRepository {
   async update(
     entry: ScheduleEntryRecord,
   ): Promise<ScheduleEntryRecord> {
-    assertRepositoryTenantParam(this.scopeTenantId, entry.tenantId);
+    assertAuroraTenantDbScopeId(entry.tenantId);
 
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    return this.dbScope.run(entry.tenantId, async (client) => {
       const result = await client.query<ScheduleRow>(
         `UPDATE aurora_schedule
          SET brand_id = $3,
@@ -130,9 +126,9 @@ export class PostgresScheduleRepository implements ScheduleRepository {
   }
 
   async delete(tenantId: string, scheduleId: string): Promise<void> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
+    assertAuroraTenantDbScopeId(tenantId);
 
-    await this.dbScope.run(this.scopeTenantId, async (client) => {
+    await this.dbScope.run(tenantId, async (client) => {
       const result = await client.query(
         `DELETE FROM aurora_schedule
          WHERE tenant_id = $1 AND id = $2`,

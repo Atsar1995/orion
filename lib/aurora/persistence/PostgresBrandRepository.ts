@@ -1,8 +1,6 @@
 import type { BrandRepository } from "@/lib/aurora/admin/repositories/TenantRepository";
-import type { AuroraTenantDbScope } from "@/lib/aurora/persistence/AuroraTenantDbScope";
-import {
-  assertRepositoryTenantParam,
-  mapNotFound,
+import { assertAuroraTenantDbScopeId, type AuroraTenantDbScope } from "@/lib/aurora/persistence/AuroraTenantDbScope";
+import {mapNotFound,
   toIsoString,
 } from "@/lib/aurora/persistence/postgresRepositoryUtils";
 import { AURORA_ERR_0403, AuroraError } from "@/lib/aurora/errors/AuroraError";
@@ -38,14 +36,11 @@ function mapBrandRow(row: BrandRow): Brand {
 
 /** PostgreSQL brand repository with business_id and tenant RLS (WP-A002). */
 export class PostgresBrandRepository implements BrandRepository {
-  constructor(
-    private readonly dbScope: AuroraTenantDbScope,
-    private readonly scopeTenantId: string,
-  ) {}
+  constructor(private readonly dbScope: AuroraTenantDbScope) {}
 
   async create(brandId: string, input: CreateBrandInput): Promise<Brand> {
-    assertRepositoryTenantParam(this.scopeTenantId, input.tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(input.tenantId);
+    return this.dbScope.run(input.tenantId, async (client) => {
       const business = await client.query<{ id: string; status: string }>(
         `SELECT id, status
          FROM aurora_business_entity
@@ -79,8 +74,8 @@ export class PostgresBrandRepository implements BrandRepository {
   }
 
   async getById(tenantId: string, brandId: string): Promise<Brand | null> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(tenantId);
+    return this.dbScope.run(tenantId, async (client) => {
       const result = await client.query<BrandRow>(
         `SELECT id, tenant_id, business_id, name, slug, locale, timezone, status, created_at, updated_at
          FROM aurora_brand
@@ -92,8 +87,8 @@ export class PostgresBrandRepository implements BrandRepository {
   }
 
   async update(tenantId: string, brandId: string, input: UpdateBrandInput): Promise<Brand> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(tenantId);
+    return this.dbScope.run(tenantId, async (client) => {
       const existing = await client.query<{ business_id: string }>(
         `SELECT business_id FROM aurora_brand WHERE tenant_id = $1 AND id = $2`,
         [tenantId, brandId],
@@ -136,8 +131,8 @@ export class PostgresBrandRepository implements BrandRepository {
   }
 
   async listByTenant(tenantId: string): Promise<readonly Brand[]> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    return this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(tenantId);
+    return this.dbScope.run(tenantId, async (client) => {
       const result = await client.query<BrandRow>(
         `SELECT id, tenant_id, business_id, name, slug, locale, timezone, status, created_at, updated_at
          FROM aurora_brand
@@ -150,8 +145,8 @@ export class PostgresBrandRepository implements BrandRepository {
   }
 
   async delete(tenantId: string, brandId: string): Promise<void> {
-    assertRepositoryTenantParam(this.scopeTenantId, tenantId);
-    await this.dbScope.run(this.scopeTenantId, async (client) => {
+    assertAuroraTenantDbScopeId(tenantId);
+    await this.dbScope.run(tenantId, async (client) => {
       await client.query(`DELETE FROM aurora_brand WHERE tenant_id = $1 AND id = $2`, [
         tenantId,
         brandId,
