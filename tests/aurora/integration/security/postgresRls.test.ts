@@ -12,6 +12,7 @@ import {
   PostgresWorkspaceConfigRepository,
   PostgresWorkspaceConfigRepositoryUnsafe,
 } from "@/lib/aurora/persistence/PostgresWorkspaceConfigRepository";
+import { PostgresConfigurationRepository } from "@/lib/aurora/persistence/PostgresConfigurationRepository";
 import {
   AURORA_LIVE_POSTGRES,
   cleanupPostgresTestHarness,
@@ -74,6 +75,67 @@ describe.skipIf(!AURORA_LIVE_POSTGRES)("PostgreSQL Aurora RLS security", () => {
     await expect(
       brandRepo.update(harness!.tenantAId, harness!.brandBId, { name: "Hacked Brand" }),
     ).rejects.toMatchObject({ code: "AURORA_ERR_0404" });
+  });
+
+  it("reads tenant configuration", async () => {
+    const configurationRepo = new PostgresConfigurationRepository(harness!.tenantDbScope);
+
+    const config = await configurationRepo.get(harness!.tenantAId);
+
+    expect(config).toMatchObject({
+      tenantId: harness!.tenantAId,
+      tier: "starter",
+      approvalPolicy: {},
+      tokenBudget: 10_000,
+      featureOverrides: {},
+      limits: {},
+    });
+  });
+
+  it("blocks cross-tenant configuration access", async () => {
+    const configurationRepo = new PostgresConfigurationRepository(harness!.tenantDbScope);
+
+    const foreign = await configurationRepo.get(harness!.tenantBId);
+
+    expect(foreign).toBeNull();
+  });
+
+  it("upserts tenant configuration", async () => {
+    const configurationRepo = new PostgresConfigurationRepository(harness!.tenantDbScope);
+
+    const updated = await configurationRepo.upsert({
+      tenantId: harness!.tenantAId,
+      tier: "professional",
+      approvalPolicy: {
+        requireApproval: true,
+      },
+      tokenBudget: 50_000,
+      featureOverrides: {
+        testFeature: true,
+      },
+      limits: {
+        maxBrands: 5,
+        maxStorageMb: 1024,
+        dailyAgentTokens: 50_000,
+      },
+    });
+
+    expect(updated).toMatchObject({
+      tenantId: harness!.tenantAId,
+      tier: "professional",
+      approvalPolicy: {
+        requireApproval: true,
+      },
+      tokenBudget: 50_000,
+      featureOverrides: {
+        testFeature: true,
+      },
+      limits: {
+        maxBrands: 5,
+        maxStorageMb: 1024,
+        dailyAgentTokens: 50_000,
+      },
+    });
   });
 
   it("blocks cross-tenant workspace config access", async () => {
