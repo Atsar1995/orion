@@ -22,19 +22,62 @@ type HcmEventInput =
   | PublishHcmTalentEventInput;
 
 function buildHcmPayload(
+  organizationId: string,
   eventType: string,
+  entityId: string,
   employeeId?: string,
   extra?: Readonly<Record<string, string>>,
 ): Readonly<Record<string, string>> {
   const payload: Record<string, string> = {
     workspace: "hcm",
     hcmEventType: eventType,
+    idempotencyKey: [
+      organizationId,
+      HCM_IIL_SERVICE_ID,
+      eventType,
+      entityId,
+      "1",
+    ].join(":"),
     ...(extra ?? {}),
   };
+
   if (employeeId) {
     payload.employeeId = employeeId;
   }
+
   return payload;
+}
+
+/**
+ * Builds a deterministic idempotency key for HCM time-domain events.
+ *
+ * The generic IIL fallback is intentionally not changed. Roster publishing
+ * can legitimately emit multiple events with the same roster entityId, so
+ * ShiftAssigned/ShiftChanged need assignment-level identity.
+ */
+function buildHcmTimeIdempotencyKey(
+  organizationId: string,
+  eventType: PublishHcmTimeEventInput["eventType"],
+  entityId: string,
+  employeeId?: string,
+  payload?: Readonly<Record<string, string>>,
+): string {
+  const discriminator =
+    eventType === "ShiftAssigned" || eventType === "ShiftChanged"
+      ? [
+          employeeId ?? "",
+          payload?.shiftId ?? "",
+          payload?.rosterDate ?? "",
+        ].join(":")
+      : employeeId ?? "1";
+
+  return [
+    organizationId,
+    HCM_IIL_SERVICE_ID,
+    eventType,
+    entityId,
+    discriminator,
+  ].join(":");
 }
 
 /** Publishes HCM domain events via IIL (P-012.x). */
@@ -54,7 +97,7 @@ export function publishHcmEvent(input: HcmEventInput, context: ServiceContext): 
       entityId,
       actorId: context.userId ?? "system",
       correlationId: input.correlationId ?? entityId,
-      payload: buildHcmPayload(input.eventType, employeeId, input.payload),
+      payload: buildHcmPayload(context.organizationId, input.eventType, entityId, employeeId, input.payload),
     },
     context,
   );
@@ -74,7 +117,16 @@ export function publishHcmTimeEvent(input: PublishHcmTimeEventInput, context: Se
       entityId,
       actorId: context.userId ?? "system",
       correlationId: input.correlationId ?? entityId,
-      payload: buildHcmPayload(input.eventType, input.employeeId, input.payload),
+      payload: {
+        ...buildHcmPayload(context.organizationId, input.eventType, entityId, input.employeeId, input.payload),
+        idempotencyKey: buildHcmTimeIdempotencyKey(
+          context.organizationId,
+          input.eventType,
+          entityId,
+          input.employeeId,
+          input.payload,
+        ),
+      },
     },
     context,
   );
@@ -95,7 +147,7 @@ export function publishHcmPayrollEvent(
       entityId: input.entityId,
       actorId: context.userId ?? "system",
       correlationId: input.correlationId ?? input.entityId,
-      payload: buildHcmPayload(input.eventType, input.employeeId, input.payload),
+      payload: buildHcmPayload(context.organizationId, input.eventType, input.entityId, input.employeeId, input.payload),
     },
     context,
   );
@@ -116,7 +168,7 @@ export function publishHcmTalentEvent(
       entityId: input.entityId,
       actorId: context.userId ?? "system",
       correlationId: input.correlationId ?? input.entityId,
-      payload: buildHcmPayload(input.eventType, input.employeeId, input.payload),
+      payload: buildHcmPayload(context.organizationId, input.eventType, input.entityId, input.employeeId, input.payload),
     },
     context,
   );
@@ -137,7 +189,7 @@ export function publishHcmRecruitmentEvent(
       entityId: input.entityId,
       actorId: context.userId ?? "system",
       correlationId: input.correlationId ?? input.entityId,
-      payload: buildHcmPayload(input.eventType, undefined, input.payload),
+      payload: buildHcmPayload(context.organizationId, input.eventType, input.entityId, undefined, input.payload),
     },
     context,
   );
@@ -158,7 +210,7 @@ export function publishHcmOnboardingEvent(
       entityId: input.entityId,
       actorId: context.userId ?? "system",
       correlationId: input.correlationId ?? input.entityId,
-      payload: buildHcmPayload(input.eventType, input.employeeId, {
+      payload: buildHcmPayload(context.organizationId, input.eventType, input.entityId, input.employeeId, {
         ...(input.payload ?? {}),
         ...(input.candidateId ? { candidateId: input.candidateId } : {}),
       }),

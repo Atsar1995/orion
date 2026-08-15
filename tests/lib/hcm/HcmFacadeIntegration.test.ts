@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import {
   HCM_ALL_CAPABILITIES,
   HCM_ALL_MISSIONS,
@@ -21,6 +21,12 @@ const CONTEXT: ServiceContext = {
 };
 
 describe("HCM Facade Integration (S-002.5)", () => {
+  beforeEach(async () => {
+    const { resetPlatformIntegrationStateForTests } = await import(
+      "@/tests/helpers/resetPlatformIntegrationState"
+    );
+    resetPlatformIntegrationStateForTests();
+  });
   it("reports accurate domain status for all missions", () => {
     const status = hcmFacade.getDomainStatus();
 
