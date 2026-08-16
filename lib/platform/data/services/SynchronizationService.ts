@@ -1,5 +1,6 @@
 import type { EnqueueSyncInput, SyncJobRecord } from "@/types/enterprise-data-synchronization";
 import type { SynchronizationRepository } from "@/lib/platform/data/repositories/SynchronizationRepository";
+import { createSyncJobId } from "@/lib/platform/data/repositories/InMemorySynchronizationRepository";
 import { SynchronizationEngine } from "@/lib/platform/data/synchronization/SynchronizationEngine";
 import { publishSynchronizationEvent } from "@/lib/platform/data/synchronization-events";
 import type { ServiceContext } from "@/types/services";
@@ -16,10 +17,12 @@ export class SynchronizationService {
   }
 
   enqueue(input: EnqueueSyncInput, context: ServiceContext): SyncJobRecord {
+    const jobId = createSyncJobId();
+
     publishSynchronizationEvent(
       {
         eventType: "SynchronizationStarted",
-        jobId: "pending",
+        jobId,
         entityType: input.entityType,
         entityId: input.entityId,
         correlationId: input.correlationId,
@@ -28,8 +31,11 @@ export class SynchronizationService {
       context,
     );
 
-    const result = this.engine.execute(input, context, (jobId, action, detail) =>
-      this.auditRecorder(jobId, action, detail, context),
+    const result = this.engine.execute(
+      input,
+      context,
+      (jobId, action, detail) => this.auditRecorder(jobId, action, detail, context),
+      { jobId },
     );
 
     publishSynchronizationEvent(

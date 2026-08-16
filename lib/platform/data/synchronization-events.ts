@@ -26,8 +26,10 @@ export function publishSynchronizationEvent(
       correlationId: input.correlationId ?? input.jobId,
       payload: {
         workspace: "platform",
+        canonicalEventType: input.eventType,
         synchronizationEventType: input.eventType,
         ...(input.payload ?? {}),
+        idempotencyKey: `synchronization:${input.eventType}:${input.jobId}`,
       },
     },
     context,

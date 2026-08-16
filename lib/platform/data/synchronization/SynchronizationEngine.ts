@@ -25,6 +25,10 @@ export type SyncPipelineResult = {
     | "SynchronizationRetried";
 };
 
+export type SynchronizationExecuteOptions = {
+  readonly jobId?: string;
+};
+
 /** Synchronization pipeline engine (Mission P-011.5). */
 export class SynchronizationEngine {
   constructor(private readonly repository: SynchronizationRepository) {}
@@ -33,6 +37,7 @@ export class SynchronizationEngine {
     input: EnqueueSyncInput,
     context: ServiceContext,
     auditFn: (jobId: string, action: string, detail: string) => void,
+    options?: SynchronizationExecuteOptions,
   ): SyncPipelineResult {
     const errors = synchronizationRulesEngine.validateEnqueue(input);
     if (errors.length > 0) throw new Error(errors[0].code);
@@ -44,7 +49,7 @@ export class SynchronizationEngine {
     const correlationId = input.correlationId ?? `corr-${randomUUID()}`;
 
     let job: SyncJobRecord = {
-      id: createSyncJobId(),
+      id: options?.jobId ?? createSyncJobId(),
       organizationId: context.organizationId,
       syncType: input.syncType,
       changeEventType: input.changeEventType,

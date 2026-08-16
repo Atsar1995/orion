@@ -23,6 +23,7 @@ export function publishMasterDataEvent(
       correlationId: input.correlationId ?? input.entityId,
       payload: {
         workspace: "platform",
+        canonicalEventType: input.eventType,
         masterDataEventType: input.eventType,
         ...(input.payload ?? {}),
       },
