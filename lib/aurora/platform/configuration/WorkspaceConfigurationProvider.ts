@@ -8,7 +8,7 @@ import type { WorkspaceConfigRepository } from "@/lib/aurora/admin/repositories/
 export class WorkspaceConfigurationProvider
   implements ConfigurationProvider
 {
-  readonly priority = 200;
+  readonly priority = 500;
   readonly scope = "workspace" as const;
 
   constructor(

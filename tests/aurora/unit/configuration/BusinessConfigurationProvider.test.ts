@@ -128,13 +128,13 @@ describe("BusinessConfigurationProvider", () => {
     ).toBeUndefined();
   });
 
-  it("has business scope and priority 400", () => {
+  it("has business scope and priority 250", () => {
     const provider = new BusinessConfigurationProvider(
       createRepository(null),
     );
 
     expect(provider.scope).toBe("business");
-    expect(provider.priority).toBe(400);
+    expect(provider.priority).toBe(250);
   });
 
   it("propagates repository failures", async () => {

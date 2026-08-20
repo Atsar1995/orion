@@ -8,7 +8,7 @@ import type { BusinessEntityRepository } from "@/lib/aurora/admin/repositories/B
 export class BusinessConfigurationProvider
   implements ConfigurationProvider
 {
-  readonly priority = 400;
+  readonly priority = 250;
   readonly scope = "business" as const;
 
   constructor(

@@ -113,12 +113,12 @@ describe("TenantConfigurationProvider", () => {
     ).toBeUndefined();
   });
 
-  it("has tenant scope and priority 500", () => {
+  it("has tenant scope and priority 200", () => {
     const repository = createRepository(null);
     const provider = new TenantConfigurationProvider(repository);
 
     expect(provider.scope).toBe("tenant");
-    expect(provider.priority).toBe(500);
+    expect(provider.priority).toBe(200);
   });
 
   it("propagates repository failures", async () => {

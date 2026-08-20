@@ -124,7 +124,7 @@ describe("WorkspaceConfigurationProvider", () => {
     ).resolves.toBeUndefined();
   });
 
-  it("has workspace scope and priority 200", () => {
+  it("has workspace scope and priority 500", () => {
     const repository = createRepository(
       vi.fn(async () => null),
     );
@@ -132,7 +132,7 @@ describe("WorkspaceConfigurationProvider", () => {
     const provider = new WorkspaceConfigurationProvider(repository);
 
     expect(provider.scope).toBe("workspace");
-    expect(provider.priority).toBe(200);
+    expect(provider.priority).toBe(500);
   });
 
   it("propagates repository failures", async () => {

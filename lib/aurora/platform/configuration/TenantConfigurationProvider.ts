@@ -8,7 +8,7 @@ import type { ConfigurationRepository } from "@/lib/aurora/admin/repositories/Te
 export class TenantConfigurationProvider
   implements ConfigurationProvider
 {
-  readonly priority = 500;
+  readonly priority = 200;
   readonly scope = "tenant" as const;
 
   constructor(
