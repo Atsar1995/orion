@@ -27,7 +27,6 @@ import {
   BRIEF_SECTION_SCROLL_MT_CLASS,
   WORKSPACE_GRID_2_COL,
   WORKSPACE_PAGE_CLASS,
-  WORKSPACE_SECTION_CLASS,
 } from "@/lib/constants";
 import type { BriefView } from "@/types/executive";
 import type { DecisionBriefIntelligence } from "@/types/decisions";
@@ -56,13 +55,14 @@ export function BriefPageContent({
     <div className={`${WORKSPACE_PAGE_CLASS} orion-scroll-smooth`}>
       <BriefSkipToRecommendation href={skipTarget} />
       <BriefKeyboardShortcuts featuredActionHref={featuredRecommendation?.href} />
-      <BriefLayout>
+      <BriefLayout className="space-y-4">
         <BriefQuickNav />
 
         <ExecutiveGreeting
           greeting={brief.greeting}
           lastSyncedAt={brief.lastSyncedAt}
           showSyncStatus={false}
+          compact
         />
 
         <BriefStatusBanner
@@ -84,9 +84,9 @@ export function BriefPageContent({
           />
         ) : null}
 
-        <section aria-label="Executive Brief" className={WORKSPACE_SECTION_CLASS}>
-          <div id="brief-overview" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-6`}>
-            <div className={`${WORKSPACE_GRID_2_COL} items-start`}>
+        <section aria-label="Executive Brief" className="space-y-4">
+          <div id="brief-overview" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-4`}>
+            <div className={`${WORKSPACE_GRID_2_COL} items-start gap-3`}>
               <BriefBusinessHealthSection health={brief.businessHealth} />
               <CriticalAlertsSection alerts={brief.criticalAlerts} />
             </div>
@@ -96,10 +96,7 @@ export function BriefPageContent({
                 id="brief-top-rec-heading"
                 className={BRIEF_SECTION_SCROLL_MT_CLASS}
               >
-                <BriefSection
-                  title="Recommendations"
-                  subtitle="Evidence-backed recommendations with confidence, value, and risk"
-                >
+                <BriefSection title="Recommendations" className="space-y-2">
                   <ExecutiveRecommendationCard
                     recommendation={featuredRecommendation}
                     featured
