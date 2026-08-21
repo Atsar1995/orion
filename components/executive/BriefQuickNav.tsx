@@ -17,7 +17,7 @@ export function BriefQuickNav({ className }: { className?: string }) {
     <nav
       aria-label="Brief sections"
       className={cn(
-        "sticky top-[var(--orion-z-header)] z-10 -mx-1 border-b border-orion-border/60 bg-orion-navy/80 px-1 py-2 backdrop-blur-md",
+        "sticky top-[var(--orion-executive-header-height)] z-10 min-h-[var(--orion-brief-quick-nav-height)] -mx-1 border-b border-orion-border/60 bg-orion-navy/80 px-1 py-2 backdrop-blur-md",
         className,
       )}
     >

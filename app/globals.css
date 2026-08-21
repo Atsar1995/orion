@@ -35,6 +35,11 @@
   --orion-space-12: 48px;
   --orion-space-16: 64px;
 
+  /* Platform chrome dimensions (ExecutiveHeader: py-3 + h-10 control row) */
+  --orion-executive-header-height: 4.5rem;
+  /* BriefQuickNav: py-2 + xs pill link row + border */
+  --orion-brief-quick-nav-height: 2.8125rem;
+
   /* Border radius */
   --orion-radius-sm: 0.5rem;
   --orion-radius-md: 0.75rem;

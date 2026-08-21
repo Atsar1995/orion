@@ -3,7 +3,7 @@ import { HospitalityHealthBriefSection } from "@/components/hospitality/Hospital
 import { OrganizationHealthBriefSection } from "@/components/organization/OrganizationHealthBriefSection";
 import { AiExecutiveSummaryCard } from "@/components/executive/AiExecutiveSummary";
 import { BriefAdditionalRecommendations } from "@/components/executive/BriefAdditionalRecommendations";
-import { BriefBusinessHealthSection } from "@/components/executive/BriefBusinessHealthSection";
+import { BriefBusinessHealthSection, BriefBusinessHealthRiskOpportunitiesSection } from "@/components/executive/BriefBusinessHealthSection";
 import { BriefEndSummary } from "@/components/executive/BriefEndSummary";
 import { BriefKeyboardShortcuts } from "@/components/executive/BriefKeyboardShortcuts";
 import { BriefLayout } from "@/components/executive/BriefLayout";
@@ -23,6 +23,7 @@ import { OvernightChangesStrip } from "@/components/executive/OvernightChangesSt
 import { DecisionIntelligencePanel } from "@/components/decisions/DecisionIntelligencePanel";
 import { DataFreshnessIndicator } from "@/components/data/DataFreshnessIndicator";
 import {
+  BRIEF_SECTION_SCROLL_MT_CLASS,
   WORKSPACE_GRID_2_COL,
   WORKSPACE_PAGE_CLASS,
   WORKSPACE_SECTION_CLASS,
@@ -53,9 +54,9 @@ export function BriefPageContent({
     <div className={`${WORKSPACE_PAGE_CLASS} orion-scroll-smooth`}>
       <BriefKeyboardShortcuts featuredActionHref={featuredRecommendation?.href} />
       <BriefLayout>
-        <ExecutiveGreeting greeting={brief.greeting} lastSyncedAt={brief.lastSyncedAt} />
-
         <BriefQuickNav />
+
+        <ExecutiveGreeting greeting={brief.greeting} lastSyncedAt={brief.lastSyncedAt} />
 
         <BriefStatusBanner
           lifecycle={brief.lifecycle}
@@ -77,34 +78,11 @@ export function BriefPageContent({
         ) : null}
 
         <section aria-label="Executive Brief" className={WORKSPACE_SECTION_CLASS}>
-          <div id="brief-overview" className="scroll-mt-28 space-y-6">
-            <MorningBriefSummarySection summary={brief.morningSummary} />
-
-            <OvernightChangesStrip changes={brief.overnightChanges} />
-
-            <div className={WORKSPACE_GRID_2_COL}>
+          <div id="brief-overview" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-6`}>
+            <div className={`${WORKSPACE_GRID_2_COL} items-start`}>
               <BriefBusinessHealthSection health={brief.businessHealth} />
               <CriticalAlertsSection alerts={brief.criticalAlerts} />
             </div>
-
-            {brief.organizationHealth ? (
-              <OrganizationHealthBriefSection health={brief.organizationHealth} />
-            ) : null}
-
-            {brief.hospitalityHealth ? (
-              <HospitalityHealthBriefSection health={brief.hospitalityHealth} />
-            ) : null}
-
-            {brief.intelligenceFeed && brief.intelligenceFeed.length > 0 ? (
-              <IntelligenceFeedSection items={brief.intelligenceFeed} />
-            ) : null}
-          </div>
-
-          <div
-            id="brief-attention"
-            className="scroll-mt-28 space-y-6 rounded-orion-lg border border-orion-gold/12 bg-gradient-to-br from-orion-gold/[0.04] via-orion-surface/20 to-transparent p-4 md:p-5"
-          >
-            <BriefPrioritiesSection priorities={brief.priorityDecisions} />
 
             {featuredRecommendation ? (
               <BriefSection
@@ -119,12 +97,45 @@ export function BriefPageContent({
               </BriefSection>
             ) : null}
 
-            <div id="brief-actions" className="scroll-mt-28">
+            <MorningBriefSummarySection summary={brief.morningSummary} />
+
+            <BriefBusinessHealthRiskOpportunitiesSection health={brief.businessHealth} />
+
+            <OvernightChangesStrip changes={brief.overnightChanges} />
+
+            {brief.organizationHealth && brief.hospitalityHealth ? (
+              <div className={`${WORKSPACE_GRID_2_COL} items-start`}>
+                <OrganizationHealthBriefSection health={brief.organizationHealth} />
+                <HospitalityHealthBriefSection health={brief.hospitalityHealth} />
+              </div>
+            ) : (
+              <>
+                {brief.organizationHealth ? (
+                  <OrganizationHealthBriefSection health={brief.organizationHealth} />
+                ) : null}
+                {brief.hospitalityHealth ? (
+                  <HospitalityHealthBriefSection health={brief.hospitalityHealth} />
+                ) : null}
+              </>
+            )}
+
+            {brief.intelligenceFeed && brief.intelligenceFeed.length > 0 ? (
+              <IntelligenceFeedSection items={brief.intelligenceFeed} />
+            ) : null}
+          </div>
+
+          <div
+            id="brief-attention"
+            className={`${BRIEF_SECTION_SCROLL_MT_CLASS} mt-8 space-y-6 rounded-orion-lg border border-orion-gold/12 bg-gradient-to-br from-orion-gold/[0.04] via-orion-surface/20 to-transparent p-4 md:p-5`}
+          >
+            <BriefPrioritiesSection priorities={brief.priorityDecisions} />
+
+            <div id="brief-actions">
               <BriefAdditionalRecommendations recommendations={additionalRecommendations} />
             </div>
           </div>
 
-          <div id="brief-decisions-block" className="scroll-mt-28 space-y-6">
+          <div id="brief-decisions-block" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-6`}>
             <ExecutiveDecisionsSection decisions={brief.executiveDecisions} />
 
             {decisionIntelligence ? (
@@ -132,13 +143,13 @@ export function BriefPageContent({
             ) : null}
           </div>
 
-          <div id="brief-intelligence" className="scroll-mt-28 space-y-6">
+          <div id="brief-intelligence" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-6`}>
             <CrossWorkspaceIntelligenceSection signals={brief.crossWorkspaceSignals} />
             <BusinessTrendsSection trends={brief.businessTrends} />
             <ExecutiveMemorySection items={brief.executiveMemory} />
           </div>
 
-          <div id="brief-context" className="scroll-mt-28 space-y-6">
+          <div id="brief-context" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-6`}>
             <AiExecutiveSummaryCard summary={brief.aiSummary} />
             <BriefEndSummary summary={brief.endSummary} />
           </div>

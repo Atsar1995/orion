@@ -37,7 +37,7 @@ export function ExecutiveHeader({ breadcrumbs = [], className }: ExecutiveHeader
   return (
     <header
       className={cn(
-        "sticky top-0 z-[var(--orion-z-header)] border-b border-orion-border bg-orion-navy/85 px-4 py-3 backdrop-blur-xl md:px-8",
+        "sticky top-0 z-[var(--orion-z-header)] min-h-[var(--orion-executive-header-height)] border-b border-orion-border bg-orion-navy/85 px-4 py-3 backdrop-blur-xl md:px-8",
         className,
       )}
     >

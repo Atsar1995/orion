@@ -62,6 +62,10 @@ export const ORION_EXECUTIVE_KICKER_CLASS =
 export const ORION_FOCUS_RING_CLASS =
   "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orion-gold/50";
 
+/** Scroll margin for brief in-page anchors clearing ExecutiveHeader + BriefQuickNav. */
+export const BRIEF_SECTION_SCROLL_MT_CLASS =
+  "scroll-mt-[calc(var(--orion-executive-header-height)+var(--orion-brief-quick-nav-height))]";
+
 /** Calm secondary navigation link. */
 export const ORION_SECONDARY_LINK_CLASS =
   "text-xs font-medium text-orion-gold/80 transition-colors hover:text-orion-gold";
