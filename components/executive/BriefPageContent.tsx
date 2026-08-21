@@ -9,6 +9,7 @@ import { BriefKeyboardShortcuts } from "@/components/executive/BriefKeyboardShor
 import { BriefLayout } from "@/components/executive/BriefLayout";
 import { BriefPrioritiesSection } from "@/components/executive/BriefPrioritiesSection";
 import { BriefQuickNav } from "@/components/executive/BriefQuickNav";
+import { BriefSkipToRecommendation } from "@/components/executive/BriefSkipToRecommendation";
 import { BriefStatusBanner } from "@/components/executive/BriefStatusBanner";
 import { BriefSection } from "@/components/executive/BriefSection";
 import { BusinessTrendsSection } from "@/components/executive/BusinessTrendsSection";
@@ -49,9 +50,11 @@ export function BriefPageContent({
   decisionIntelligence,
 }: BriefPageContentProps) {
   const [featuredRecommendation, ...additionalRecommendations] = brief.recommendations;
+  const skipTarget = featuredRecommendation ? "#brief-top-rec-heading" : "#brief-overview";
 
   return (
     <div className={`${WORKSPACE_PAGE_CLASS} orion-scroll-smooth`}>
+      <BriefSkipToRecommendation href={skipTarget} />
       <BriefKeyboardShortcuts featuredActionHref={featuredRecommendation?.href} />
       <BriefLayout>
         <BriefQuickNav />
@@ -89,16 +92,20 @@ export function BriefPageContent({
             </div>
 
             {featuredRecommendation ? (
-              <BriefSection
+              <div
                 id="brief-top-rec-heading"
-                title="Recommendations"
-                subtitle="Evidence-backed recommendations with confidence, value, and risk"
+                className={BRIEF_SECTION_SCROLL_MT_CLASS}
               >
-                <ExecutiveRecommendationCard
-                  recommendation={featuredRecommendation}
-                  featured
-                />
-              </BriefSection>
+                <BriefSection
+                  title="Recommendations"
+                  subtitle="Evidence-backed recommendations with confidence, value, and risk"
+                >
+                  <ExecutiveRecommendationCard
+                    recommendation={featuredRecommendation}
+                    featured
+                  />
+                </BriefSection>
+              </div>
             ) : null}
 
             <MorningBriefSummarySection summary={brief.morningSummary} />
