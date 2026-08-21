@@ -39,6 +39,10 @@
   --orion-executive-header-height: 4.5rem;
   /* BriefQuickNav: py-2 + xs pill link row + border */
   --orion-brief-quick-nav-height: 2.8125rem;
+  /* BriefMobileHealthMiniBar: py-2 + compact health row */
+  --orion-brief-mobile-health-mini-bar-height: 2.75rem;
+  /* BriefMobilePinnedRecommendation: measured at runtime when pinned (P5.3) */
+  --orion-brief-mobile-pinned-rec-height: 0px;
 
   /* Border radius */
   --orion-radius-sm: 0.5rem;
@@ -140,5 +144,16 @@ input[type="search"]::-webkit-search-cancel-button {
 @media (prefers-reduced-motion: reduce) {
   .orion-scroll-smooth {
     scroll-behavior: auto;
+  }
+}
+
+/* Executive Brief mobile anchor offsets (P5.2 / P5.3) */
+@media (max-width: 767px) {
+  [data-brief-pinned-rec="true"] .brief-section-scroll-mt-mobile-pinned-aware {
+    scroll-margin-top: calc(
+      var(--orion-executive-header-height) + var(--orion-brief-quick-nav-height) +
+        var(--orion-brief-mobile-health-mini-bar-height) +
+        var(--orion-brief-mobile-pinned-rec-height)
+    );
   }
 }

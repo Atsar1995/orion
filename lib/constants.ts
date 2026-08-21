@@ -66,6 +66,17 @@ export const ORION_FOCUS_RING_CLASS =
 export const BRIEF_SECTION_SCROLL_MT_CLASS =
   "scroll-mt-[calc(var(--orion-executive-header-height)+var(--orion-brief-quick-nav-height))]";
 
+/** Mobile scroll margin also clearing BriefMobileHealthMiniBar (<768px). */
+export const BRIEF_SECTION_SCROLL_MT_MOBILE_CLASS =
+  "max-md:scroll-mt-[calc(var(--orion-executive-header-height)+var(--orion-brief-quick-nav-height)+var(--orion-brief-mobile-health-mini-bar-height))]";
+
+/** Brief page root element id for pinned-rec scroll-margin coordination (P5.3). */
+export const BRIEF_PAGE_ROOT_ID = "brief-page-root";
+
+/** Mobile scroll margin extension when pinned rec is active (P5.3). */
+export const BRIEF_SECTION_SCROLL_MT_MOBILE_PINNED_AWARE_CLASS =
+  "brief-section-scroll-mt-mobile-pinned-aware";
+
 /** Calm secondary navigation link. */
 export const ORION_SECONDARY_LINK_CLASS =
   "text-xs font-medium text-orion-gold/80 transition-colors hover:text-orion-gold";

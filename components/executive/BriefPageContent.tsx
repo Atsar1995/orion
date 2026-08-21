@@ -7,6 +7,8 @@ import { BriefBusinessHealthSection, BriefBusinessHealthRiskOpportunitiesSection
 import { BriefEndSummary } from "@/components/executive/BriefEndSummary";
 import { BriefKeyboardShortcuts } from "@/components/executive/BriefKeyboardShortcuts";
 import { BriefLayout } from "@/components/executive/BriefLayout";
+import { BriefMobileHealthMiniBar } from "@/components/executive/BriefMobileHealthMiniBar";
+import { BriefMobilePinnedRecommendation } from "@/components/executive/BriefMobilePinnedRecommendation";
 import { BriefPrioritiesSection } from "@/components/executive/BriefPrioritiesSection";
 import { BriefQuickNav } from "@/components/executive/BriefQuickNav";
 import { BriefSkipToRecommendation } from "@/components/executive/BriefSkipToRecommendation";
@@ -24,7 +26,10 @@ import { OvernightChangesStrip } from "@/components/executive/OvernightChangesSt
 import { DecisionIntelligencePanel } from "@/components/decisions/DecisionIntelligencePanel";
 import { DataFreshnessIndicator } from "@/components/data/DataFreshnessIndicator";
 import {
+  BRIEF_PAGE_ROOT_ID,
   BRIEF_SECTION_SCROLL_MT_CLASS,
+  BRIEF_SECTION_SCROLL_MT_MOBILE_CLASS,
+  BRIEF_SECTION_SCROLL_MT_MOBILE_PINNED_AWARE_CLASS,
   WORKSPACE_GRID_2_COL,
   WORKSPACE_PAGE_CLASS,
 } from "@/lib/constants";
@@ -52,7 +57,7 @@ export function BriefPageContent({
   const skipTarget = featuredRecommendation ? "#brief-top-rec-heading" : "#brief-overview";
 
   return (
-    <div className={`${WORKSPACE_PAGE_CLASS} orion-scroll-smooth`}>
+    <div id={BRIEF_PAGE_ROOT_ID} className={`${WORKSPACE_PAGE_CLASS} orion-scroll-smooth`}>
       <BriefSkipToRecommendation href={skipTarget} />
       <BriefKeyboardShortcuts featuredActionHref={featuredRecommendation?.href} />
       <BriefLayout className="space-y-4">
@@ -84,8 +89,14 @@ export function BriefPageContent({
           />
         ) : null}
 
+        <BriefMobileHealthMiniBar health={brief.businessHealth} />
+
         <section aria-label="Executive Brief" className="space-y-4">
-          <div id="brief-overview" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-4`}>
+          <div
+            id="brief-overview"
+            tabIndex={-1}
+            className={`${BRIEF_SECTION_SCROLL_MT_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_CLASS} space-y-4`}
+          >
             <div className={`${WORKSPACE_GRID_2_COL} items-start gap-3`}>
               <BriefBusinessHealthSection health={brief.businessHealth} />
               <CriticalAlertsSection alerts={brief.criticalAlerts} />
@@ -94,14 +105,17 @@ export function BriefPageContent({
             {featuredRecommendation ? (
               <div
                 id="brief-top-rec-heading"
-                className={BRIEF_SECTION_SCROLL_MT_CLASS}
+                tabIndex={-1}
+                className={`${BRIEF_SECTION_SCROLL_MT_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_CLASS}`}
               >
-                <BriefSection title="Recommendations" className="space-y-2">
-                  <ExecutiveRecommendationCard
-                    recommendation={featuredRecommendation}
-                    featured
-                  />
-                </BriefSection>
+                <BriefMobilePinnedRecommendation recommendation={featuredRecommendation}>
+                  <BriefSection title="Recommendations" className="space-y-2">
+                    <ExecutiveRecommendationCard
+                      recommendation={featuredRecommendation}
+                      featured
+                    />
+                  </BriefSection>
+                </BriefMobilePinnedRecommendation>
               </div>
             ) : null}
 
@@ -134,7 +148,7 @@ export function BriefPageContent({
 
           <div
             id="brief-attention"
-            className={`${BRIEF_SECTION_SCROLL_MT_CLASS} mt-8 space-y-6 rounded-orion-lg border border-orion-gold/12 bg-gradient-to-br from-orion-gold/[0.04] via-orion-surface/20 to-transparent p-4 md:p-5`}
+            className={`${BRIEF_SECTION_SCROLL_MT_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_PINNED_AWARE_CLASS} mt-8 space-y-6 rounded-orion-lg border border-orion-gold/12 bg-gradient-to-br from-orion-gold/[0.04] via-orion-surface/20 to-transparent p-4 md:p-5`}
           >
             <BriefPrioritiesSection priorities={brief.priorityDecisions} />
 
@@ -143,7 +157,7 @@ export function BriefPageContent({
             </div>
           </div>
 
-          <div id="brief-decisions-block" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-6`}>
+          <div id="brief-decisions-block" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_PINNED_AWARE_CLASS} space-y-6`}>
             <ExecutiveDecisionsSection decisions={brief.executiveDecisions} />
 
             {decisionIntelligence ? (
@@ -151,13 +165,13 @@ export function BriefPageContent({
             ) : null}
           </div>
 
-          <div id="brief-intelligence" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-6`}>
+          <div id="brief-intelligence" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_PINNED_AWARE_CLASS} space-y-6`}>
             <CrossWorkspaceIntelligenceSection signals={brief.crossWorkspaceSignals} />
             <BusinessTrendsSection trends={brief.businessTrends} />
             <ExecutiveMemorySection items={brief.executiveMemory} />
           </div>
 
-          <div id="brief-context" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} space-y-6`}>
+          <div id="brief-context" className={`${BRIEF_SECTION_SCROLL_MT_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_CLASS} ${BRIEF_SECTION_SCROLL_MT_MOBILE_PINNED_AWARE_CLASS} space-y-6`}>
             <AiExecutiveSummaryCard summary={brief.aiSummary} />
             <BriefEndSummary summary={brief.endSummary} />
           </div>
