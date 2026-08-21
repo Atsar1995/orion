@@ -10,6 +10,7 @@ import {
 type ExecutiveGreetingProps = {
   greeting: BriefGreeting;
   lastSyncedAt: string;
+  showSyncStatus?: boolean;
 };
 
 const OPERATING_MODE_LABELS: Record<BriefGreeting["operatingMode"], string> = {
@@ -20,7 +21,11 @@ const OPERATING_MODE_LABELS: Record<BriefGreeting["operatingMode"], string> = {
 };
 
 /** Executive Brief greeting — orientation within five seconds (Mission P-002). */
-export function ExecutiveGreeting({ greeting, lastSyncedAt }: ExecutiveGreetingProps) {
+export function ExecutiveGreeting({
+  greeting,
+  lastSyncedAt,
+  showSyncStatus = true,
+}: ExecutiveGreetingProps) {
   return (
     <header className={WORKSPACE_HEADER_BLOCK_CLASS}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -48,12 +53,14 @@ export function ExecutiveGreeting({ greeting, lastSyncedAt }: ExecutiveGreetingP
             </div>
           </dl>
         </div>
-        <p
-          role="status"
-          className="shrink-0 text-xs font-light text-orion-muted sm:max-w-[11rem] sm:text-right"
-        >
-          Intelligence synced · {lastSyncedAt}
-        </p>
+        {showSyncStatus ? (
+          <p
+            role="status"
+            className="shrink-0 text-xs font-light text-orion-muted sm:max-w-[11rem] sm:text-right"
+          >
+            Intelligence synced · {lastSyncedAt}
+          </p>
+        ) : null}
       </div>
     </header>
   );

@@ -56,7 +56,11 @@ export function BriefPageContent({
       <BriefLayout>
         <BriefQuickNav />
 
-        <ExecutiveGreeting greeting={brief.greeting} lastSyncedAt={brief.lastSyncedAt} />
+        <ExecutiveGreeting
+          greeting={brief.greeting}
+          lastSyncedAt={brief.lastSyncedAt}
+          showSyncStatus={false}
+        />
 
         <BriefStatusBanner
           lifecycle={brief.lifecycle}
@@ -64,7 +68,7 @@ export function BriefPageContent({
           lastSyncedAt={brief.lastSyncedAt}
         />
 
-        {lastUpdatedAt ? (
+        {lastUpdatedAt && brief.lifecycle !== "fresh" ? (
           <DataFreshnessIndicator
             freshness={{
               generatedAt: brief.generatedAt,

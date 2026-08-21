@@ -23,15 +23,6 @@ export function MorningBriefSummarySection({ summary }: MorningBriefSummarySecti
           </p>
         </div>
 
-        <div>
-          <p className="text-[10px] font-medium tracking-wide text-orion-muted uppercase">
-            Business Health
-          </p>
-          <p className="mt-1 text-sm font-light text-orion-text/85">
-            {summary.businessHealthHeadline}
-          </p>
-        </div>
-
         {summary.criticalDecisions.length > 0 ? (
           <div>
             <p className="text-[10px] font-medium tracking-wide text-orion-muted uppercase">
