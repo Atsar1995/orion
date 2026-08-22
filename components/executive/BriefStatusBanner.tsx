@@ -5,6 +5,8 @@ type BriefStatusBannerProps = {
   lifecycle: BriefLifecycleState;
   changesSinceLastView?: number;
   lastSyncedAt: string;
+  /** Brief-only single-line layout to preserve above-the-fold space (P4.5). */
+  compact?: boolean;
 };
 
 const BANNER_COPY: Record<
@@ -34,6 +36,7 @@ export function BriefStatusBanner({
   lifecycle,
   changesSinceLastView,
   lastSyncedAt,
+  compact = false,
 }: BriefStatusBannerProps) {
   if (lifecycle === "fresh") {
     return (
@@ -50,6 +53,31 @@ export function BriefStatusBanner({
   }
 
   const copy = BANNER_COPY[lifecycle];
+
+  if (compact) {
+    return (
+      <div
+        role="status"
+        aria-live="polite"
+        className={cn(
+          "rounded-orion-md border px-4 py-2.5 text-sm font-light",
+          copy.tone,
+        )}
+      >
+        <span className="font-medium">{copy.title}</span>
+        {lifecycle === "updated" && changesSinceLastView ? (
+          <>
+            <span aria-hidden> · </span>
+            <span className="opacity-80">
+              {changesSinceLastView} changes since you last viewed
+            </span>
+          </>
+        ) : null}
+        <span aria-hidden> · </span>
+        <span className="opacity-80">Last synced {lastSyncedAt}</span>
+      </div>
+    );
+  }
 
   return (
     <div

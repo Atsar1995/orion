@@ -74,15 +74,19 @@ export function BriefPageContent({
           lifecycle={brief.lifecycle}
           changesSinceLastView={brief.changesSinceLastView}
           lastSyncedAt={brief.lastSyncedAt}
+          compact
         />
 
-        {lastUpdatedAt && brief.lifecycle !== "fresh" ? (
+        {lastUpdatedAt &&
+        brief.lifecycle !== "fresh" &&
+        brief.lifecycle !== "stale" &&
+        brief.lifecycle !== "incomplete" ? (
           <DataFreshnessIndicator
             freshness={{
               generatedAt: brief.generatedAt,
               lastUpdatedAt,
               ttlSeconds: 60,
-              isStale: brief.lifecycle === "stale",
+              isStale: dataStatus === "stale",
               sourceCount: dataSources.length,
             }}
             status={dataStatus}

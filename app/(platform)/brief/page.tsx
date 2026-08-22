@@ -35,7 +35,7 @@ export default async function ExecutiveBriefPage() {
     decisionContext.executiveName,
   );
 
-  const brief = composeExecutiveBriefV1({
+  const composedBrief = composeExecutiveBriefV1({
     executiveName: decisionContext.executiveName,
     organizationName: DEMO_ORGANIZATION.name,
     profileLabel: session?.user.role ?? "Executive",
@@ -43,6 +43,11 @@ export default async function ExecutiveBriefPage() {
     decisions,
     learning,
   });
+
+  const brief = {
+    ...composedBrief,
+    lifecycle: envelope.data?.lifecycle ?? "fresh",
+  };
 
   const decisionIntelligence = decisionService.getBriefIntelligence(
     decisionContext.context,
