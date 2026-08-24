@@ -1,9 +1,9 @@
 # ORION – CURRENT STATE
 
-**Version:** v0.7  
-**Status:** Stable  
-**Branch:** `main`  
-**Last Updated:** Sprint 10 – Platform Polish Complete
+**Version:** v2.0
+**Status:** Stable / GA-001 Certified
+**Branch:** `develop/v2.0`
+**Last Updated:** 2026-08-24 - GA-001 Operational Certification
 
 ---
 
@@ -32,7 +32,7 @@ The platform now provides a consistent executive experience with reusable compon
 ## Implemented Workspaces
 
 ### ES-013 – Configuration Workspace
-**Status:** Complete
+**Status:** Stable / GA-001 Certified
 
 Features:
 - Platform configuration
@@ -43,7 +43,7 @@ Features:
 ---
 
 ### ES-014 – Intelligence Workspace
-**Status:** Complete
+**Status:** Stable / GA-001 Certified
 
 Features:
 - Executive Briefing
@@ -58,7 +58,7 @@ Features:
 ---
 
 ### ES-015 – Executive Command Center
-**Status:** Complete
+**Status:** Stable / GA-001 Certified
 
 Features:
 - Executive Greeting
@@ -76,7 +76,7 @@ Features:
 
 ## Sprint 10 – Platform Polish
 
-**Status:** Complete
+**Status:** Stable / GA-001 Certified
 
 Improvements:
 
@@ -171,17 +171,32 @@ CURRENT_STATE Update
 
 ---
 
-# Next Phase
+# Current Engineering Phase
 
-Following the successful completion of Version 0.7, ORION is ready for the next phase of product expansion.
+ORION has progressed beyond the Version 0.7 foundation milestone and is now operating on the `develop/v2.0` engineering line.
+
+## GA-001 Operational Certification
+
+**Status:** Certified
+
+**Result:** 13 / 13 tests passed
+
+GA-001 certifies the operational PostgreSQL staging path, restart persistence, migration readiness, health registration, backup and restore validation, disaster recovery readiness, RBAC fail-closed behavior, tenant isolation, and production-secret validation.
+
+## Current Engineering Focus
+
+**Sprint 11E - Configuration & Feature Flags**
+
+The next engineering objective is to complete the configuration and feature-flag capability while preserving the certified platform foundation.
 
 Primary objectives:
 
-- Expand executive capabilities
-- Introduce new business workspaces
-- Continue strengthening the reusable design system
-- Maintain disciplined feature-based development
-
+- Configuration & Feature Flags
+- Preserve PostgreSQL persistence guarantees
+- Maintain fail-closed security behavior
+- Maintain migration readiness
+- Maintain health and operational certification
+- Continue disciplined feature-based development
 ---
 
 # CTO Assessment
@@ -206,4 +221,4 @@ ORION is now positioned for accelerated feature development while preserving lon
 
 **Platform Status:** 🟢 Stable
 
-**Ready For:** Version 0.8
+**Ready For:** Sprint 11E � Configuration & Feature Flags
