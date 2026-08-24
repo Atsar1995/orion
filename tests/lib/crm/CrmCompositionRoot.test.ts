@@ -81,8 +81,8 @@ describe("CRM Composition Root Convergence (P-008.18)", () => {
   });
 
   it("does not expose TD-002 defaultCrmRepository singleton", async () => {
-    const module = await import("@/lib/crm/repositories/InMemoryCrmRepository");
-    expect("defaultCrmRepository" in module).toBe(false);
+    const repositoryModule = await import("@/lib/crm/repositories/InMemoryCrmRepository");
+    expect("defaultCrmRepository" in repositoryModule).toBe(false);
   });
 
   it("wires canonical publisher and sales order service through composition root", () => {
