@@ -191,6 +191,22 @@ export async function cleanupPostgresTestHarness(harness: PostgresTestHarness): 
       harness.tenantAId,
       harness.tenantBId,
     ]);
+    await client.query(`DELETE FROM aurora_knowledge_relationship WHERE tenant_id IN ($1, $2)`, [
+      harness.tenantAId,
+      harness.tenantBId,
+    ]);
+    await client.query(`DELETE FROM aurora_knowledge_embedding WHERE tenant_id IN ($1, $2)`, [
+      harness.tenantAId,
+      harness.tenantBId,
+    ]);
+    await client.query(`DELETE FROM aurora_knowledge_entity_version WHERE tenant_id IN ($1, $2)`, [
+      harness.tenantAId,
+      harness.tenantBId,
+    ]);
+    await client.query(`DELETE FROM aurora_knowledge_entity WHERE tenant_id IN ($1, $2)`, [
+      harness.tenantAId,
+      harness.tenantBId,
+    ]);
     await client.query(`DELETE FROM aurora_workspace_config WHERE tenant_id IN ($1, $2)`, [
       harness.tenantAId,
       harness.tenantBId,

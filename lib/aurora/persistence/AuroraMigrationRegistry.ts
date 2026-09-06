@@ -47,6 +47,24 @@ export const AURORA_ADMIN_MIGRATIONS: readonly Migration[] = [
     "Tenant RLS policies (ADR-004)",
     "005_aurora_rls_policies.sql",
   ),
+  sqlMigration(
+    "007_knowledge_memory",
+    7,
+    "Knowledge entity and version history tables (ES-AURORA-007 Gate 4C)",
+    "007_knowledge_memory.sql",
+  ),
+  sqlMigration(
+    "008_knowledge_relationship",
+    8,
+    "Knowledge relationship graph table (ES-AURORA-007 Sprint 2)",
+    "008_knowledge_relationship.sql",
+  ),
+  sqlMigration(
+    "009_knowledge_embedding",
+    9,
+    "Knowledge embedding pgvector table and entity FTS (ES-AURORA-007 Sprint 3 Gate 2)",
+    "009_knowledge_embedding.sql",
+  ),
 ];
 
 export class AuroraMigrationRegistry {
