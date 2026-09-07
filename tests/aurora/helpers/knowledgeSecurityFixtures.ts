@@ -1,6 +1,8 @@
 import type { KnowledgeEntity } from "@/lib/aurora/knowledge/domain/KnowledgeEntity";
 import { knowledgeEntityRegistry } from "@/lib/aurora/knowledge/registry/KnowledgeEntityRegistry";
 import {
+  InMemoryEmbeddingRepository,
+  InMemoryKnowledgeRepository,
   PostgresEmbeddingRepository,
   PostgresKnowledgeRepository,
 } from "@/lib/aurora/knowledge/repositories";
@@ -17,6 +19,7 @@ import {
   DefaultSemanticSearchEngine,
 } from "@/lib/aurora/knowledge/retrieval";
 import { InMemoryRetrievalCache } from "@/lib/aurora/knowledge/cache";
+import type { EmbeddingProvider } from "@/lib/aurora/knowledge/services/EmbeddingProvider";
 import {
   DefaultEmbeddingService,
   DefaultKnowledgeGraphService,
@@ -27,6 +30,8 @@ import {
   RelationshipEngine,
   type KnowledgeRetrievalService,
 } from "@/lib/aurora/knowledge/services";
+import type { KnowledgeService } from "@/lib/aurora/knowledge/services/KnowledgeService";
+import type { RetrievalCache } from "@/lib/aurora/knowledge/cache/RetrievalCache";
 import { DefaultAuroraAuthorizationService } from "@/lib/aurora/identity/AuroraAuthorizationService";
 import { createTestAuroraRuntimeContext } from "@/lib/aurora/runtime/AuroraContextFactory";
 import type { AuroraRuntimeContext } from "@/lib/aurora/runtime/AuroraRuntimeContext";
@@ -105,6 +110,67 @@ export type PostgresKnowledgeRetrievalStack = KnowledgeRetrievalOrchestrationSta
   readonly knowledgeRepository: KnowledgeRepository;
   readonly embeddingService: EmbeddingService;
 };
+
+export type InMemoryKnowledgeRetrievalStack = KnowledgeRetrievalOrchestrationStack & {
+  readonly retrievalService: KnowledgeRetrievalService;
+  readonly knowledgeService: KnowledgeService;
+  readonly knowledgeRepository: InMemoryKnowledgeRepository;
+  readonly embeddingService: EmbeddingService;
+  readonly retrievalCache: RetrievalCache;
+};
+
+export function createInMemoryKnowledgeRetrievalStack(
+  repository: InMemoryKnowledgeRepository = new InMemoryKnowledgeRepository(),
+  embeddingProvider: EmbeddingProvider = new DeterministicEmbeddingProvider(),
+): InMemoryKnowledgeRetrievalStack {
+  const authorization = new DefaultAuroraAuthorizationService();
+  const retrievalCache = new InMemoryRetrievalCache();
+  const embeddingRepository = new InMemoryEmbeddingRepository();
+  const embeddingService = new DefaultEmbeddingService(
+    embeddingProvider,
+    embeddingRepository,
+    repository,
+    authorization,
+  );
+  const knowledgeService = new DefaultKnowledgeService(
+    repository,
+    authorization,
+    new DefaultTaxonomyManager(),
+    retrievalCache,
+  );
+  const graphService = new DefaultKnowledgeGraphService(
+    knowledgeService,
+    new RelationshipEngine(repository),
+    repository,
+    authorization,
+  );
+  const hybridSearchEngine = new DefaultHybridSearchEngine(
+    new DefaultSemanticSearchEngine(embeddingService, repository),
+    new DefaultKeywordSearchEngine(repository, authorization),
+    new DefaultGraphSearchEngine(graphService, authorization),
+    new DefaultMemorySearchEngine(authorization),
+    authorization,
+  );
+  const contextAssembler = new DefaultContextAssembler(authorization);
+
+  return {
+    knowledgeRepository: repository,
+    embeddingService,
+    hybridSearchEngine,
+    contextAssembler,
+    knowledgeService,
+    retrievalCache,
+    retrievalService: new DefaultKnowledgeRetrievalService(
+      hybridSearchEngine,
+      embeddingService,
+      contextAssembler,
+      new DefaultConfidenceScorer(),
+      new DefaultCitationBuilder(),
+      retrievalCache,
+      authorization,
+    ),
+  };
+}
 
 export function createPostgresKnowledgeRetrievalStack(
   harness: PostgresTestHarness,
