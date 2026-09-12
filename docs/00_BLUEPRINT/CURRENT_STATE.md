@@ -3,7 +3,7 @@
 **Version:** v2.0
 **Status:** Stable / GA-001 Certified
 **Branch:** `develop/v2.0`
-**Last Updated:** 2026-08-24 - GA-001 Operational Certification
+**Last Updated:** 2026-09-07 — ES-AURORA-007 Sprint 3 closure (Gate 19)
 
 ---
 
@@ -99,7 +99,7 @@ Status: Stable
 
 Branch:
 
-main
+`develop/v2.0`
 
 Git History:
 
@@ -183,20 +183,67 @@ ORION has progressed beyond the Version 0.7 foundation milestone and is now oper
 
 GA-001 certifies the operational PostgreSQL staging path, restart persistence, migration readiness, health registration, backup and restore validation, disaster recovery readiness, RBAC fail-closed behavior, tenant isolation, and production-secret validation.
 
+## ES-AURORA-007 - Enterprise Knowledge Graph & Memory Infrastructure
+
+### Sprint 3 - Embedding + Retrieval
+
+**Status:** COMPLETE WITH DOCUMENTED LIMITATIONS
+
+**Gates 1-18:** Closed
+
+Sprint 3 delivered the embedding and retrieval infrastructure, including:
+
+- retrieval domain types and contracts
+- embedding persistence and EmbeddingRepository
+- pgvector/HNSW infrastructure
+- EmbeddingService
+- SemanticSearchEngine
+- KeywordSearchEngine
+- GraphSearchEngine
+- HybridSearchEngine
+- MemorySearchEngine Sprint 3 degradation stub
+- ContextAssembler
+- ConfidenceScorer
+- KnowledgeRetrievalService
+- CitationBuilder
+- in-memory retrieval caching
+- retrieval integration tests
+- performance benchmarks
+- accuracy tests
+- tenant isolation and RBAC/security validation
+
+### Documented Limitations
+
+- Memory retrieval is deferred to Sprint 4.
+- Redis retrieval caching is deferred; Sprint 3 uses an in-memory cache.
+- A live ORION embedding provider is not configured.
+- ConflictResolver and freshness stages are not yet implemented.
+- Some accuracy scenarios use test-only deterministic providers.
+- Full load/concurrent-50 certification is deferred.
+- Some graph-latency and recovery benchmark work remains follow-on work.
+- Platform wiring such as KnowledgeModuleRuntime/AuroraKnowledgeWiring remains deferred to the later platform-integration sprint.
+
+These are documented limitations, not Sprint 3 blockers.
+
+### Next Engineering Phase
+
+**Sprint 4 - Memory Tiers 1-5**
+
+The next objective is to design and implement the memory-tier infrastructure while preserving:
+
+- tenant isolation
+- RBAC/fail-closed behavior
+- retrieval security boundaries
+- PostgreSQL persistence guarantees
+- migration discipline
+- deterministic and testable engineering practices
+
 ## Current Engineering Focus
 
-**Sprint 11E - Configuration & Feature Flags**
+**ES-AURORA-007 Sprint 4 - Memory Tiers 1-5 Planning**
 
-The next engineering objective is to complete the configuration and feature-flag capability while preserving the certified platform foundation.
+Sprint 3 (Embedding + Retrieval) has closed. The next engineering objective is planning and implementation of Memory Tiers 1-5 capability while preserving the certified platform foundation and Sprint 3 retrieval security boundaries.
 
-Primary objectives:
-
-- Configuration & Feature Flags
-- Preserve PostgreSQL persistence guarantees
-- Maintain fail-closed security behavior
-- Maintain migration readiness
-- Maintain health and operational certification
-- Continue disciplined feature-based development
 ---
 
 # CTO Assessment
@@ -221,4 +268,4 @@ ORION is now positioned for accelerated feature development while preserving lon
 
 **Platform Status:** 🟢 Stable
 
-**Ready For:** Sprint 11E � Configuration & Feature Flags
+**Ready For:** ES-AURORA-007 Sprint 4 - Memory Tiers 1-5 Planning
